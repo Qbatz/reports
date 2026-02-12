@@ -100,16 +100,18 @@ public class InvoiceService {
         BedInfo bedInfo = bedsService.getBedDetails(cbh.getBedId());
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId());
 
+        String rentalPeriod = Utils.dateToMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToMonth(invoicesV1.getInvoiceEndDate());
         InvoiceInfo invoiceInfo = new InvoiceInfo(
                 invoicesV1.getInvoiceNumber(),
                 Utils.dateToString(invoicesV1.getInvoiceStartDate()),
                 Utils.dateToString(invoicesV1.getInvoiceDueDate()),
-                Utils.dateToMonth(invoicesV1.getInvoiceStartDate()),
+                rentalPeriod,
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
                 String.valueOf(Math.round(invoicesV1.getPaidAmount())),
                 String.valueOf(Math.round(balanceAmount)),
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
                 String.valueOf(0),
+                "Rental",
                 invoiceItems,
                 hostelInfo,
                 customerInfo,
@@ -118,5 +120,9 @@ public class InvoiceService {
         );
 
         return invoiceInfo;
+    }
+
+    public InvoicesV1 getInvoice(String invoiceId) {
+        return invoicesV1Repository.getReferenceById(invoiceId);
     }
 }
