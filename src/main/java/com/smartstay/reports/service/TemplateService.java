@@ -26,7 +26,13 @@ public class TemplateService {
                 return null;
             }
             String colorCode = billTemplateType.getInvoiceTemplateColor();
-            String colorValue = colorCode.substring(4, colorCode.length()-1);
+            String colorValue = null;
+            if (colorCode.startsWith("rgba")) {
+                colorValue = colorCode.substring(5, colorCode.length()-1);
+            }
+            else if (colorCode.startsWith("rgb(")){
+                colorValue = colorCode.substring(4, colorCode.length()-1);
+            }
             String[] colorArr = colorValue.replaceAll(" ", "")
                             .split(",");
 
@@ -49,6 +55,10 @@ public class TemplateService {
                 hostelLogo = billTemplates.getHostelLogo();
             }
 
+            if (hostelLogo == null) {
+                hostelLogo = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
+            }
+
             if (billTemplates.isMobileCustomized()) {
                 hostelPhone = billTemplateType.getInvoicePhoneNumber();
             } else {
@@ -68,6 +78,7 @@ public class TemplateService {
                     hostelLogo,
                     hostelPhone,
                     hostelEmailId,
+                    null,
                     termsAndCondition,
                     notes);
         }

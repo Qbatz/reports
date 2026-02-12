@@ -2,103 +2,328 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
     <style>
+
+        html,
+body {
+    height: 100%;
+    margin: 0;
+}
         body {
-            font-family: Arial, sans-serif;
-            font-size: 13px;
-            color: #333;
+    font-family: 'Inter', 'Poppins', 'Montserrat', Arial, sans-serif;
+
+}
+
+
+         .container {
+ width: 100%;
+ box-sizing: border-box;
+    min-height: 100vh;
+    position: relative;
+border-radius: 12px;
+ padding-top: 32px;
+ padding-bottom:32px;
+ padding-left: 20px;
+ padding-right: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+ border: 1px solid #E5E7EB;
+
+         }
+
+    .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 2px;
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FF00FF;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.hostel-info {
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.hostel-info strong {
+    font-size: 14px;
+}
+
+         .title {
+             text-align: center;
+             color: red;
+             font-size: 20px;
+             margin-top: 20px;
+         }
+
+         .label {
+             color: #777;
+             width: 120px;
+             display: inline-block;
+         }
+
+         .value {
+             font-weight: bold;
+         }
+
+         .section-title {
+             color: #1E45E1;
+             margin: 35px 0 10px;
+             font-weight: bold;
+             font-size: 12px;
+         }
+
+          table {
+             width: 100%;
+             border-collapse: collapse;
+             font-size: 12px;
+             border-radius: 6px;
+             overflow: hidden;
+         }
+
+         th, td {
+             padding: 12px;
+             border-bottom: 1px solid #e5e7eb;
+         }
+
+         th {
+             background: #FAFBFF;
+             text-align: left;
+             font-weight: 600;
+         }
+
+         .summary {
+             margin-top: 20px;
+             border: 1px solid #ddd;
+             padding: 15px;
+              background: #FAFBFF;
+               border-radius: 6px;
+               color:#4B4B4B;
+
+         }
+
+         .summary-row {
+             display: flex;
+             justify-content: space-between;
+             margin-bottom: 8px;
+             color:#4B4B4B;
+              font-weight: bold;
+         }
+.right {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.amount {
+    display: inline-block;
+    min-width: 80px;
+    text-align: right;
+}
+         .paid {
+             color: green;
+             font-weight: bold;
+         }
+
+         .due {
+             color: red;
+             font-weight: bold;
+         }
+
+
+.summary-box {
+    display: table;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #FAFBFF;
+    margin-top: 20px;
+    font-size: 13px;
+}
+
+.summary-row {
+    display: table-row;
+}
+
+.summary-row > div {
+    display: table-cell;
+    padding: 10px 14px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.summary-box .label {
+    text-align: left;
+    color: #4B4B4B;
+}
+
+.summary-box .value {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.summary-box .paid {
+    color: green;
+}
+
+.summary-box .due {
+    color: red;
+}
+
+
+.bill-table {
+    display: table;
+    width: 100%;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.bill-row {
+    display: table-row;
+}
+
+.bill-cell {
+    display: table-cell;
+    width: 65%;
+    vertical-align: top;
+}
+
+.bill-left {
+    text-align: left;
+}
+
+
+
+.bill-cell p {
+    margin: 12px 0;
+}
+
+.label {
+    color: #4B4B4B;
+    font-size: 12px;
+}
+
+.bill-right p {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin: 8px 0;
+}
+
+.bill-right .label {
+
+       color: #4B4B4B;
+}
+
+.bill-right .colon {
+    width: 10px;
+    text-align: center;
+}
+
+.bill-right .invoice-style,
+.bill-right strong {
+    flex: 1;
+     text-align: left;
+}
+
+
+
+.invoice-style {
+color: #222;
+font-size: 12px;
+margin-top: 5px
+}
+
+
+.condition-box {
+    display: table;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+.condition-row {
+    display: table-row;
+}
+
+.condition-row > div {
+    display: table-cell;
+    vertical-align: top;
+    padding: 8px 6px;
+}
+
+.condition-left {
+    text-align: left;
+    color: #333;
+}
+
+.condition-right {
+    text-align: right;
+}
+
+.condition-right img {
+    margin-top: 6px;
+    max-height: 40px;
+}
+
+.footer {
+    margin-top: 25px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.footer-box {
+    display: table;
+    width: 100%;
+}
+
+.footer-row {
+    display: table-row;
+}
+
+.footer-row > div {
+    display: table-cell;
+    padding: 6px 0;
+    vertical-align: middle;
+    color: #555;
+}
+
+.footer-left {
+    text-align: left;
+}
+
+.footer-right {
+    text-align: right;
+}
+
+.invoice-hr {
+    border: none;
+    border-top: 1px solid;
+    margin: 15px 0;
+}
+.footer-style {
+color:#000;
+font-weight:600;
         }
 
-        .container {
-            width: 100%;
-            padding: 20px;
+.logo {
+        height: 25px;
+        background-color: #000000;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f1a1a1;
-            padding-bottom: 10px;
-        }
-
-        .logo img {
-            height: 40px;
-        }
-
-        .company {
-            text-align: right;
-        }
-
-        .title {
-            text-align: center;
-            color: red;
-            font-size: 20px;
-            margin: 20px 0;
-        }
-
-        .flex {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .box {
-            width: 48%;
-        }
-
-        .label {
-            color: #777;
-            width: 120px;
-            display: inline-block;
-        }
-
-        .value {
-            font-weight: bold;
-        }
-
-        .section-title {
-            color: red;
-            margin: 20px 0 10px;
-            font-weight: bold;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background: #f9f9f9;
-        }
-
-        .summary {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .paid {
-            color: green;
-            font-weight: bold;
-        }
-
-        .due {
-            color: red;
-            font-weight: bold;
-        }
     </style>
 </head>
 
@@ -107,37 +332,105 @@
 
     <!-- HEADER -->
     <div class="header">
-        <div class="company">
-            <div><strong>Happy Living</strong></div>
-            <div>Jalahalli, Bangalore</div>
-            <div>Karnataka - 560057</div>
+        <div class="brand">
+            <img class="logo" th:src="${invoice.templateInfo.hostelLogo}" alt="logo"/>
+
+<!--            <h1 class="logo">Logo goes here</h1>-->
+
+        </div>
+        <div class="hostel-info">
+            <div><strong th:text="${invoice.hostelInfo.hostelName}">Hostel name goes here</strong></div>
+            <div th:text="${invoice.hostelInfo.address}">address goes here </div>
+
         </div>
     </div>
-
+    <hr class="invoice-hr"
+        th:style="'border-color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"/>
     <div class="title">
         <span th="${invoice.configurations.invoiceType}"></span>
     </div>
 
     <!-- BILL DETAILS -->
-    <div class="flex">
-        <div class="box">
-            <p><strong>Bill to:</strong></p>
-            <p><span th:text="${invoice.invoiceNumber}"></span></p>
-            <p><span th:text="7022736579"></span></p>
-            <p><span th:text="B1"></span></p>
+
+
+    <div class="bill-table">
+
+        <div class="bill-row">
+
+
+            <div class="bill-cell bill-left">
+                <p th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">
+                    <strong>Bill to: </strong>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-regular fa-user invoice-icon"
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
+                    <span th:text="${invoice.customerInfo.fullName}"></span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-phone invoice-icon"
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
+                    <span th:text="${invoice.customerInfo.mobile}"></span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-bed invoice-icon"
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
+                    <span th:text="${invoice.bedInfo.bedName}"></span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-location-dot invoice-icon"
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
+                    <span th:text="${invoice.customerInfo.address}"></span>
+                </p>
+            </div>
+
+
+            <div class="bill-cell bill-right">
+                <p>
+                    <span class="label">Invoice</span>
+                    <span class="colon">:</span>
+                    <strong th:text="${invoice.invoiceNumber}"></strong>
+                </p>
+
+                <p>
+                    <span class="label">Invoice Date</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${invoice.invoiceDate}"></span>
+                </p>
+
+                <p>
+                    <span class="label">Due Date</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${invoice.dueDate}"></span>
+                </p>
+
+                <p>
+                    <span class="label">Joining Date</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${invoice.customerInfo.joiningDate}"></span>
+                </p>
+
+                <p>
+                    <span class="label">Rent Period</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${invoice.rentalPeriod}">
+                        Feb 2026 - Mar 2026
+                    </span>
+                </p>
+            </div>
+
         </div>
 
-        <div class="box">
-            <p><span class="label">Invoice :</span> <span class="value" th:text="ABCD1234"></span></p>
-            <p><span class="label">Invoice Date :</span> <span th:text="${invoice.customerInfo.joiningDate}"></span></p>
-            <p><span class="label">Due Date :</span> <span th:text="20/09/2025"></span></p>
-            <p><span class="label">Joining Date :</span> <span th:text="01/02/2025"></span></p>
-            <p><span class="label">Rental Period :</span> <span th:text="B2"></span></p>
-        </div>
     </div>
 
+
     <!-- PAYMENT SUMMARY -->
-    <div class="section-title">Payment Summary</div>
+    <div class="section-title" th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">Payment Summary
+    </div>
 
     <table>
         <thead>
@@ -148,34 +441,86 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td th:text="ABCD1234"></td>
-            <td>Rent</td>
-            <td style="text-align:right">₹ <span th:text="ABCD1234"></span></td>
+        <tr th:each="item : ${invoice.invoiceItems}">
+            <td th:text="${invoice.invoiceNumber}"></td>
+            <td th:text="${item.item}"></td>
+            <td class="right">
+                <span class="amount" th:text="${item.amount}"></span>
+            </td>
+
         </tr>
         <tr>
             <td colspan="2"><strong>Total</strong></td>
-            <td style="text-align:right"><strong>₹ <span th:text="500"></span></strong></td>
+            <td class="right">
+                <strong><span class="amount" th:text="${invoice.totalAmount}"></span></strong>
+            </td>
+
         </tr>
         </tbody>
     </table>
 
-    <!-- TOTALS -->
-    <div class="summary">
+    <div class="summary-box">
         <div class="summary-row">
-            <span>Grand Total</span>
-            <span>₹ <span th:text="100"></span></span>
+            <div class="label">Grand Total</div>
+            <div class="value"><span th:text="${invoice.totalAmount}"></span></div>
         </div>
+
         <div class="summary-row">
-            <span>Payment Made</span>
-            <span class="paid">₹ <span th:text="200"></span></span>
+            <div class="label">Payment Made</div>
+            <div class="value paid"><span th:text="${invoice.paidAmount}"></span></div>
         </div>
+
         <div class="summary-row">
-            <span>Balance Due</span>
-            <span class="due">₹ <span th:text="300"></span></span>
+            <div class="label">Balance Due</div>
+            <div class="value due"><span th:text="${invoice.balanceAmount}"></span></div>
         </div>
     </div>
 
+
+    <div class="account">
+        <div>
+            <p class="section-title" th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">ACCOUNT
+                DETAILS</p>
+            <p style="font-size:13px;">Account No : N/A</p>
+            <p style="font-size:13px;">IFSC Code : N/A</p>
+            <p style="font-size:13px;">Bank Name : N/A</p>
+            <p style="font-size:13px;">UPI Details : N/A</p>
+        </div>
+
+
+        <div class="condition-box">
+            <div class="condition-row">
+                <div class="condition-left">
+                    <strong th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">Terms and
+                        Conditions</strong><br/>
+                    <span th:text="${invoice.templateInfo.termsAndCondition}"></span>
+                </div>
+
+                <div class="condition-right">
+                    <strong>Authorized Signature</strong><br/>
+                    <img th:src="${invoice.templateInfo.hostelLogo}" alt="logo"/>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer">
+            <hr class="invoice-hr"
+                th:style="'border-color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"/>
+
+            <div class="footer-box">
+                <div class="footer-row">
+                    <div class="footer-left">
+                        Email: <span class="footer-style" th:text="${invoice.templateInfo.emailId}"></span>
+                    </div>
+                    <div class="footer-right">
+                        Contact: <span class="footer-style" th:text="${invoice.templateInfo.phone}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 </body>
 </html>
