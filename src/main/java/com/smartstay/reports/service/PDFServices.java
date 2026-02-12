@@ -12,12 +12,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 @Service
-public class InvoicePDFServices {
+public class PDFServices {
     private final TemplateEngine templateEngine;
 
     @Autowired
     private UploadFileToS3 uploadFileToS3;
-    public InvoicePDFServices(TemplateEngine templateEngine) {
+    public PDFServices(TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
@@ -32,6 +32,22 @@ public class InvoicePDFServices {
 
             File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "invoice-");
             return uploadFileToS3.uploadFileToS3(pdfFile, "invoices");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+    }
+
+    public String generateReceiptPdf(String templateName, Context context) {
+        String html = templateEngine.process(templateName, context);
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.withHtmlContent(html, null);
+            builder.toStream(outputStream);
+            builder.run();
+
+            File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "receipts-");
+            return uploadFileToS3.uploadFileToS3(pdfFile, "receipts");
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate PDF", e);
         }

@@ -11,7 +11,7 @@ import lombok.Setter;
 
 import java.util.Date;
 
-@Entity
+@Entity(name = "transactionv1")
 @Getter
 @Setter
 @AllArgsConstructor

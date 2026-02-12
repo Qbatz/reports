@@ -1,4 +1,4 @@
-package com.smartstay.reports.responses.invoice;
+package com.smartstay.reports.responses.hostel;
 
 public record TemplateInfo(String colorCode,
                            String hostelLogo,

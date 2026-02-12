@@ -3,6 +3,9 @@ package com.smartstay.reports.service;
 import com.smartstay.reports.dao.CustomersBedHistory;
 import com.smartstay.reports.dao.InvoicesV1;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
+import com.smartstay.reports.responses.customers.CustomerInfo;
+import com.smartstay.reports.responses.hostel.HostelInfo;
+import com.smartstay.reports.responses.hostel.TemplateInfo;
 import com.smartstay.reports.responses.invoice.*;
 import com.smartstay.reports.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,7 @@ public class InvoiceService {
     @Autowired
     private InvoicesV1Repository invoicesV1Repository;
     @Autowired
-    private InvoicePDFServices invoicePDFServices;
+    private PDFServices invoicePDFServices;
     @Autowired
     private HostelService hostelService;
     @Autowired
