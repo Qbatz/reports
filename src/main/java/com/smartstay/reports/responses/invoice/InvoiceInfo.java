@@ -1,5 +1,9 @@
 package com.smartstay.reports.responses.invoice;
 
+import com.smartstay.reports.responses.customers.CustomerInfo;
+import com.smartstay.reports.responses.hostel.HostelInfo;
+import com.smartstay.reports.responses.hostel.TemplateInfo;
+
 import java.util.List;
 
 public record InvoiceInfo(String invoiceNumber,

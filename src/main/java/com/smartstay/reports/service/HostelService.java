@@ -2,7 +2,7 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.HostelV1;
 import com.smartstay.reports.repositories.HostelV1Repository;
-import com.smartstay.reports.responses.invoice.HostelInfo;
+import com.smartstay.reports.responses.hostel.HostelInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
