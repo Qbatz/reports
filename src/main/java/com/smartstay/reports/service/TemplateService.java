@@ -48,6 +48,7 @@ public class TemplateService {
             String termsAndCondition = null;
             String signatureUrl = null;
             String notes = null;
+            String qrCode = null;
 
             if (billTemplates.isLogoCustomized()) {
                 hostelLogo = billTemplateType.getInvoiceLogoUrl();
@@ -78,14 +79,19 @@ public class TemplateService {
                 signatureUrl = billTemplates.getDigitalSignature();
             }
 
+            if (billTemplateType.getQrCode() != null) {
+                qrCode = billTemplateType.getQrCode();
+            }
+
             termsAndCondition = billTemplateType.getInvoiceTermsAndCondition();
             notes = billTemplateType.getInvoiceNotes();
 
             return new TemplateInfo(hexColor,
                     hostelLogo,
+                    qrCode,
                     hostelPhone,
                     hostelEmailId,
-                    null,
+                    signatureUrl,
                     termsAndCondition,
                     notes);
         }
@@ -128,6 +134,7 @@ public class TemplateService {
             String termsAndCondition = null;
             String signatureUrl = null;
             String notes = null;
+            String qrCode = null;
 
             if (billTemplates.isLogoCustomized()) {
                 hostelLogo = billTemplateType.getReceiptLogoUrl();
@@ -157,11 +164,15 @@ public class TemplateService {
             else {
                 signatureUrl = billTemplates.getDigitalSignature();
             }
+            if (billTemplateType.getQrCode() != null) {
+                qrCode = billTemplateType.getQrCode();
+            }
             termsAndCondition = billTemplateType.getReceiptTermsAndCondition();
             notes = billTemplateType.getReceiptNotes();
 
             return new TemplateInfo(hexColor,
                     hostelLogo,
+                    qrCode,
                     hostelPhone,
                     hostelEmailId,
                     signatureUrl,
