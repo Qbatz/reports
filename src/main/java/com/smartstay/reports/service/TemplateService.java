@@ -25,6 +25,7 @@ public class TemplateService {
             if (billTemplateType == null) {
                 return null;
             }
+            String hexColor = null;
             String colorCode = billTemplateType.getInvoiceTemplateColor();
             String colorValue = null;
             if (colorCode.startsWith("rgba")) {
@@ -33,14 +34,20 @@ public class TemplateService {
             else if (colorCode.startsWith("rgb(")){
                 colorValue = colorCode.substring(4, colorCode.length()-1);
             }
-            String[] colorArr = colorValue.replaceAll(" ", "")
-                            .split(",");
+            else if (colorCode.startsWith("#")) {
+                hexColor = colorCode;
+            }
+            if (colorValue != null) {
+                String[] colorArr = colorValue.replaceAll(" ", "")
+                        .split(",");
 
-            int r = Integer.parseInt(colorArr[0].trim());
-            int g = Integer.parseInt(colorArr[1].trim());
-            int b = Integer.parseInt(colorArr[2].trim());
+                int r = Integer.parseInt(colorArr[0].trim());
+                int g = Integer.parseInt(colorArr[1].trim());
+                int b = Integer.parseInt(colorArr[2].trim());
 
-            String hexColor = String.format("#%02X%02X%02X", r, g, b);
+                hexColor = String.format("#%02X%02X%02X", r, g, b);
+            }
+
 
             String hostelLogo = null;
             String hostelPhone = null;
