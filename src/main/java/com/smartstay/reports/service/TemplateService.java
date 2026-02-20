@@ -80,7 +80,7 @@ public class TemplateService {
             }
 
             if (billTemplates.isSignatureCustomized()) {
-                signatureUrl = billTemplateType.getReceiptSignatureUrl();
+                signatureUrl = billTemplateType.getInvoiceSignatureUrl();
             }
             else {
                 signatureUrl = billTemplates.getDigitalSignature();

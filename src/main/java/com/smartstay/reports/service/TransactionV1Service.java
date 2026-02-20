@@ -70,7 +70,7 @@ public class TransactionV1Service {
                 Utils.dateToTime(transactionV1.getPaymentDate()),
                 paymentMode,
                 transactionV1.getReferenceNumber());
-        TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId());
+        TemplateInfo templateInfo = templateService.getReceiptTemplate(invoicesV1.getHostelId());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
 
