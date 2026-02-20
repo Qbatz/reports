@@ -2,6 +2,7 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.CustomersBedHistory;
 import com.smartstay.reports.dao.InvoicesV1;
+import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
@@ -60,8 +61,11 @@ public class InvoiceService {
     }
 
     public InvoiceInfo getInvoiceInfo(InvoicesV1 invoicesV1) {
-        double paidAmount = invoicesV1.getPaidAmount();
-        double balanceAmount = invoicesV1.getTotalAmount() - invoicesV1.getPaidAmount();
+        double paidAmount = 0.0;
+        if (invoicesV1.getPaidAmount() != null) {
+            paidAmount = invoicesV1.getPaidAmount();
+        }
+        double balanceAmount = invoicesV1.getTotalAmount() - paidAmount;
 
         List<InvoiceItems> invoiceItems = invoicesV1
                 .getInvoiceItems()
@@ -97,6 +101,21 @@ public class InvoiceService {
                 })
                 .toList();
 
+        String invoiceType = null;
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
+            invoiceType = "Payment Bill";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            invoiceType = "Security Deposit(Booking)";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
+            invoiceType = "Security Deposit";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+            invoiceType = "Settlement";
+        }
+
+
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
         CustomersBedHistory cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
@@ -114,7 +133,7 @@ public class InvoiceService {
                 String.valueOf(Math.round(balanceAmount)),
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
                 String.valueOf(0),
-                "Rental",
+                invoiceType,
                 invoiceItems,
                 hostelInfo,
                 customerInfo,
