@@ -387,7 +387,7 @@ font-weight:600;
 
 
 .qr-image {
-    max-height: 60px;
+    max-height: 150px;
 }
 
 
@@ -590,7 +590,7 @@ font-weight:600;
                 <!-- RIGHT SIDE -->
                 <div class="account-right">
                     <img class="qr-image"
-                         th:src="${invoice.templateInfo.hostelLogo}"
+                         th:src="${invoice.templateInfo.qrCode}"
                          alt="QR Code" />
                 </div>
 

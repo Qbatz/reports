@@ -3,6 +3,7 @@ package com.smartstay.reports.service;
 import com.smartstay.reports.dao.BillTemplateType;
 import com.smartstay.reports.dao.BillTemplates;
 import com.smartstay.reports.ennum.BillConfigTypes;
+import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.repositories.BillTemplateRepository;
 import com.smartstay.reports.responses.hostel.TemplateInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,25 @@ public class TemplateService {
     @Autowired
     private BillTemplateRepository billTemplateRepository;
 
-    public TemplateInfo getTemplateDetails(String hostelId) {
+    public TemplateInfo getTemplateDetails(String hostelId, String invoiceType) {
         BillTemplates billTemplates = billTemplateRepository.getByHostelId(hostelId);
         if (billTemplates != null) {
-            BillTemplateType billTemplateType = billTemplates
-                    .getTemplateTypes()
-                    .stream()
-                    .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
-                    .findFirst()
-                    .orElse(null);
+            BillTemplateType billTemplateType = null;
+            if (invoiceType.equalsIgnoreCase(InvoiceType.RENT.name()) || invoiceType.equalsIgnoreCase(InvoiceType.SETTLEMENT.name()) ||  invoiceType.equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+                billTemplateType = billTemplates
+                        .getTemplateTypes()
+                        .stream()
+                        .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
+                        .findFirst()
+                        .orElse(null);
+            } else if (invoiceType.equalsIgnoreCase(InvoiceType.BOOKING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
+                billTemplateType = billTemplates
+                        .getTemplateTypes()
+                        .stream()
+                        .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.ADVANCE.name()))
+                        .findFirst()
+                        .orElse(null);
+            }
             if (billTemplateType == null) {
                 return null;
             }

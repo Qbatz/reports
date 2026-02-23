@@ -120,7 +120,7 @@ public class InvoiceService {
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
         CustomersBedHistory cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
         BedInfo bedInfo = bedsService.getBedDetails(cbh.getBedId());
-        TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId());
+        TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
 
         String rentalPeriod = Utils.dateToMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToMonth(invoicesV1.getInvoiceEndDate());
         InvoiceInfo invoiceInfo = new InvoiceInfo(
@@ -129,7 +129,7 @@ public class InvoiceService {
                 Utils.dateToString(invoicesV1.getInvoiceDueDate()),
                 rentalPeriod,
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
-                String.valueOf(Math.round(invoicesV1.getPaidAmount())),
+                String.valueOf(Math.round(paidAmount)),
                 String.valueOf(Math.round(balanceAmount)),
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
                 String.valueOf(0),
