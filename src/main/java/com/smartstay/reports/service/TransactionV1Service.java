@@ -59,13 +59,20 @@ public class TransactionV1Service {
 
     public ReceiptsResponse getReceiptInfo(TransactionV1 transactionV1, InvoicesV1 invoicesV1) {
         String title = null;
+        String description = null;
         List<String> headers = null;
         String labelUrl = null;
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             title = "Payment Receipt";
+            description = "Payment";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
-            title = "Settlement";
+            title = "Final Settlement Receipt";
+            description = "Settlement";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            description = "Security Deposit (Advance)";
         }
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())
@@ -113,6 +120,7 @@ public class TransactionV1Service {
                 String.valueOf(Math.round(dueAmount)),
                 paidAmountInWords,
                 title,
+                description,
                 headers,
                 hostelInfo,
                 receiptInfo,
