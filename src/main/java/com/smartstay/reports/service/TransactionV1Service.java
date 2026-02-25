@@ -18,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class TransactionV1Service {
 
@@ -56,11 +59,29 @@ public class TransactionV1Service {
 
     public ReceiptsResponse getReceiptInfo(TransactionV1 transactionV1, InvoicesV1 invoicesV1) {
         String title = null;
+        List<String> headers = null;
+        String labelUrl = null;
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             title = "Payment Receipt";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             title = "Settlement";
+        }
+
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())
+                || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())
+                || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+           headers = new ArrayList<>();
+           headers.add("Sl No");
+           headers.add("Description");
+           headers.add("Amount");
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+            headers = new ArrayList<>();
+            headers.add("Invoice No");
+            headers.add("Invoice Date");
+            headers.add("Invoice Amount");
+            headers.add("Payment Amount");
         }
 
         String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Only";
@@ -74,12 +95,25 @@ public class TransactionV1Service {
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
 
+        double totalAmount = 0.0;
+        double paidAmount = 0.0;
+        double dueAmount = 0.0;
+        if (invoicesV1.getTotalAmount() != null) {
+            totalAmount = invoicesV1.getTotalAmount();
+        }
+        if (invoicesV1.getPaidAmount() != null) {
+            paidAmount = invoicesV1.getPaidAmount();
+        }
+        dueAmount = totalAmount - paidAmount;
+
         return new ReceiptsResponse(invoicesV1.getInvoiceNumber(),
                 Utils.dateToString(invoicesV1.getInvoiceStartDate()),
-                String.valueOf(Math.round(invoicesV1.getTotalAmount())),
-                String.valueOf(Math.round(transactionV1.getPaidAmount())),
+                String.valueOf(Math.round(totalAmount)),
+                String.valueOf(Math.round(paidAmount)),
+                String.valueOf(Math.round(dueAmount)),
                 paidAmountInWords,
                 title,
+                headers,
                 hostelInfo,
                 receiptInfo,
                 templateInfo,
