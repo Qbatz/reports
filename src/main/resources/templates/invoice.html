@@ -83,7 +83,7 @@ border-radius: 12px;
 
          .section-title {
              color: #1E45E1;
-             margin: 35px 0 10px;
+             margin: 25px 0 10px;
              font-weight: bold;
              font-size: 12px;
          }
@@ -198,18 +198,19 @@ border-radius: 12px;
 
 .bill-cell {
     display: table-cell;
-    /*width: 50%;*/
-    vertical-align: top;
+       vertical-align: top;
 }
         .bill-right {
-            width: 36%;
+            width: 40%;
             text-align: left;
         }
 .bill-left {
     text-align: left;
-    width: 64%;
+    width: 40%;
 }
-
+.bill-center {
+width: 20%;
+}
 
 
 .bill-cell p {
@@ -253,14 +254,14 @@ border-radius: 12px;
 .invoice-style {
 color: #222;
 font-size: 12px;
-margin-top: 5px
+margin-top: 2px
 }
 
 
 .condition-box {
     display: table;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 5px;
     font-size: 12px;
 }
 
@@ -359,7 +360,7 @@ font-weight:600;
 .account-box {
     display: table;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
     font-size: 13px;
 }
 
@@ -389,7 +390,10 @@ font-weight:600;
 .qr-image {
     max-height: 150px;
 }
-
+.tenant-address {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
 
 
     </style>
@@ -477,10 +481,11 @@ font-weight:600;
                 <p class="invoice-style">
                     <i class="fa-solid fa-location-dot invoice-icon"
                        th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
-                    <span th:text="${invoice.customerInfo.address}"></span>
+                    <span class="tenant-address" th:text="${invoice.customerInfo.address}"></span>
                 </p>
             </div>
 
+            <div class ="bill-cell bill-center"></div>
 
             <div class="bill-cell bill-right">
                 <p>
