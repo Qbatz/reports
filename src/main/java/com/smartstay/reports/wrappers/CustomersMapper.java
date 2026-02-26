@@ -87,6 +87,7 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                     else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.VACATED.name())) {
                         long duration = Utils.findNumberOfDays(bookingsV1.getJoiningDate(), bookingsV1.getCheckoutDate());
                         stayDuration = String.valueOf(duration) +" days";
+                        checkoutDate = Utils.dateToString(bookingsV1.getCheckoutDate());
                     }
 
                 }
@@ -128,7 +129,13 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                     .findFirst()
                     .orElse(null);
             if (transactionV1 != null) {
-                lastPayment = String.valueOf(transactionV1.getPaidAmount());
+                if (transactionV1.getPaidAmount() != null) {
+                    lastPayment = "₹"+String.valueOf(transactionV1.getPaidAmount());
+                }
+                else {
+                    lastPayment = "NA";
+                }
+
             }
         }
 
