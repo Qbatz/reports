@@ -5,10 +5,7 @@ import com.smartstay.reports.dao.Customers;
 import com.smartstay.reports.dao.Rooms;
 import com.smartstay.reports.dao.TransactionV1;
 import com.smartstay.reports.dto.beds.BedInformations;
-import com.smartstay.reports.dto.customer.CustomerInfo;
-import com.smartstay.reports.dto.customer.CustomersDetails;
-import com.smartstay.reports.dto.customer.HeaderInfo;
-import com.smartstay.reports.dto.customer.HostelInformation;
+import com.smartstay.reports.dto.customer.*;
 import com.smartstay.reports.ennum.BookingStatus;
 import com.smartstay.reports.repositories.CustomersRepository;
 import com.smartstay.reports.utils.Utils;
@@ -115,9 +112,13 @@ public class CustomersService {
                 String.valueOf(noticePeriodCount),
                 String.valueOf(checkoutCount),
                 String.valueOf(inactiveCount),
-                String.valueOf(bookingCount));
+                String.valueOf(bookingCount),
+                Utils.dateToString(sDate),
+                Utils.dateToString(eDate));
+        Date d = new Date();
+        FooterInfo footerInfo = new FooterInfo(Utils.dateToString(d), Utils.dateToTime(d));
 
-        CustomersDetails details = new CustomersDetails(hostelInformation, headerInfo, listCustomerInfo);
+        CustomersDetails details = new CustomersDetails(hostelInformation, headerInfo, footerInfo, listCustomerInfo);
         return details;
     }
 

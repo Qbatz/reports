@@ -1,10 +1,756 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Receipt</title>
+
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+
+    <style>
+
+        html,
+body {
+    height: 100%;
+    margin: 0;
+}
+        body {
+    font-family: 'Inter', 'Poppins', 'Montserrat', Arial, sans-serif;
+
+}
+
+
+         .container {
+ width: 100%;
+ box-sizing: border-box;
+    min-height: 100vh;
+    position: relative;
+border-radius: 12px;
+ padding-top: 32px;
+ padding-bottom:32px;
+ padding-left: 20px;
+ padding-right: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+ border: 1px solid #E5E7EB;
+
+         }
+
+
+.header-table {
+    width: 100%;
+    font-size: 13px;
+}
+
+.header-row {
+    width: 100%;
+}
+
+.header-cell {
+    float: left;
+}
+
+.header-left {
+    width: 40%;
+}
+
+.header-right {
+    width: 60%;
+    text-align: right;
+}
+
+.logo {
+    max-height: 60px;
+}
+
+
+         .title {
+             text-align: center;
+                      font-size: 20px;
+             margin-top: 20px;
+         }
+
+         .label {
+             color: #777;
+             width: 120px;
+             display: inline-block;
+         }
+
+         .value {
+             font-weight: bold;
+         }
+
+         .section-title {
+             color: #1E45E1;
+             margin: 25px 0 10px;
+             font-weight: bold;
+             font-size: 12px;
+         }
+
+          table {
+             width: 100%;
+margin-top:15px;
+             font-size: 12px;
+             border-radius: 6px;
+             overflow: hidden;
+         }
+
+         th, td {
+             padding: 12px;
+             border-bottom: 1px solid #e5e7eb;
+         }
+
+         th {
+             background: #FAFBFF;
+             text-align: left;
+             font-weight: 600;
+         }
+
+         .summary {
+             margin-top: 20px;
+             border: 1px solid #ddd;
+             padding: 15px;
+              background: #FAFBFF;
+               border-radius: 6px;
+               color:#4B4B4B;
+
+         }
+
+         .summary-row {
+             display: flex;
+             justify-content: space-between;
+             margin-bottom: 8px;
+             color:#4B4B4B;
+              font-weight: bold;
+         }
+.right {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.amount {
+    display: inline-block;
+    min-width: 80px;
+    text-align: right;
+}
+         .paid {
+             color: green;
+             font-weight: bold;
+         }
+
+         .due {
+             color: red;
+             font-weight: bold;
+         }
+
+
+.summary-box {
+    display: table;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #FAFBFF;
+    margin-top: 20px;
+    font-size: 13px;
+}
+
+.summary-row {
+    display: table-row;
+}
+
+.summary-row > div {
+    display: table-cell;
+    padding: 10px 14px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.summary-box .label {
+    text-align: left;
+    color: #4B4B4B;
+}
+
+.summary-box .value {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.summary-box .paid {
+    color: green;
+}
+
+.summary-box .due {
+    color: red;
+}
+
+
+.bill-table {
+    display: table;
+    width: 100%;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.bill-row {
+    display: table-row;
+}
+
+.bill-cell {
+    display: table-cell;
+       vertical-align: top;
+}
+        .bill-right {
+            width: 40%;
+            text-align: left;
+        }
+
+.bill-left .invoice-style {
+    display: table;
+    width: 100%;
+    margin: 6px 0;
+}
+
+.bill-left .invoice-icon,
+.bill-left .colon,
+.bill-left .info-text {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.bill-left .invoice-icon {
+    width: 25px;
+    text-align: center;
+}
+
+.bill-left .colon {
+    width: 15px;
+    text-align: center;
+}
+
+.bill-left .info-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.bill-center {
+width: 20%;
+}
+
+
+.bill-cell p {
+    margin: 12px 0;
+}
+
+.label {
+    color: #4B4B4B;
+    font-size: 12px;
+}
+
+.bill-right p {
+       font-size: 12px;
+        display: grid;
+    grid-template-columns: 120px 10px auto;
+    margin: 8px 0;
+   }
+
+.bill-right .label {
+
+       color: #4B4B4B;
+}
+
+.bill-right .colon {
+    width: 10px;
+    text-align: center;
+}
+
+.bill-right .invoice-style,
+.bill-right strong {
+    flex: 1;
+     text-align: left;
+}
+
+
+
+.invoice-style {
+color: #222;
+font-size: 12px;
+margin-top: 2px
+}
+
+
+.condition-box {
+    display: table;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+.condition-row {
+    display: table-row;
+}
+
+.condition-row > div {
+    display: table-cell;
+    vertical-align: top;
+    padding: 8px 6px;
+}
+
+
+.condition-left {
+    width: 65%;
+    text-align: left;
+    color: #333;
+}
+
+.termscondition {
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
+
+.condition-right {
+    width: 35%;
+    text-align: right;
+}
+
+
+.signature-box {
+    display: inline-block;
+    text-align: center;
+}
+
+
+.condition-right img {
+    display: block;
+    margin: 0 auto 5px auto;
+    max-height: 45px;
+}
+
+
+.signature-text {
+    font-size: 12px;
+}
+
+.footer {
+    margin-top: 25px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.footer-box {
+    display: table;
+    width: 100%;
+}
+
+.footer-row {
+    display: table-row;
+}
+
+.footer-row > div {
+    display: table-cell;
+    padding: 6px 0;
+    vertical-align: middle;
+    color: #555;
+}
+
+.footer-left {
+    text-align: left;
+}
+
+.footer-right {
+    text-align: right;
+}
+
+.invoice-hr {
+    border: none;
+    border-top: 1px solid;
+    margin: 15px 0;
+}
+.footer-style {
+color:#000;
+font-weight:600;
+        }
+
+
+    .invoice-type {
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+.account-box {
+    display: table;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 13px;
+}
+
+.account-row {
+    display: table-row;
+}
+
+.account-row > div {
+    display: table-cell;
+    vertical-align: top;
+    padding: 8px 6px;
+}
+
+
+.account-left {
+    width: 65%;
+    text-align: left;
+}
+
+
+.account-right {
+    width: 35%;
+    text-align: right;
+}
+
+
+.qr-image {
+    max-height: 150px;
+}
+
+
+
+   .amount-card {
+    display: table;
+    width: 100%;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top:10px;
+}
+
+.amount-left,
+.amount-right {
+    display: table-cell;
+    vertical-align: middle;
+
+}
+
+.amount-left {
+    width: 35%;
+    padding: 20px;
+    font-weight: 600;
+    font-size: 11px;
+    background: #ffffff;
+     border-radius: 10px;
+}
+
+.amount-right {
+    width: 65%;
+        border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    }
+
+.amount-value {
+    font-size: 20px;
+    font-weight: bold;
+    border-left: 4px solid #00A651;
+    padding: 20px;
+     background-color: #F1FFF5;
+}
+
+.amount-words {
+    padding: 10px;
+    font-size: 13px;
+    color: #444;
+}
+
+    </style>
 </head>
 <body>
 
+
+
+
+<div class="container">
+
+
+    <div class="header-table">
+        <div class="header-row">
+
+            <div class="header-cell header-left">
+                <img class="logo"
+                     th:src="${receipt.templateInfo.hostelLogo}"
+                     alt="logo" />
+            </div>
+
+            <div class="header-cell header-right">
+                <div>
+                    <strong th:text="${receipt.hostelInfo.hostelName}">
+                        Hostel Name
+                    </strong>
+                </div>
+
+                <div th:text="${receipt.hostelInfo.address}">
+                    Hostel Address
+                </div>
+            </div>
+
+        </div>
+
+        <div style="clear: both;"></div>
+    </div>
+
+
+
+
+    <hr class="invoice-hr"
+        th:style="'border-color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"/>
+    <div class="invoice-type"
+         th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+        <strong th:text="${receipt.title}"></strong>
+    </div>
+
+
+
+
+
+
+    <div class="bill-table">
+
+        <div class="bill-row">
+
+
+            <div class="bill-cell bill-left">
+                <p th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                    <strong>Receipt to: </strong>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-regular fa-user invoice-icon"
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
+                    <span class="colon">:</span>
+                    <span class="info-text" th:text="${receipt.customerInfo.fullName}"></span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-phone invoice-icon"
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
+                    <span class="colon">:</span>
+                    <span class="info-text" th:text="${receipt.customerInfo.mobile}"></span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-bed invoice-icon"
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
+                    <span class="colon">:</span>
+                    <span class="info-text" >Floor name room name bed name </span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-location-dot invoice-icon"
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
+                    <span class="colon">:</span>
+
+                    <span class="info-text" th:text="${receipt.customerInfo.address}"></span>
+                </p>
+            </div>
+
+            <div class ="bill-cell bill-center"></div>
+
+            <div class="bill-cell bill-right">
+                <p>
+                    <span class="label">Receipt No</span>
+                    <span class="colon">:</span>
+                    <strong th:text="${receipt.receiptInfo.receiptNumber}"></strong>
+                </p>
+
+                <p>
+                    <span class="label">Date</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${receipt.receiptInfo.date}"></span>
+                </p>
+
+                <p>
+                    <span class="label">Time </span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${receipt.receiptInfo.time}"></span>
+                </p>
+
+                <p>
+                    <span class="label">Payment Mode</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${receipt.receiptInfo.paymentMode}"></span>
+                </p>
+
+                <p>
+                    <span class="label">Transaction ID</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${receipt.receiptInfo.transactionId}">
+
+                    </span>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="amount-card">
+        <div class="amount-left">
+
+            <div th:text="${T(java.lang.Integer).parseInt(receipt.invoiceAmount) < 0}
+        ? 'TOTAL REFUNDED AMOUNT'
+        : 'TOTAL PAID AMOUNT'">
+            </div>
+
+            <div th:text="${T(java.lang.Integer).parseInt(receipt.invoiceAmount) < 0}
+        ? '(Settlement)'
+        : '(Security Deposit (Advance))'">
+            </div>
+
+        </div>
+        <div class="amount-right">
+            <div class="amount-value" th:text="${receipt.paidAmount}">
+                ₹ 464
+            </div>
+            <div class="amount-words" th:text="${receipt.amountInWords}">
+                Four Hundred and Sixty Four Rupees Only.
+            </div>
+        </div>
+    </div>
+
+    <div class="account">
+
+
+        <div class="condition-box">
+            <div class="condition-row">
+
+
+                <div class="condition-left">
+                    <strong th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                        Acknowledgment
+                    </strong>
+                    <div class="termscondition"
+                         th:text="${receipt.templateInfo.termsAndCondition}">
+                    </div>
+                </div>
+
+
+                <div class="condition-right">
+                    <div class="signature-box">
+                        <img th:src="${receipt.templateInfo.signature}" alt="signature"/>
+                        <div class="signature-text">
+                            <strong>Authorized Signature</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="condition-box">
+            <div class="condition-row">
+
+
+                <div class="condition-left">
+                    <!--                    <strong th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">-->
+                    <!--                        Acknowledgment-->
+                    <!--                    </strong>-->
+                    <div class="termscondition"
+                         th:text="${receipt.templateInfo.notes}">
+                    </div>
+                </div>
+
+                <!--Received & refund image -->
+                <div class="condition-right">
+                    <div class="signature-box">
+                        <img th:src="${receipt.labelImage}" alt="signature"/>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th th:each="header, stat : ${receipt.headers}"
+                    th:text="${header}"
+                    th:classappend="${stat.last} ? ' right'">
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td th:each="header, stat : ${receipt.headers}"
+                    th:classappend="${stat.last} ? ' right'">
+
+                <span th:switch="${header}">
+
+
+                    <span th:case="'Sl No'"
+                          th:text="1"></span>
+
+                    <span th:case="'Description'"
+                          th:text="${receipt.description}"></span>
+
+                    <span th:case="'Amount'"
+                          th:text="${receipt.invoiceAmount}"></span>
+
+
+                    <span th:case="'Invoice No'"
+                          th:text="${receipt.invoiceNumber}"></span>
+
+                    <span th:case="'Invoice Date'"
+                          th:text="${receipt.invoiceDate}"></span>
+
+                    <span th:case="'Invoice Amount'"
+                          th:text="${receipt.invoiceAmount}"></span>
+
+                    <span th:case="'Payment Amount'"
+                          th:text="${receipt.paidAmount}"></span>
+
+
+                    <span th:case="*">-</span>
+
+                </span>
+
+                </td>
+            </tr>
+
+
+            <tr>
+                <td th:colspan="${receipt.headers.size() - 1}">
+                    <strong>Total</strong>
+                </td>
+
+                <td class="right">
+                    <strong th:text="${receipt.invoiceAmount}"></strong>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <hr class="invoice-hr"
+                th:style="'border-color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"/>
+
+            <div class="footer-box">
+                <div class="footer-row">
+                    <div class="footer-left">
+                        Email: <span class="footer-style" th:text="${receipt.templateInfo.emailId}"></span>
+                    </div>
+                    <div class="footer-right">
+                        Contact: <span class="footer-style" th:text="${receipt.templateInfo.phone}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
+
+
+

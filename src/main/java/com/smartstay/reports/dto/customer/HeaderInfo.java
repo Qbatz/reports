@@ -5,5 +5,7 @@ public record HeaderInfo(String totalTenantsCount,
                          String noticePeriodCount,
                          String checkoutCount,
                          String inactiveCount,
-                         String bookingCount) {
+                         String bookingCount,
+                         String startDate,
+                         String endDate) {
 }
