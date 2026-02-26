@@ -208,6 +208,47 @@ border-radius: 12px;
     text-align: left;
     width: 40%;
 }
+
+
+.bill-left .invoice-style {
+    display: table;
+    width: 100%;
+    margin: 6px 0;
+}
+
+.bill-left .invoice-icon,
+.bill-left .colon,
+.bill-left .info-text {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.bill-left .invoice-icon {
+    width: 25px;
+    text-align: center;
+}
+
+.bill-left .colon {
+    width: 15px;
+    text-align: center;
+}
+
+.bill-left .info-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .bill-center {
 width: 20%;
 }
@@ -223,15 +264,12 @@ width: 20%;
 }
 
 .bill-right p {
-    /*display: flex;*/
-    /*align-items: center;*/
+
     font-size: 12px;
-    /*margin: 8px 0;*/
-    display: grid;
+       display: grid;
     grid-template-columns: 120px 10px auto;
     margin: 8px 0;
-    /*justify-content: end;*/
-}
+    }
 
 .bill-right .label {
 
@@ -462,26 +500,30 @@ font-weight:600;
 
                 <p class="invoice-style">
                     <i class="fa-regular fa-user invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
-                    <span th:text="${invoice.customerInfo.fullName}"></span>
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
+                    <span class="colon">:</span>
+                    <span class="info-text" th:text="${invoice.customerInfo.fullName}"></span>
                 </p>
 
                 <p class="invoice-style">
                     <i class="fa-solid fa-phone invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
-                    <span th:text="${invoice.customerInfo.mobile}"></span>
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
+                    <span class="colon">:</span>
+                    <span  class="info-text" th:text="${invoice.customerInfo.mobile}"></span>
                 </p>
 
                 <p class="invoice-style">
                     <i class="fa-solid fa-bed invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
-                    <span th:text="${invoice.bedInfo.bedName}"></span>
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
+                    <span class="colon">:</span>
+                    <span class="info-text" th:text="${invoice.bedInfo.bedName}"></span>
                 </p>
 
                 <p class="invoice-style">
                     <i class="fa-solid fa-location-dot invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i> :
-                    <span class="tenant-address" th:text="${invoice.customerInfo.address}"></span>
+                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
+                    <span class="colon">:</span>
+                    <span class="info-text" th:text="${invoice.customerInfo.address}"></span>
                 </p>
             </div>
 

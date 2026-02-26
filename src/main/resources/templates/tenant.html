@@ -1,10 +1,255 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8" />
-    <title>Tenants</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tenant Register</title>
+
+    <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 20px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        /* Header */
+
+.header-table {
+    width: 100%;
+    display: table;
+    margin-bottom: 15px;
+}
+
+.header-row {
+    display: table-row;
+}
+
+.header-cell {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.header-left {
+    width: 40%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.header-right {
+    width: 60%;
+}
+
+.right-inner-table {
+    display: table;
+    width: 100%;
+}
+
+.inner-row {
+    display: table-row;
+}
+
+.inner-cell {
+    display: table-cell;
+    padding: 2px 0;
+}
+
+.inner-left {
+    text-align: right;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.inner-right {
+    text-align: right;
+    font-size: 12px;
+}
+        /* Summary */
+        .summary-row {
+            display: table;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary-cell {
+            display: table-cell;
+            padding-right: 20px;
+            font-size: 12px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        th {
+            border: 1px solid #cccccc;
+            padding: 6px;
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .footer-date {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 11px;
+        }
+
+    </style>
 </head>
+
 <body>
+
+<div class="container">
+
+
+    <div class="header-table">
+        <div class="header-row">
+
+
+            <div class="header-cell header-left">
+                Tenant Register
+            </div>
+
+
+            <div class="header-cell header-right">
+
+                <div class="right-inner-table">
+
+
+                    <div class="inner-row">
+                        <div class="inner-cell inner-left"
+                             th:text="${tenants.hostelInformation.hostelName}"
+                        >
+                            Zen1 Hostels
+                        </div>
+
+                        <div class="inner-cell inner-right">
+                            <strong>From Date: 01-02-2026</strong>
+                            <!--                            <span th:text="${tenants.fromDate}">-->
+                            <!--                            01 Jan 2026-->
+                            <!--                        </span>-->
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="inner-row">
+                        <div class="inner-cell inner-left"
+                             th:text="${tenants.hostelInformation.fullAddress}"  >
+                            Navalur, Chennai
+                        </div>
+
+                        <div class="inner-cell inner-right">
+                            <strong>To Date: 28-02-2026</strong>
+                            <!--                            <span th:text="${tenants.toDate}">-->
+                            <!--                            31 Jan 2026-->
+                            <!--                        </span>-->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="summary-row">
+        <div class="summary-cell">
+            Total Tenants:
+            <strong th:text="${tenants.headerInfo.totalTenantsCount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Active Tenants:
+            <strong th:text="${tenants.headerInfo.activeTenantsCount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Notice Period:
+            <strong th:text="${tenants.headerInfo.noticePeriodCount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Check out:
+            <strong th:text="${tenants.headerInfo.checkoutCount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Inactive:
+            <strong th:text="${tenants.headerInfo.inactiveCount}">10</strong>
+        </div>
+        <div class="summary-cell">
+            Booking:
+            <strong th:text="${tenants.headerInfo.bookingCount}">10</strong>
+        </div>
+    </div>
+
+
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Mobile No</th>
+            <th>Sharing</th>
+            <th>Checkin On</th>
+            <th>Checkout On</th>
+            <th>Stay Duration</th>
+            <th>Room</th>
+            <th>Bed</th>
+            <th>Status</th>
+            <th>Last Payment</th>
+            <th>Rent</th>
+            <th>Due</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="tenant : ${tenants.customersList}">
+
+            <td th:text="${tenant.customerInfo.fullName}">Murugan</td>
+            <td th:text="${tenant.customerInfo.mobile}">9876543210</td>
+            <td th:text="${tenant.stayInfo.sharingType}">Single</td>
+            <td th:text="${tenant.stayInfo.checkInDate} ?: '-'">10 May 2024</td>
+            <td th:text="${tenant.stayInfo.checkoutDate} ?: '-'">-</td>
+            <td th:text="${tenant.stayInfo.stayDuration} ?: '-'">20</td>
+            <td th:text="${tenant.stayInfo.roomName}">101</td>
+            <td th:text="${tenant.stayInfo.bedName}">Bed 06</td>
+            <td th:text="${tenant.customerInfo.status} ?: '-'">Active</td>
+            <td th:text="${tenant.customerInfo.lastPayment} ?: '-'">10 Dec 2025</td>
+            <td th:text="${tenant.customerInfo.rent} ?: '-'">9300</td>
+            <td >0</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="footer-date">
+        <span >31 Jan 2026</span>
+    </div>
+
+</div>
 
 </body>
 </html>
