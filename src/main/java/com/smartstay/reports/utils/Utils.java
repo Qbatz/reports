@@ -1,6 +1,10 @@
 package com.smartstay.reports.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class Utils {
@@ -8,7 +12,7 @@ public class Utils {
     public static final String OUTPUT_TIME_FORMAT = "hh:mm:ss a";
     public static final String OUTPUT_MONTH_FORMAT = "MMM YYYY";
     public static final String OUTPUT_DATE_MONTH_FORMAT = "dd MMM";
-
+    public static final String USER_INPUT_DATE_FORMAT = "dd-MM-yyyy";
     public static String dateToString(Date date) {
         if (date == null) {
             return "";
@@ -33,5 +37,18 @@ public class Utils {
             return "";
         }
         return new SimpleDateFormat(OUTPUT_DATE_MONTH_FORMAT).format(date);
+    }
+    public static Date stringToDate(String date, String inputFormat) {
+        try {
+            return new SimpleDateFormat(inputFormat).parse(date);
+        } catch (ParseException e) {
+            throw new RuntimeException("Invalid date format");
+        }
+    }
+    public static long findNumberOfDays(Date date1, Date date2) {
+        LocalDate start = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        return ChronoUnit.DAYS.between(start, end) + 1;
     }
 }
