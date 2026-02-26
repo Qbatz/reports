@@ -4,6 +4,7 @@ import com.smartstay.reports.dao.InvoicesV1;
 import com.smartstay.reports.dao.TransactionV1;
 import com.smartstay.reports.ennum.InvoiceItems;
 import com.smartstay.reports.ennum.InvoiceType;
+import com.smartstay.reports.ennum.TransactionType;
 import com.smartstay.reports.repositories.TransactionRepository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
@@ -73,6 +74,7 @@ public class TransactionV1Service {
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name()) ||
                 invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
             description = "Security Deposit (Advance)";
+            title = "Security Deposit (Advance)";
         }
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())
@@ -89,6 +91,13 @@ public class TransactionV1Service {
             headers.add("Invoice Date");
             headers.add("Invoice Amount");
             headers.add("Payment Amount");
+        }
+
+        if (transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
+            labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-refunded.png";
+        }
+        else {
+            labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
         }
 
         String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Only";
@@ -121,6 +130,7 @@ public class TransactionV1Service {
                 paidAmountInWords,
                 title,
                 description,
+                labelUrl,
                 headers,
                 hostelInfo,
                 receiptInfo,

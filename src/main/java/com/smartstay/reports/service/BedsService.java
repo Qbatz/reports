@@ -1,10 +1,13 @@
 package com.smartstay.reports.service;
 
 import com.smartstay.reports.dto.beds.BedDetails;
+import com.smartstay.reports.dto.beds.BedInformations;
 import com.smartstay.reports.repositories.BedsRepository;
 import com.smartstay.reports.responses.invoice.BedInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BedsService {
@@ -23,5 +26,10 @@ public class BedsService {
         bd.append("-");
         bd.append(bedDetails.getBedName());
         return new BedInfo(bd.toString());
+    }
+
+
+    public List<BedInformations> getBedInformations(List<Integer> bedIds) {
+        return bedsRepository.findByBedIds(bedIds);
     }
 }
