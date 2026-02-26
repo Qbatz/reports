@@ -3,6 +3,7 @@ package com.smartstay.reports.wrappers;
 import com.smartstay.reports.dao.BookingsV1;
 import com.smartstay.reports.dao.Customers;
 import com.smartstay.reports.dao.Rooms;
+import com.smartstay.reports.dao.TransactionV1;
 import com.smartstay.reports.dto.beds.BedInformations;
 import com.smartstay.reports.dto.customer.CustomerInfo;
 import com.smartstay.reports.dto.customer.StayInfo;
@@ -19,10 +20,12 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
 
     List<BookingsV1> listBooking = null;
     List<BedInformations> listBedInformations = null;
+    List<TransactionV1> listTransactions = null;
 
-    public CustomersMapper(List<BookingsV1> bookings, List<BedInformations> listBedInformations) {
+    public CustomersMapper(List<BookingsV1> bookings, List<BedInformations> listBedInformations, List<TransactionV1> listTransactions) {
         this.listBooking = bookings;
         this.listBedInformations = listBedInformations;
+        this.listTransactions = listTransactions;
     }
 
     @Override
@@ -37,6 +40,9 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
         String bedName = null;
         String sharingType = null;
         String stayDuration = null;
+        String rent = null;
+        String status = null;
+        String lastPayment = null;
 
         String fullName = NameUtils.getFullName(customers.getFirstName(), customers.getLastName());
         String initils = NameUtils.getInitials(customers.getFirstName(), customers.getLastName());
@@ -49,11 +55,26 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                     .orElse(null);
 
             if (bookingsV1 != null) {
+                rent = String.valueOf(bookingsV1.getRentAmount());
                 if (bookingsV1.getJoiningDate() != null) {
                     checkInDate = Utils.dateToString(bookingsV1.getJoiningDate());
                 }
                 else if (bookingsV1.getExpectedJoiningDate() != null) {
                     bookingDate = Utils.dateToString(bookingsV1.getBookingDate());
+                }
+
+                if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.VACATED.name()) ||
+                        bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.TERMINATED.name())) {
+                    status = "Checked out";
+                }
+                else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.BOOKED.name())) {
+                    status = "Booked";
+                }
+                else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.CHECKIN.name())) {
+                    status = "Checked in";
+                }
+                else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.NOTICE.name())) {
+                    status = "Notice";
                 }
 
                 if (!bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.BOOKED.name())
@@ -100,6 +121,17 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
              }
         }
 
+        if (listTransactions != null) {
+            TransactionV1 transactionV1 = listTransactions
+                    .stream()
+                    .filter(i -> i.getCustomerId().equalsIgnoreCase(customers.getCustomerId()))
+                    .findFirst()
+                    .orElse(null);
+            if (transactionV1 != null) {
+                lastPayment = String.valueOf(transactionV1.getPaidAmount());
+            }
+        }
+
 
 
         CustomerInfo customerInfo = new CustomerInfo(customers.getFirstName(),
@@ -107,7 +139,10 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                 fullName,
                 customers.getProfilePic(),
                 initils,
-                customers.getMobile());
+                customers.getMobile(),
+                status,
+                lastPayment,
+                rent);
         StayInfo stayInfo = new StayInfo(bedName,
                 floorName,
                 roomName,
