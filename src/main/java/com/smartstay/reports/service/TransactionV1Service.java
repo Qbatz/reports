@@ -93,9 +93,15 @@ public class TransactionV1Service {
             headers.add("Payment Amount");
         }
 
-        if (transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
-            labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-refunded.png";
+        if (transactionV1.getType() != null) {
+            if (transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
+                labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-refunded.png";
+            }
+            else {
+                labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
+            }
         }
+
         else {
             labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
         }
@@ -152,5 +158,13 @@ public class TransactionV1Service {
         ReceiptsResponse response = getReceiptInfo(transactionV1, invoicesV1);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public List<TransactionV1> findTransactions(String hostelId, List<String> customerIds) {
+        List<TransactionV1> listTransactions = transactionRepository.findLatestPaymentsByCustomers(hostelId, customerIds);
+        if (listTransactions == null) {
+            listTransactions = new ArrayList<>();
+        }
+        return listTransactions;
     }
 }
