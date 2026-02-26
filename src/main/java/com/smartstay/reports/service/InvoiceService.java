@@ -3,6 +3,7 @@ package com.smartstay.reports.service;
 import com.smartstay.reports.dao.CustomersBedHistory;
 import com.smartstay.reports.dao.InvoicesV1;
 import com.smartstay.reports.ennum.InvoiceType;
+import com.smartstay.reports.ennum.PaymentStatus;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
+
+import static com.smartstay.reports.ennum.PaymentStatus.PARTIAL_REFUND;
+import static com.smartstay.reports.ennum.PaymentStatus.REFUNDED;
 
 @Service
 public class InvoiceService {
@@ -65,7 +69,10 @@ public class InvoiceService {
         if (invoicesV1.getPaidAmount() != null) {
             paidAmount = invoicesV1.getPaidAmount();
         }
-        double balanceAmount = invoicesV1.getTotalAmount() - paidAmount;
+        double balanceAmount = calculateBalance(invoicesV1.getTotalAmount(), paidAmount, invoicesV1.getPaymentStatus());
+        System.out.println("Total Amount: " + invoicesV1.getTotalAmount());
+        System.out.println("Paid Amount: " + paidAmount);
+        System.out.println("Balance Amount: " + balanceAmount);
 
         List<InvoiceItems> invoiceItems = invoicesV1
                 .getInvoiceItems()
@@ -142,6 +149,15 @@ public class InvoiceService {
         );
 
         return invoiceInfo;
+    }
+
+    private double calculateBalance(double totalAmount, double paidAmount,
+                                    String paymentStatus) {
+        return switch (paymentStatus) {
+            case "PARTIAL_REFUND", "REFUND" -> totalAmount + paidAmount;
+
+            default -> totalAmount - paidAmount;
+        };
     }
 
     public InvoicesV1 getInvoice(String invoiceId) {
