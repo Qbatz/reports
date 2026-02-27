@@ -42,12 +42,6 @@ public class PDFServices {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.useFont(
-                    () -> Thread.currentThread()
-                            .getContextClassLoader()
-                            .getResourceAsStream("fonts/ARIAL.ttf"),
-                    "Arial"
-            );
             builder.withHtmlContent(html, null);
             builder.toStream(outputStream);
             builder.run();
@@ -64,12 +58,40 @@ public class PDFServices {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFont(
+                    () -> Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream("fonts/ARIAL.ttf"),
+                    "Arial"
+            );
             builder.withHtmlContent(html, null);
             builder.toStream(outputStream);
             builder.run();
 
             File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "tenants-");
             return uploadFileToS3.uploadFileToS3(pdfFile, "tenants");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+    }
+
+    public String generateReceiptReportPDF(String templateName, Context context) {
+        String html = templateEngine.process(templateName, context);
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFont(
+                    () -> Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream("fonts/ARIAL.ttf"),
+                    "Arial"
+            );
+            builder.withHtmlContent(html, null);
+            builder.toStream(outputStream);
+            builder.run();
+
+            File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "receipt-report-");
+            return uploadFileToS3.uploadFileToS3(pdfFile, "receipts/reports");
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate PDF", e);
         }

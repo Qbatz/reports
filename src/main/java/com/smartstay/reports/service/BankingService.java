@@ -7,6 +7,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BankingService {
     @Autowired
@@ -36,5 +38,9 @@ public class BankingService {
         catch (EntityNotFoundException nnf) {
             return null;
         }
+    }
+
+    public List<BankingV1> findByBankIds(List<String> bankIds) {
+        return bankingRepository.findAllById(bankIds);
     }
 }

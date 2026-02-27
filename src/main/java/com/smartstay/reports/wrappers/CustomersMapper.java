@@ -56,7 +56,7 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
 
             if (bookingsV1 != null) {
                 if (bookingsV1.getRentAmount() != null) {
-                    rent = String.valueOf(bookingsV1.getRentAmount());
+                    rent = "₹" + String.valueOf(bookingsV1.getRentAmount());
                 }
                 else {
                     rent = "NA";
@@ -139,7 +139,7 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
             if (transactionV1 != null) {
                 if (transactionV1.getPaidAmount() != null) {
                     if (status != null && !status.equalsIgnoreCase("Cancelled")) {
-                        lastPayment = String.valueOf(transactionV1.getPaidAmount());
+                        lastPayment = "₹"+String.valueOf(transactionV1.getPaidAmount());
                     }
                     else {
                         lastPayment = "NA";
