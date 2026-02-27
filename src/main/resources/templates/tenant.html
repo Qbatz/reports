@@ -221,7 +221,7 @@
             <th>Status</th>
             <th>Last Payment</th>
             <th>Rent</th>
-            <th>Due</th>
+<!--            <th>Due</th>-->
         </tr>
         </thead>
 
@@ -237,16 +237,17 @@
             <td th:text="${tenant.stayInfo.roomName}">101</td>
             <td th:text="${tenant.stayInfo.bedName}">Bed 06</td>
             <td th:text="${tenant.customerInfo.status} ?: '-'">Active</td>
-            <td th:text="${tenant.customerInfo.lastPayment} ?: '-'">10 Dec 2025</td>
+            <td th:text="${tenant.customerInfo.lastPayment} ?: '-'">₹2000</td>
             <td th:text="${tenant.customerInfo.rent} ?: '-'">9300</td>
-            <td >0</td>
+<!--            <td >0</td>-->
         </tr>
         </tbody>
     </table>
 
 
     <div class="footer-date">
-        <span >31 Jan 2026</span>
+        <span th:text="${tenants.footerInfo.date}">31 Jan 2026</span>
+        <span th:text="${tenants.footerInfo.time}">10:30</span>
     </div>
 
 </div>

@@ -2,6 +2,7 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.CustomersBedHistory;
 import com.smartstay.reports.dao.InvoicesV1;
+import com.smartstay.reports.dto.customer.Deductions;
 import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.ennum.PaymentStatus;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.smartstay.reports.ennum.PaymentStatus.PARTIAL_REFUND;
@@ -70,43 +72,63 @@ public class InvoiceService {
             paidAmount = invoicesV1.getPaidAmount();
         }
         double balanceAmount = calculateBalance(invoicesV1.getTotalAmount(), paidAmount, invoicesV1.getPaymentStatus());
-        System.out.println("Total Amount: " + invoicesV1.getTotalAmount());
-        System.out.println("Paid Amount: " + paidAmount);
-        System.out.println("Balance Amount: " + balanceAmount);
 
-        List<InvoiceItems> invoiceItems = invoicesV1
-                .getInvoiceItems()
-                .stream()
-                .map(i -> {
-                    String item = null;
-                    String amount = null;
-                    if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.RENT.name())) {
-                        item = "Rent";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
-                        item = "Electricity";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
-                        item = "Amenity";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
-                        item = "Security Deposit (Advance)";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
-                        item = "Security Deposit (Advance)";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
-                        item = "Maintenance";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
-                        item = i.getOtherItem();
-                    }
+        List<InvoiceItems> invoiceItems = new ArrayList<>();
+        List<Deductions> listDeductions = new ArrayList<>();
 
-                    amount = String.valueOf(Math.round(i.getAmount()));
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+            listDeductions = invoicesV1.getInvoiceItems().stream().map(i -> {
+                Deductions d = new Deductions();
+                if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
+                    if (i.getOtherItem() != null) {
+                        i.setInvoiceItem(i.getOtherItem());
+                    }
+                } else {
+                    i.setInvoiceItem(i.getInvoiceItem());
+                }
+                d.setType(i.getInvoiceItem());
+                d.setAmount(i.getAmount());
 
-                    return new InvoiceItems(item, amount);
-                })
-                .toList();
+                return d;
+            }).toList();
+
+            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getTotalAmount()), invoicesV1.getInvoiceNumber()));
+        }
+        else {
+            invoiceItems = invoicesV1
+                    .getInvoiceItems()
+                    .stream()
+                    .map(i -> {
+                        String item = null;
+                        String amount = null;
+                        if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.RENT.name())) {
+                            item = "Rent";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
+                            item = "Electricity";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
+                            item = "Amenity";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
+                            item = "Security Deposit (Advance)";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
+                            item = "Security Deposit (Advance)";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
+                            item = "Maintenance";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
+                            item = i.getOtherItem();
+                        }
+
+                        amount = String.valueOf(Math.round(i.getAmount()));
+
+                        return new InvoiceItems(item, amount, invoicesV1.getInvoiceNumber());
+                    })
+                    .toList();
+        }
 
         String invoiceType = null;
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
@@ -142,6 +164,7 @@ public class InvoiceService {
                 String.valueOf(0),
                 invoiceType,
                 invoiceItems,
+                listDeductions,
                 hostelInfo,
                 customerInfo,
                 bedInfo,
