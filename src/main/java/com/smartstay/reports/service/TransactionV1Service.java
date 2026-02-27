@@ -199,7 +199,7 @@ public class TransactionV1Service {
         ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate);
 
         Context context = new Context();
-        context.setVariable("invoice", receiptsReports);
+        context.setVariable("receipts", receiptsReports);
 
         String receiptReportUrl = pdfServices.generateReceiptReportPDF("receipt-report", context);
 
