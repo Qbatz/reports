@@ -25,4 +25,7 @@ public interface BookingsRepository extends JpaRepository<BookingsV1, String> {
     List<BookingsV1> findAllBookingsWithFilters(@Param("hostelId") String hostelId,
                                                 @Param("startDate") Date startDate,
                                                 @Param("endDate") Date endDate);
+
+    BookingsV1 findByCustomerIdAndHostelId(@Param("customerId") String customerId,
+                                           @Param("hostelId") String hostelId);
 }

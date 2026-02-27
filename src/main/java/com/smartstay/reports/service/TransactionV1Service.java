@@ -1,5 +1,6 @@
 package com.smartstay.reports.service;
 
+import com.smartstay.reports.dao.BookingsV1;
 import com.smartstay.reports.dao.InvoicesV1;
 import com.smartstay.reports.dao.TransactionV1;
 import com.smartstay.reports.ennum.InvoiceItems;
@@ -9,6 +10,7 @@ import com.smartstay.reports.repositories.TransactionRepository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
 import com.smartstay.reports.responses.hostel.TemplateInfo;
+import com.smartstay.reports.responses.invoice.BedInfo;
 import com.smartstay.reports.responses.receipts.ReceiptInfo;
 import com.smartstay.reports.responses.receipts.ReceiptsResponse;
 import com.smartstay.reports.utils.AmountToWordsUtils;
@@ -39,6 +41,10 @@ public class TransactionV1Service {
     private BankingService bankingService;
     @Autowired
     private PDFServices pdfServices;
+    @Autowired
+    private BookingsService bookingsService;
+    @Autowired
+    private BedsService bedsService;
 
     public ResponseEntity<?> getReceiptPDF(String hostelId, String transactionId) {
         TransactionV1 transactionV1 = transactionRepository.findByHostelIdAndTransactionId(hostelId, transactionId);
@@ -63,6 +69,16 @@ public class TransactionV1Service {
         String description = null;
         List<String> headers = null;
         String labelUrl = null;
+        BedInfo bedInfo = null;
+
+        BookingsV1 bookingsV1 = bookingsService.findByCustomerId(invoicesV1.getCustomerId(), invoicesV1.getHostelId());
+        if (bookingsV1 != null) {
+            if (bookingsV1.getBedId() != 0) {
+                bedInfo = bedsService.getBedDetails(bookingsV1.getBedId());
+            }
+
+        }
+
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             title = "Payment Receipt";
             description = "Payment";
@@ -71,10 +87,13 @@ public class TransactionV1Service {
             title = "Final Settlement Receipt";
             description = "Settlement";
         }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name()) ||
-                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
             description = "Security Deposit (Advance)";
             title = "Security Deposit (Advance)";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            description = "Security Deposit (Advance)";
+            title = "Booking Receipt";
         }
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())
@@ -123,9 +142,12 @@ public class TransactionV1Service {
         if (invoicesV1.getTotalAmount() != null) {
             totalAmount = invoicesV1.getTotalAmount();
         }
-        if (invoicesV1.getPaidAmount() != null) {
-            paidAmount = invoicesV1.getPaidAmount();
+        if (transactionV1.getPaidAmount() != null) {
+            paidAmount = transactionV1.getPaidAmount();
         }
+//        if (invoicesV1.getPaidAmount() != null) {
+//            paidAmount = transactionV1.getPaidAmount();
+//        }
         dueAmount = totalAmount - paidAmount;
 
         return new ReceiptsResponse(invoicesV1.getInvoiceNumber(),
@@ -141,7 +163,7 @@ public class TransactionV1Service {
                 hostelInfo,
                 receiptInfo,
                 templateInfo,
-                customerInfo);
+                customerInfo, bedInfo);
     }
 
 

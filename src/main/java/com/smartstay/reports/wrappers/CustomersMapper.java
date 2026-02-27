@@ -55,7 +55,12 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                     .orElse(null);
 
             if (bookingsV1 != null) {
-                rent = String.valueOf(bookingsV1.getRentAmount());
+                if (bookingsV1.getRentAmount() != null) {
+                    rent = String.valueOf(bookingsV1.getRentAmount());
+                }
+                else {
+                    rent = "NA";
+                }
                 if (bookingsV1.getJoiningDate() != null) {
                     checkInDate = Utils.dateToString(bookingsV1.getJoiningDate());
                 }
@@ -75,6 +80,9 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                 }
                 else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.NOTICE.name())) {
                     status = "Notice";
+                }
+                else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.CANCELLED.name())) {
+                    status = "Cancelled";
                 }
 
                 if (!bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.BOOKED.name())
@@ -130,7 +138,13 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                     .orElse(null);
             if (transactionV1 != null) {
                 if (transactionV1.getPaidAmount() != null) {
-                    lastPayment = "₹"+String.valueOf(transactionV1.getPaidAmount());
+                    if (status != null && !status.equalsIgnoreCase("Cancelled")) {
+                        lastPayment = String.valueOf(transactionV1.getPaidAmount());
+                    }
+                    else {
+                        lastPayment = "NA";
+                    }
+
                 }
                 else {
                     lastPayment = "NA";

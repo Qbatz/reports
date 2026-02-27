@@ -540,7 +540,7 @@ font-weight:600;
                     <i class="fa-solid fa-bed invoice-icon"
                        th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
                     <span class="colon">:</span>
-                    <span class="info-text" >Floor name room name bed name </span>
+                    <span class="info-text" th:text="${receipt.bedInfo.bedName}">-</span>
                 </p>
 
                 <p class="invoice-style">

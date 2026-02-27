@@ -10,19 +10,27 @@ public class HostelUtils {
             address.append(hostelV1.getHouseNo());
         }
         if (hostelV1.getStreet() != null && !hostelV1.getStreet().trim().equalsIgnoreCase("")) {
-            address.append(", ");
+            if (!address.toString().isEmpty()) {
+                address.append(", ");
+            }
             address.append(hostelV1.getStreet());
         }
         if (hostelV1.getCity() != null && !hostelV1.getCity().trim().equalsIgnoreCase("")) {
-            address.append(", ");
+            if (!address.toString().isEmpty()) {
+                address.append(", ");
+            }
             address.append(hostelV1.getCity());
         }
         if (hostelV1.getState() != null && !hostelV1.getState().trim().equalsIgnoreCase("")) {
-            address.append(", ");
+            if (!address.toString().isEmpty()) {
+                address.append(", ");
+            }
             address.append(hostelV1.getState());
         }
         if (hostelV1.getPincode() != 0) {
-            address.append(", ");
+            if (!address.toString().isEmpty()) {
+                address.append(", ");
+            }
             address.append(hostelV1.getPincode());
         }
 

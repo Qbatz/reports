@@ -21,4 +21,8 @@ public class BookingsService {
         }
         return listBookings;
     }
+
+    public BookingsV1 findByCustomerId(String customerId, String hostelId) {
+        return bookingsRepository.findByCustomerIdAndHostelId(customerId, hostelId);
+    }
 }
