@@ -11,14 +11,13 @@
     <style>
 
         html,
-body {
+       body {
     height: 100%;
     margin: 0;
 }
-        body {
-    font-family: 'Inter', 'Poppins', 'Montserrat', Arial, sans-serif;
-
-}
+       body {
+        font-family: 'DejaVu Sans', sans-serif;
+    }
 
 
          .container {
@@ -315,7 +314,7 @@ margin-top: 2px
 
 
 .condition-left {
-    width: 65%;
+    width: 50%;
     text-align: left;
     color: #333;
 }
@@ -327,7 +326,7 @@ margin-top: 2px
 
 
 .condition-right {
-    width: 35%;
+    width: 50%;
     text-align: right;
 }
 
@@ -576,14 +575,14 @@ font-weight:600;
         <thead>
         <tr>
             <th>INV NO</th>
-            <th>DESCRIPTION</th>
+            <th style="text-align:center">DESCRIPTION</th>
             <th style="text-align:right">AMOUNT / INR</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item : ${invoice.invoiceItems}">
             <td th:text="${invoice.invoiceNumber}"></td>
-            <td th:text="${item.item}"></td>
+            <td th:text="${item.item}" style="text-align:center"></td>
             <td class="right">
                 <span class="amount" th:text="${item.amount}"></span>
             </td>

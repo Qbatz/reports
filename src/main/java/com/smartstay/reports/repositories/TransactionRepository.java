@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,4 +22,9 @@ public interface TransactionRepository extends JpaRepository<TransactionV1, Stri
             @Param("hostelId") String hostelId,
             @Param("customerIds") List<String> customerIds
     );
+
+    @Query(value = """
+    SELECT t FROM transactionv1 t WHERE t.hostelId = :hostelId AND (:startDate IS NULL OR DATE(t.paidAt) >= DATE(:startDate)) 
+    AND (:endDate IS NULL OR DATE(t.paidAt) <= DATE(:endDate))""")
+    List<TransactionV1> getTransactionsList(@Param("hostelId") String hostelId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

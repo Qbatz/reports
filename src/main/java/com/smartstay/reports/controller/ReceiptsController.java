@@ -2,6 +2,7 @@ package com.smartstay.reports.controller;
 
 import com.smartstay.reports.service.TransactionV1Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,5 +24,15 @@ public class ReceiptsController {
     @GetMapping("/details/{hostelId}/{transactionId}")
     public ResponseEntity<?> getReceiptdetails(@PathVariable("hostelId") String hostelId, @PathVariable("transactionId") String transactionId) {
         return transctionService.getReceiptDetails(hostelId, transactionId);
+    }
+
+    @GetMapping("/report/{hostelId}")
+    public ResponseEntity<?> getReceiptsReports(@PathVariable("hostelId") String hostelId, @Param("startDate") String startDate, @Param("endDate") String endDate) {
+        return transctionService.getReceiptReports(hostelId, startDate, endDate);
+    }
+
+    @GetMapping("/report/details/{hostelId}")
+    public ResponseEntity<?> getReceiptsReportsDetails(@PathVariable("hostelId") String hostelId, @Param("startDate") String startDate, @Param("endDate") String endDate) {
+        return transctionService.getReceiptReportsDetails(hostelId, startDate, endDate);
     }
 }

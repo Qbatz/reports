@@ -7,6 +7,8 @@ import com.smartstay.reports.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CustomerServices {
     @Autowired
@@ -54,5 +56,9 @@ public class CustomerServices {
                 "+91-" + customers.getMobile(),
                 fullAddress.toString(),
                 Utils.dateToString(customers.getJoiningDate()));
+    }
+
+    public List<Customers> findByCustomerIds(List<String> customerIds) {
+        return customersRepository.findAllById(customerIds);
     }
 }
