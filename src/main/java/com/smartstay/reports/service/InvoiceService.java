@@ -80,11 +80,16 @@ public class InvoiceService {
             paidAmount = invoicesV1.getPaidAmount();
         }
         double balanceAmount = calculateBalance(invoicesV1.getTotalAmount(), paidAmount, invoicesV1.getPaymentStatus());
-
+        double totalDeductionAmount = 0.0;
         List<InvoiceItems> invoiceItems = new ArrayList<>();
         List<Deductions> listDeductions = new ArrayList<>();
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+
+            totalDeductionAmount = invoicesV1.getInvoiceItems()
+                    .stream()
+                    .mapToDouble(com.smartstay.reports.dao.InvoiceItems::getAmount)
+                    .sum();
             listDeductions = invoicesV1.getInvoiceItems().stream().map(i -> {
                 Deductions d = new Deductions();
                 if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
@@ -100,7 +105,7 @@ public class InvoiceService {
                 return d;
             }).toList();
 
-            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getTotalAmount()), invoicesV1.getInvoiceNumber()));
+            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getBasePrice()), invoicesV1.getInvoiceNumber()));
         }
         else {
             invoiceItems = invoicesV1
@@ -150,6 +155,7 @@ public class InvoiceService {
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             invoiceType = "Settlement";
+
         }
 
 
@@ -166,6 +172,7 @@ public class InvoiceService {
                 Utils.dateToString(invoicesV1.getInvoiceDueDate()),
                 rentalPeriod,
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
+                String.valueOf(Math.round(totalDeductionAmount)),
                 String.valueOf(Math.round(paidAmount)),
                 String.valueOf(Math.round(balanceAmount)),
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
