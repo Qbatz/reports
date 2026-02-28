@@ -41,7 +41,7 @@ public class CustomersService {
         Context context = new Context();
         context.setVariable("tenants", details);
 
-        String receiptsUrl = pdfServices.generateReceiptPdf("tenant", context);
+        String receiptsUrl = pdfServices.generateTenantPdf("tenant", context);
         return new ResponseEntity<>(receiptsUrl, HttpStatus.OK);
     }
 

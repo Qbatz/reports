@@ -11,14 +11,13 @@
     <style>
 
         html,
-body {
+       body {
     height: 100%;
     margin: 0;
 }
-        body {
-    font-family: 'Inter', 'Poppins', 'Montserrat', Arial, sans-serif;
-
-}
+       body {
+        font-family: 'DejaVu Sans', sans-serif;
+    }
 
 
          .container {
@@ -88,13 +87,20 @@ border-radius: 12px;
              font-size: 12px;
          }
 
-          table {
-             width: 100%;
+.table-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
 
+.table-wrapper table {
+       width: 100%;
              font-size: 12px;
-             border-radius: 6px;
+             border-radius: 10px;
              overflow: hidden;
-         }
+             border-collapse: separate;
+   }
+
 
          th, td {
              padding: 12px;
@@ -106,6 +112,19 @@ border-radius: 12px;
              text-align: left;
              font-weight: 600;
          }
+         .table-wrapper table thead tr th:first-child {
+    border-top-left-radius: 10px;
+}
+
+
+.table-wrapper table thead tr th:last-child {
+    border-top-right-radius: 10px;
+}
+
+
+.table-wrapper table tbody tr:last-child td {
+    border-bottom: none;
+}
 
          .summary {
              margin-top: 20px;
@@ -315,7 +334,7 @@ margin-top: 2px
 
 
 .condition-left {
-    width: 65%;
+    width: 50%;
     text-align: left;
     color: #333;
 }
@@ -327,7 +346,7 @@ margin-top: 2px
 
 
 .condition-right {
-    width: 35%;
+    width: 50%;
     text-align: right;
 }
 
@@ -572,32 +591,101 @@ font-weight:600;
     <div class="section-title" th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">Payment Summary
     </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>INV NO</th>
-            <th>DESCRIPTION</th>
-            <th style="text-align:right">AMOUNT / INR</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item : ${invoice.invoiceItems}">
-            <td th:text="${invoice.invoiceNumber}"></td>
-            <td th:text="${item.item}"></td>
-            <td class="right">
-                <span class="amount" th:text="${item.amount}"></span>
-            </td>
+    <div class="table-wrapper" th:if="${invoice.listDeductions != null and invoice.listDeductions.size() > 0}">
 
-        </tr>
-        <tr>
-            <td colspan="2"><strong>Total</strong></td>
-            <td class="right">
-                <strong><span class="amount" th:text="${invoice.totalAmount}"></span></strong>
-            </td>
+        <table >
+            <thead style="background:#f5f5f5;">
+            <tr>
+                <th style="padding:8px; text-align:left;"
+                    th:text="${T(java.lang.Double).parseDouble(invoice.totalAmount) < 0 ? 'REFUND' : 'PAYMENT'}">
+                </th>
+                <th style="padding:8px; text-align:right;">AMOUNT / INR</th>
+                <th style="padding:8px; text-align:left;">DEDUCTIONS</th>
+                <th style="padding:8px; text-align:right;">AMOUNT / INR</th>
+            </tr>
+            </thead>
 
-        </tr>
-        </tbody>
-    </table>
+            <tbody>
+            <tr>
+                <td style="padding:10px 10px 25px 10px;"
+                    th:text="${invoice.invoiceItems[0].item}">
+                </td>
+
+                <td style="padding:10px 10px 25px 10px; text-align:right;">
+                    <span th:text="${invoice.invoiceItems[0].amount}"></span>
+                </td>
+
+                <td style="padding:10px 10px 25px 10px;">
+                    <div th:each="deduction : ${invoice.listDeductions}">
+                        <span th:text="${deduction.type}"></span><br/>
+                    </div>
+                </td>
+
+                <td style="padding:10px 10px 25px 10px; text-align:right;">
+                    <div th:each="deduction : ${invoice.listDeductions}">
+                        <span th:text="${deduction.amount}"></span><br/>
+                    </div>
+                </td>
+            </tr>
+
+
+            <tr style="border-top:1px solid #ddd; font-weight:bold;">
+                <td style="padding:8px;">Total</td>
+                <td style="padding:8px; text-align:right;">
+                    <span th:text="${invoice.totalAmount}"></span>
+                </td>
+
+                <td style="padding:8px;">Total Deductions</td>
+                <td style="padding:8px; text-align:right;">
+                    <span >0</span>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+    <div class="table-wrapper" th:if="${invoice.listDeductions == null or invoice.listDeductions.size() == 0}">
+
+        <table >
+            <thead style="background:#f5f5f5;">
+            <tr>
+                <th style="padding:8px;">INV NO</th>
+                <th style="padding:8px; text-align:center;">DESCRIPTION</th>
+                <th style="padding:8px; text-align:right;">AMOUNT / INR</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="item : ${invoice.invoiceItems}">
+                <td style="padding:8px;"
+                    th:text="${invoice.invoiceNumber}">
+                </td>
+
+                <td style="padding:8px; text-align:center;"
+                    th:text="${item.item}">
+                </td>
+
+                <td style="padding:8px; text-align:right;">
+                    ₹ <span th:text="${item.amount}"></span>
+                </td>
+            </tr>
+
+            <tr style="border-top:1px solid #ddd; font-weight:bold;">
+                <td colspan="2" style="padding:8px;">Total</td>
+                <td style="padding:8px; text-align:right;">
+                    ₹ <span th:text="${invoice.totalAmount}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
 
     <div class="summary-box">
         <div class="summary-row">

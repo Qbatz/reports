@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+    <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 20px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        /* Header */
+
+.header-table {
+    width: 100%;
+    display: table;
+    margin-bottom: 15px;
+}
+
+.header-row {
+    display: table-row;
+}
+
+.header-cell {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.header-left {
+    width: 40%;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.header-right {
+    width: 60%;
+}
+
+.right-inner-table {
+    display: table;
+    width: 100%;
+}
+
+.inner-row {
+    display: table-row;
+}
+
+.inner-cell {
+    display: table-cell;
+    padding: 2px 0;
+}
+
+.inner-left {
+    text-align: right;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.inner-right {
+    text-align: right;
+    font-size: 12px;
+}
+        /* Summary */
+        .summary-row {
+            display: table;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary-cell {
+            display: table-cell;
+            padding-right: 4px;
+            font-size: 12px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        th {
+            border: 1px solid #cccccc;
+            padding: 6px;
+            background-color: #f2f2f2;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .footer-date {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 11px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+
+    <div class="header-table">
+        <div class="header-row">
+
+
+            <div class="header-cell header-left">
+                Receipt Register
+            </div>
+
+
+            <div class="header-cell header-right">
+
+                <div class="right-inner-table">
+
+
+                    <div class="inner-row">
+                        <strong class="inner-cell inner-left"
+                                th:text="${receipts.hostelInformation.hostelName}"
+                        >
+                            Zen1 Hostels
+                        </strong>
+
+                        <div class="inner-cell inner-right">
+                            <strong style="font-weight:400">From Date: </strong>
+                            <span th:text="${receipts.headerInfo.startDate}">
+                                                        01 Jan 2026
+                                                    </span>
+                        </div>
+                    </div>
+
+
+                    <div class="inner-row">
+                        <strong class="inner-cell inner-left"
+                                th:text="${receipts.hostelInformation.fullAddress}"  >
+                            Navalur, Chennai
+                        </strong>
+
+                        <div class="inner-cell inner-right">
+                            <strong style="font-weight:400">To Date: </strong>
+                            <span th:text="${receipts.headerInfo.endDate}">
+                                                        31 Jan 2026
+                                                    </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="summary-row">
+        <div class="summary-cell">
+            Total Receipts:
+            <strong th:text="${receipts.headerInfo.totalReceipts}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Collected Amount:
+            <strong th:text="${receipts.headerInfo.receivedAmount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Refunded Amount:
+            <strong th:text="${receipts.headerInfo.returnedAmount}">10</strong>
+        </div>
+
+    </div>
+
+
+    <table>
+        <thead>
+        <tr>
+            <th>RECEIPT NO</th>
+            <th>PAID DATE</th>
+            <th>TENANT NAME</th>
+            <th>INVOICE NO</th>
+            <th>AMOUNT</th>
+            <th>PAYMENT MODE</th>
+            <th>COLLECTED BY</th>
+
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="receipt : ${receipts.listReceipts}">
+
+            <td th:text="${receipt.receiptNo}">receiptNo</td>
+            <td th:text="${receipt.paidDate}">paidDate</td>
+            <td th:text="${receipt.tenant}">tenant</td>
+            <td th:text="${receipt.invoiceNumber} ?: '-'">invoiceNumber</td>
+            <td th:text="${receipt.amount} ?: '-'">amount</td>
+            <td th:text="${receipt.paymentMode} ?: '-'">paymentMode</td>
+            <td th:text="${receipt.collectedBy}">collectedBy</td>
+
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="footer-date">
+        <span th:text="${receipts.footerInfo.date}">31 Jan 2026</span>
+        <span th:text="${receipts.footerInfo.time}">10:30</span>
+    </div>
+
+</div>
+
+</body>
+</html>

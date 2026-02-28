@@ -2,6 +2,7 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.CustomersBedHistory;
 import com.smartstay.reports.dao.InvoicesV1;
+import com.smartstay.reports.dto.customer.Deductions;
 import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.ennum.PaymentStatus;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
@@ -72,36 +73,62 @@ public class InvoiceService {
         }
         double balanceAmount = calculateBalance(invoicesV1.getTotalAmount(), paidAmount, invoicesV1.getPaymentStatus());
 
-        List<InvoiceItems> invoiceItems = invoicesV1
-                .getInvoiceItems()
-                .stream()
-                .map(i -> {
-                    String item = null;
-                    String amount = String.valueOf(Math.round(i.getAmount()));
-                    if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.RENT.name())) {
-                        item = "Rent";
+        List<InvoiceItems> invoiceItems = new ArrayList<>();
+        List<Deductions> listDeductions = new ArrayList<>();
+
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+            listDeductions = invoicesV1.getInvoiceItems().stream().map(i -> {
+                Deductions d = new Deductions();
+                if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
+                    if (i.getOtherItem() != null) {
+                        i.setInvoiceItem(i.getOtherItem());
                     }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
-                        item = "Electricity";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
-                        item = "Amenity";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
-                        item = "Security Deposit (Advance)";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
-                        item = "Security Deposit (Advance)";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
-                        item = "Maintenance";
-                    }
-                    else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
-                        item = i.getOtherItem();
-                    }
-                    return new InvoiceItems(item, amount);
-                })
-                .toList();
+                } else {
+                    i.setInvoiceItem(i.getInvoiceItem());
+                }
+                d.setType(i.getInvoiceItem());
+                d.setAmount(i.getAmount());
+
+                return d;
+            }).toList();
+
+            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getBasePrice()), invoicesV1.getInvoiceNumber()));
+        }
+        else {
+            invoiceItems = invoicesV1
+                    .getInvoiceItems()
+                    .stream()
+                    .map(i -> {
+                        String item = null;
+                        String amount = null;
+                        if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.RENT.name())) {
+                            item = "Rent";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
+                            item = "Electricity";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
+                            item = "Amenity";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
+                            item = "Security Deposit (Advance)";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
+                            item = "Security Deposit (Advance)";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
+                            item = "Maintenance";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
+                            item = i.getOtherItem();
+                        }
+
+                        amount = String.valueOf(Math.round(i.getAmount()));
+
+                        return new InvoiceItems(item, amount, invoicesV1.getInvoiceNumber());
+                    })
+                    .toList();
+        }
 
         String invoiceType = null;
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
@@ -115,8 +142,6 @@ public class InvoiceService {
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             invoiceType = "Settlement";
-            invoiceItems = new ArrayList<>();
-            invoiceItems.add(new InvoiceItems("Settlement", invoicesV1.getBasePrice().toString()));
         }
 
 
@@ -139,6 +164,7 @@ public class InvoiceService {
                 String.valueOf(0),
                 invoiceType,
                 invoiceItems,
+                listDeductions,
                 hostelInfo,
                 customerInfo,
                 bedInfo,
@@ -159,5 +185,9 @@ public class InvoiceService {
 
     public InvoicesV1 getInvoice(String invoiceId) {
         return invoicesV1Repository.getReferenceById(invoiceId);
+    }
+
+    public List<InvoicesV1> getInvoicesByIds(List<String> listInvoicesId) {
+        return invoicesV1Repository.findAllById(listInvoicesId);
     }
 }
