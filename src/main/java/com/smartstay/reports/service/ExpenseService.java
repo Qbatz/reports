@@ -63,8 +63,8 @@ public class ExpenseService {
 
         expenseHeader = new ExpenseHeader(String.valueOf(listExpenses.size()),
                 String.valueOf(totalExpenseAmount),
-                String.valueOf(sDate),
-                String.valueOf(eDate));
+                Utils.dateToString(sDate),
+                Utils.dateToString(eDate));
 
         List<ExpensesList> list = listExpenses
                 .stream()
