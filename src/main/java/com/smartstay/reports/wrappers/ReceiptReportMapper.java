@@ -1,9 +1,6 @@
 package com.smartstay.reports.wrappers;
 
-import com.smartstay.reports.dao.BankingV1;
-import com.smartstay.reports.dao.Customers;
-import com.smartstay.reports.dao.TransactionV1;
-import com.smartstay.reports.dao.Users;
+import com.smartstay.reports.dao.*;
 import com.smartstay.reports.ennum.TransactionType;
 import com.smartstay.reports.responses.receipts.ReceiptList;
 import com.smartstay.reports.utils.NameUtils;
@@ -17,11 +14,13 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
     List<Customers> listCustomers = null;
     List<Users> listCreatedBy = null;
     List<BankingV1> listBanks = null;
+    List<InvoicesV1> listInvoices = null;
 
-    public ReceiptReportMapper(List<Customers> listCustomers, List<Users> listCreatedBy, List<BankingV1> listBanks) {
+    public ReceiptReportMapper(List<Customers> listCustomers, List<Users> listCreatedBy, List<BankingV1> listBanks, List<InvoicesV1> listInvoices) {
         this.listCustomers = listCustomers;
         this.listCreatedBy = listCreatedBy;
         this.listBanks = listBanks;
+        this.listInvoices = listInvoices;
     }
 
     @Override
@@ -69,6 +68,17 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
                     .orElse(null);
             if (users != null) {
                 collectedBy = NameUtils.getFullName(users.getFirstName(), users.getLastName());
+            }
+        }
+
+        if (listInvoices != null) {
+            InvoicesV1 invoicesV1 = listInvoices
+                    .stream()
+                    .filter(i -> i.getInvoiceId().equalsIgnoreCase(transactionV1.getInvoiceId()))
+                    .findFirst()
+                    .orElse(null);
+            if (invoicesV1 != null) {
+                invoiceNumber = invoicesV1.getInvoiceNumber();
             }
         }
 

@@ -24,7 +24,7 @@ public interface TransactionRepository extends JpaRepository<TransactionV1, Stri
     );
 
     @Query(value = """
-    SELECT t FROM transactionv1 t WHERE t.hostelId = :hostelId AND (:startDate IS NULL OR DATE(t.paidAt) >= DATE(:startDate)) 
-    AND (:endDate IS NULL OR DATE(t.paidAt) <= DATE(:endDate))""")
+    SELECT t FROM transactionv1 t WHERE t.hostelId = :hostelId AND (:startDate IS NULL OR DATE(t.paymentDate) >= DATE(:startDate)) 
+    AND (:endDate IS NULL OR DATE(t.paymentDate) <= DATE(:endDate))""")
     List<TransactionV1> getTransactionsList(@Param("hostelId") String hostelId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

@@ -4,10 +4,7 @@ import com.smartstay.reports.service.TransactionV1Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v2/reports/receipts")
@@ -27,12 +24,12 @@ public class ReceiptsController {
     }
 
     @GetMapping("/report/{hostelId}")
-    public ResponseEntity<?> getReceiptsReports(@PathVariable("hostelId") String hostelId, @Param("startDate") String startDate, @Param("endDate") String endDate) {
+    public ResponseEntity<?> getReceiptsReports(@PathVariable("hostelId") String hostelId, @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) {
         return transctionService.getReceiptReports(hostelId, startDate, endDate);
     }
 
     @GetMapping("/report/details/{hostelId}")
-    public ResponseEntity<?> getReceiptsReportsDetails(@PathVariable("hostelId") String hostelId, @Param("startDate") String startDate, @Param("endDate") String endDate) {
+    public ResponseEntity<?> getReceiptsReportsDetails(@PathVariable("hostelId") String hostelId, @RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) {
         return transctionService.getReceiptReportsDetails(hostelId, startDate, endDate);
     }
 }
