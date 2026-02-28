@@ -32,17 +32,19 @@ public class ExpenseService {
     public ResponseEntity<?> getExpenseDetails(String hostelId, String startDate, String endDate) {
         ExpensesResponse expenses = getExpensesResponse(hostelId, startDate, endDate);
 
+
+        return new ResponseEntity<>(expenses, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getExpense(String hostelId, String startDate, String endDate) {
+        ExpensesResponse expenses = getExpensesResponse(hostelId, startDate, endDate);
+
         Context context = new Context();
         context.setVariable("expenses", expenses);
 
         String invoiceUrl = pdfServices.generateExpensesPdf("expenses", context);
 
         return new ResponseEntity<>(invoiceUrl, HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getExpense(String hostelId, String startDate, String endDate) {
-        ExpensesResponse expensesResponse = getExpensesResponse(hostelId, startDate, endDate);
-        return new ResponseEntity<>(expensesResponse, HttpStatus.OK);
     }
 
     private ExpensesResponse getExpensesResponse(String hostelId, String startDate, String endDate) {
