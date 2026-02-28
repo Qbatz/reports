@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.smartstay.reports.ennum.PaymentStatus.PARTIAL_REFUND;
@@ -70,16 +71,13 @@ public class InvoiceService {
             paidAmount = invoicesV1.getPaidAmount();
         }
         double balanceAmount = calculateBalance(invoicesV1.getTotalAmount(), paidAmount, invoicesV1.getPaymentStatus());
-        System.out.println("Total Amount: " + invoicesV1.getTotalAmount());
-        System.out.println("Paid Amount: " + paidAmount);
-        System.out.println("Balance Amount: " + balanceAmount);
 
         List<InvoiceItems> invoiceItems = invoicesV1
                 .getInvoiceItems()
                 .stream()
                 .map(i -> {
                     String item = null;
-                    String amount = null;
+                    String amount = String.valueOf(Math.round(i.getAmount()));
                     if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.RENT.name())) {
                         item = "Rent";
                     }
@@ -101,9 +99,6 @@ public class InvoiceService {
                     else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
                         item = i.getOtherItem();
                     }
-
-                    amount = String.valueOf(Math.round(i.getAmount()));
-
                     return new InvoiceItems(item, amount);
                 })
                 .toList();
@@ -120,6 +115,8 @@ public class InvoiceService {
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             invoiceType = "Settlement";
+            invoiceItems = new ArrayList<>();
+            invoiceItems.add(new InvoiceItems("Settlement", invoicesV1.getBasePrice().toString()));
         }
 
 
