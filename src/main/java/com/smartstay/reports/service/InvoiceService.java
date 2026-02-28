@@ -186,4 +186,8 @@ public class InvoiceService {
     public InvoicesV1 getInvoice(String invoiceId) {
         return invoicesV1Repository.getReferenceById(invoiceId);
     }
+
+    public List<InvoicesV1> getInvoicesByIds(List<String> listInvoicesId) {
+        return invoicesV1Repository.findAllById(listInvoicesId);
+    }
 }

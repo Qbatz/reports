@@ -243,6 +243,13 @@ public class TransactionV1Service {
                     Utils.dateToString(sDate),
                     Utils.dateToString(eDate));
 
+            List<String> listInvoicesId = listTransactions
+                    .stream()
+                    .map(TransactionV1::getInvoiceId)
+                    .distinct()
+                    .toList();
+            List<InvoicesV1> listInvoices = invoiceService.getInvoicesByIds(listInvoicesId);
+
             List<String> customerIds = listTransactions.stream().map(TransactionV1::getCustomerId).filter(Objects::nonNull)
                     .distinct().toList();
             List<String> tBankIds = listTransactions.stream().map(TransactionV1::getBankId).filter(Objects::nonNull).distinct()
@@ -256,7 +263,7 @@ public class TransactionV1Service {
 
             List<ReceiptList> listReceipts = listTransactions
                     .stream()
-                    .map(i -> new ReceiptReportMapper(listCustomers, listUsers, listBanks).apply(i))
+                    .map(i -> new ReceiptReportMapper(listCustomers, listUsers, listBanks, listInvoices).apply(i))
                     .toList();
 
 
