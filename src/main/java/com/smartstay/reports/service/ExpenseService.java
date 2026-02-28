@@ -1,8 +1,13 @@
 package com.smartstay.reports.service;
 
+import com.smartstay.reports.dao.BankingV1;
+import com.smartstay.reports.dao.ExpenseCategory;
+import com.smartstay.reports.dao.ExpenseSubCategory;
 import com.smartstay.reports.dao.ExpensesV1;
 import com.smartstay.reports.dto.customer.FooterInfo;
 import com.smartstay.reports.dto.customer.HostelInformation;
+import com.smartstay.reports.repositories.ExpenseCategoryRepository;
+import com.smartstay.reports.repositories.ExpenseSubCategoryRepository;
 import com.smartstay.reports.repositories.ExpensesRepository;
 import com.smartstay.reports.responses.expense.ExpenseHeader;
 import com.smartstay.reports.responses.expense.ExpensesList;
@@ -16,8 +21,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ExpenseService {
@@ -27,7 +34,13 @@ public class ExpenseService {
     @Autowired
     private ExpensesRepository expensesRepository;
     @Autowired
+    private ExpenseCategoryRepository expenseCategoryRepository;
+    @Autowired
+    private ExpenseSubCategoryRepository expenseSubCategoryRepository;
+    @Autowired
     private PDFServices pdfServices;
+    @Autowired
+    private BankingService bankingService;
 
     public ResponseEntity<?> getExpenseDetails(String hostelId, String startDate, String endDate) {
         ExpensesResponse expenses = getExpensesResponse(hostelId, startDate, endDate);
@@ -66,9 +79,37 @@ public class ExpenseService {
                 Utils.dateToString(sDate),
                 Utils.dateToString(eDate));
 
+        List<String> bankIds = listExpenses
+                .stream()
+                .map(ExpensesV1::getBankId)
+                .distinct()
+                .toList();
+        List<Long> categories = listExpenses
+                .stream()
+                .map(ExpensesV1::getCategoryId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        List<Long> subCategories = listExpenses
+                .stream()
+                .map(ExpensesV1::getSubCategoryId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        List<ExpenseCategory> listCategories = getExpenseCategories(categories);
+        List<ExpenseSubCategory> listSubcatgories;
+        if (subCategories != null && !subCategories.isEmpty()) {
+            listSubcatgories = getExpenseSubcategories(subCategories);
+        } else {
+            listSubcatgories = new ArrayList<>();
+        }
+
+        List<BankingV1> banks = bankingService.findByBankIds(bankIds);
+
         List<ExpensesList> list = listExpenses
                 .stream()
-                .map(i -> new ExpensesMapper().apply(i))
+                .map(i -> new ExpensesMapper(listCategories, listSubcatgories, banks).apply(i))
                 .toList();
 
         return new ExpensesResponse(hostelInformation,
@@ -76,4 +117,14 @@ public class ExpenseService {
                 expenseHeader,
                 list);
     }
+
+
+    public List<ExpenseCategory> getExpenseCategories(List<Long> ids) {
+        return expenseCategoryRepository.findAllById(ids);
+    }
+
+    public List<ExpenseSubCategory> getExpenseSubcategories(List<Long> ids) {
+        return expenseSubCategoryRepository.findAllById(ids);
+    }
+
 }
