@@ -1,14 +1,249 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+    <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 20px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        /* Header */
+
+.header-table {
+    width: 100%;
+    display: table;
+    margin-bottom: 15px;
+}
+
+.header-row {
+    display: table-row;
+}
+
+.header-cell {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.header-left {
+    width: 40%;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.header-right {
+    width: 60%;
+}
+
+.right-inner-table {
+    display: table;
+    width: 100%;
+}
+
+.inner-row {
+    display: table-row;
+}
+
+.inner-cell {
+    display: table-cell;
+    padding: 2px 0;
+}
+
+.inner-left {
+    text-align: right;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.inner-right {
+    text-align: right;
+    font-size: 12px;
+}
+        /* Summary */
+        .summary-row {
+            display: table;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary-cell {
+            display: table-cell;
+            padding-right: 4px;
+            font-size: 12px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        th {
+            border: 1px solid #cccccc;
+            padding: 6px;
+            background-color: #f2f2f2;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .footer-date {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 11px;
+        }
+
+    </style>
 </head>
 
 <body>
+
+<div class="container">
+
+
+    <div class="header-table">
+        <div class="header-row">
+
+
+            <div class="header-cell header-left">
+                Invoice Register
+            </div>
+
+
+            <div class="header-cell header-right">
+
+                <div class="right-inner-table">
+
+
+                    <div class="inner-row">
+                        <strong class="inner-cell inner-left"
+                                th:text="${invoices.hostelInformation.hostelName}"
+                        >
+                            Zen1 Hostels
+                        </strong>
+
+                        <div class="inner-cell inner-right">
+                            <strong style="font-weight:400">From Date: </strong>
+                            <span th:text="${invoices.invoiceHeader.startDate}">
+                                                        01 Jan 2026
+                                                    </span>
+                        </div>
+                    </div>
+
+
+                    <div class="inner-row">
+                        <strong class="inner-cell inner-left"
+                                th:text="${invoices.hostelInformation.fullAddress}"  >
+                            Navalur, Chennai
+                        </strong>
+
+                        <div class="inner-cell inner-right">
+                            <strong style="font-weight:400">To Date: </strong>
+                            <span th:text="${invoices.invoiceHeader.endDate}">
+                                                        31 Jan 2026
+                                                    </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="summary-row">
+        <div class="summary-cell">
+            Total Invoices:
+            <strong th:text="${invoices.invoiceHeader.totalInvoices}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Total Amount:
+            <strong th:text="${invoices.invoiceHeader.totalAmount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Paid Amount:
+            <strong th:text="${invoices.invoiceHeader.paidAmount}">10</strong>
+        </div>
+        <div class="summary-cell">
+            Outstanding:
+            <strong th:text="${invoices.invoiceHeader.outstandingAmount}">10</strong>
+        </div>
+        <div class="summary-cell">
+            Refunded Booking Amount:
+            <strong th:text="${invoices.invoiceHeader.refundedBookingAmount}">10</strong>
+        </div>
+        <div class="summary-cell">
+            Cancelled Amount:
+            <strong th:text="${invoices.invoiceHeader.cancelledAmount}">10</strong>
+        </div>
+
+    </div>
+
+
+    <table>
+        <thead>
+        <tr>
+            <th>INVOICE NO</th>
+            <th>INVOICE DATE</th>
+            <th>TENANT NAME</th>
+            <th>TYPE</th>
+            <th>STATUS</th>
+            <th>DUE DATE</th>
+            <th>AMOUNT</th>
+            <th>DUE AMOUNT</th>
+
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="invoice : ${invoices.listInvoiceItems}">
+
+            <td th:text="${invoice.invoiceNumber}">invoiceNumber</td>
+            <td th:text="${invoice.invoiceDate}">invoiceDate</td>
+            <td th:text="${invoice.name}">name</td>
+            <td th:text="${invoice.invoiceType} ?: '-'">invoiceType</td>
+            <td th:text="${invoice.status} ?: '-'">status</td>
+            <td th:text="${invoice.dueDate} ?: '-'">dueDate</td>
+            <td th:text="${invoice.invoiceAmount}">invoiceAmount</td>
+            <td th:text="${invoice.dueAmount}">dueAmount</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="footer-date">
+        <span th:text="${invoices.footerInfo.date}">31 Jan 2026</span>
+        <span th:text="${invoices.footerInfo.time}">10:30</span>
+    </div>
+
+</div>
+
 </body>
 </html>

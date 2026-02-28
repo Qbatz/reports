@@ -209,7 +209,7 @@ public class InvoiceService {
         Context context = new Context();
         context.setVariable("invoices", invoicePdfResponse);
 
-        String invoiceReportUrl = pdfServices.generateReceiptReportPDF("invoice-report", context);
+        String invoiceReportUrl = pdfServices.generateInvoicePdf("invoice-report", context);
         return new ResponseEntity<>(invoiceReportUrl, HttpStatus.OK);
     }
 
