@@ -130,7 +130,7 @@ public class TransactionV1Service {
             labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
         }
 
-        String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Only";
+        String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Rupees Only";
         String paymentMode = bankingService.getPaymentMode(transactionV1.getBankId());
         ReceiptInfo receiptInfo = new ReceiptInfo(transactionV1.getTransactionReferenceId(),
                 Utils.dateToString(transactionV1.getPaymentDate()),

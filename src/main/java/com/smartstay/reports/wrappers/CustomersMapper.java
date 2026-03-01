@@ -112,6 +112,7 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                         floorName = bedInformations.floorName();
                         roomName = bedInformations.roomName();
 
+
                         if (bedInformations.sharing() == 1) {
                             sharingType = "Single sharing";
                         }
