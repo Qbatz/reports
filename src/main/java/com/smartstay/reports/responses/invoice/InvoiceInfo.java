@@ -12,7 +12,6 @@ public record InvoiceInfo(String invoiceNumber,
                           String dueDate,
                           String rentalPeriod,
                           String payableAmount,
-
                           String totalDeductionAmount,
                           String paidAmount,
                           String balanceAmount,

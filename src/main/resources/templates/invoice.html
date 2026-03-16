@@ -16,7 +16,7 @@
     margin: 0;
 }
        body {
-        font-family: 'DejaVu Sans', sans-serif;
+        font-family: 'Arial', sans-serif;
     }
 
 
@@ -535,7 +535,9 @@ font-weight:600;
                     <i class="fa-solid fa-bed invoice-icon"
                        th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
                     <span class="colon">:</span>
-                    <span class="info-text" th:text="${invoice.bedInfo.bedName}"></span>
+                    <span class="info-text"
+                          th:text="${invoice.bedInfo != null ? invoice.bedInfo.bedName : ''}">
+                    </span>
                 </p>
 
                 <p class="invoice-style">
@@ -612,7 +614,7 @@ font-weight:600;
                 </td>
 
                 <td style="padding:10px 10px 25px 10px; text-align:right;">
-                    <span th:text="${invoice.invoiceItems[0].amount}"></span>
+                    <span th:text="'₹'+${invoice.invoiceItems[0].amount}"></span>
                 </td>
 
                 <td style="padding:10px 10px 25px 10px;">
@@ -623,7 +625,7 @@ font-weight:600;
 
                 <td style="padding:10px 10px 25px 10px; text-align:right;">
                     <div th:each="deduction : ${invoice.listDeductions}">
-                        <span th:text="${deduction.amount}"></span><br/>
+                        <span th:text="'₹'+${deduction.amount}"></span><br/>
                     </div>
                 </td>
             </tr>
@@ -632,7 +634,7 @@ font-weight:600;
             <tr style="border-top:1px solid #ddd; font-weight:bold;">
                 <td style="padding:8px;">Total</td>
                 <td style="padding:8px; text-align:right;">
-                    <span th:text="${invoice.totalAmount}"></span>
+                    <span th:text="'₹'+${invoice.totalAmount}"></span>
                 </td>
 
                 <td style="padding:8px;">Total Deductions</td>
@@ -690,17 +692,17 @@ font-weight:600;
     <div class="summary-box">
         <div class="summary-row">
             <div class="label">Grand Total</div>
-            <div class="value"><span th:text="${invoice.totalAmount}"></span></div>
+            <div class="value">₹<span th:text="${invoice.totalAmount}"></span></div>
         </div>
 
         <div class="summary-row">
             <div class="label">Payment Made</div>
-            <div class="value paid"><span th:text="${invoice.paidAmount}"></span></div>
+            <div class="value paid">₹<span th:text="${invoice.paidAmount}"></span></div>
         </div>
 
         <div class="summary-row">
             <div class="label">Balance Due</div>
-            <div class="value due"><span th:text="${invoice.balanceAmount}"></span></div>
+            <div class="value due">₹<span th:text="${invoice.balanceAmount}"></span></div>
         </div>
     </div>
 

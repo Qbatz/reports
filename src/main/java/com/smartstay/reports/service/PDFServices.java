@@ -26,8 +26,15 @@ public class PDFServices {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFont(
+                    () -> Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream("fonts/ARIAL.TTF"),
+                    "Arial"
+            );
             builder.withHtmlContent(html, null);
             builder.toStream(outputStream);
+
             builder.run();
 
             File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "invoice-");
@@ -44,6 +51,12 @@ public class PDFServices {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.withHtmlContent(html, null);
             builder.toStream(outputStream);
+            builder.useFont(
+                    () -> Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream("fonts/ARIAL.ttf"),
+                    "Arial"
+            );
             builder.run();
 
             File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "receipts-");
@@ -61,7 +74,7 @@ public class PDFServices {
             builder.useFont(
                     () -> Thread.currentThread()
                             .getContextClassLoader()
-                            .getResourceAsStream("fonts/ARIAL.ttf"),
+                            .getResourceAsStream("fonts/ARIAL.TTF"),
                     "Arial"
             );
             builder.withHtmlContent(html, null);
@@ -83,7 +96,7 @@ public class PDFServices {
             builder.useFont(
                     () -> Thread.currentThread()
                             .getContextClassLoader()
-                            .getResourceAsStream("fonts/ARIAL.ttf"),
+                            .getResourceAsStream("fonts/ARIAL.TTF"),
                     "Arial"
             );
             builder.withHtmlContent(html, null);

@@ -17,7 +17,7 @@ body {
     margin: 0;
 }
         body {
-    font-family: 'Inter', 'Poppins', 'Montserrat', Arial, sans-serif;
+     font-family: 'Arial', sans-serif;
 
 }
 
@@ -607,7 +607,7 @@ font-weight:600;
 
         </div>
         <div class="amount-right">
-            <div class="amount-value" th:text="${receipt.paidAmount}">
+            <div class="amount-value" th:text="'₹' + ${receipt.paidAmount}">
                 ₹ 464
             </div>
             <div class="amount-words" th:text="${receipt.amountInWords}">
@@ -695,7 +695,7 @@ font-weight:600;
                           th:text="${receipt.description}"></span>
 
                     <span th:case="'Amount'"
-                          th:text="${receipt.invoiceAmount}"></span>
+                          th:text="'₹'+${receipt.invoiceAmount}"></span>
 
 
                     <span th:case="'Invoice No'"
@@ -705,10 +705,10 @@ font-weight:600;
                           th:text="${receipt.invoiceDate}"></span>
 
                     <span th:case="'Invoice Amount'"
-                          th:text="${receipt.invoiceAmount}"></span>
+                          th:text="'₹' + ${receipt.invoiceAmount}"></span>
 
                     <span th:case="'Payment Amount'"
-                          th:text="${receipt.paidAmount}"></span>
+                          th:text="'₹' + ${receipt.paidAmount}"></span>
 
 
                     <span th:case="*">-</span>
@@ -725,7 +725,7 @@ font-weight:600;
                 </td>
 
                 <td class="right">
-                    <strong th:text="${receipt.invoiceAmount}"></strong>
+                    <strong th:text="'₹' +${receipt.invoiceAmount}"></strong>
                 </td>
             </tr>
             </tbody>

@@ -162,7 +162,11 @@ public class InvoiceService {
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
         CustomersBedHistory cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
-        BedInfo bedInfo = bedsService.getBedDetails(cbh.getBedId());
+        BedInfo bedInfo = null;
+        if (cbh != null) {
+            bedInfo = bedsService.getBedDetails(cbh.getBedId());
+        }
+
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
 
         String rentalPeriod = Utils.dateToMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToMonth(invoicesV1.getInvoiceEndDate());
@@ -192,7 +196,7 @@ public class InvoiceService {
     private double calculateBalance(double totalAmount, double paidAmount,
                                     String paymentStatus) {
         return switch (paymentStatus) {
-            case "PARTIAL_REFUND", "REFUND" -> totalAmount + paidAmount;
+            case "PARTIAL_REFUND", "REFUNDED" -> totalAmount + paidAmount;
 
             default -> totalAmount - paidAmount;
         };

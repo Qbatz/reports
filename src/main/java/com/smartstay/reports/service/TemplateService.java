@@ -75,7 +75,8 @@ public class TemplateService {
             }
 
             if (hostelLogo == null) {
-                hostelLogo = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
+//                hostelLogo = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
+                hostelLogo = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
             }
 
             if (billTemplates.isMobileCustomized()) {
