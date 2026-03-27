@@ -52,7 +52,7 @@ public class AmountToWordsUtils {
             result.append(convertTwoDigits((int) number));
         }
 
-        return result.toString().trim() + " Rupees";
+        return result.toString().trim() + " ";
     }
 
     private static String convertTwoDigits(int number) {

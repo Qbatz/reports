@@ -1,14 +1,238 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+    <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 20px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        /* Header */
+
+.header-table {
+    width: 100%;
+    display: table;
+    margin-bottom: 15px;
+}
+
+.header-row {
+    display: table-row;
+}
+
+.header-cell {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.header-left {
+    width: 40%;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.header-right {
+    width: 60%;
+}
+
+.right-inner-table {
+    display: table;
+    width: 100%;
+}
+
+.inner-row {
+    display: table-row;
+}
+
+.inner-cell {
+    display: table-cell;
+    padding: 2px 0;
+}
+
+.inner-left {
+    text-align: right;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.inner-right {
+    text-align: right;
+    font-size: 12px;
+}
+        /* Summary */
+        .summary-row {
+            display: table;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary-cell {
+            display: table-cell;
+            padding-right: 20px;
+            font-size: 12px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        th {
+            border: 1px solid #cccccc;
+            padding: 6px;
+            background-color: #f2f2f2;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .footer-date {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 11px;
+        }
+
+    </style>
 </head>
 
 <body>
+
+<div class="container">
+
+
+    <div class="header-table">
+        <div class="header-row">
+
+
+            <div class="header-cell header-left">
+                Expense Register
+            </div>
+
+
+            <div class="header-cell header-right">
+
+                <div class="right-inner-table">
+
+
+                    <div class="inner-row">
+                        <div class="inner-cell inner-left"
+                             th:text="${expenses.hostelInformation.hostelName}"
+                        >
+                            Zen1 Hostels
+                        </div>
+
+                        <div class="inner-cell inner-right">
+                            <strong style="font-weight:400">From Date: </strong>
+                            <span th:text="${expenses.expenseHeader.startDate}">
+                                                        01 Jan 2026
+                                                    </span>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="inner-row">
+                        <div class="inner-cell inner-left"
+                             th:text="${expenses.hostelInformation.fullAddress}"  >
+                            Navalur, Chennai
+                        </div>
+
+                        <div class="inner-cell inner-right">
+                            <strong style="font-weight:400">To Date: </strong>
+                            <span th:text="${expenses.expenseHeader.endDate}">
+                                                        31 Jan 2026
+                                                    </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="summary-row">
+        <div class="summary-cell">
+            Total Expenses:
+            <strong th:text="${expenses.expenseHeader.totalExpenses}">10</strong>
+        </div>
+
+        <div class="summary-cell">
+            Total Expenses Amount:
+            <strong th:text="${expenses.expenseHeader.totalExpenseAmount}">10</strong>
+        </div>
+
+
+
+
+    </div>
+
+
+    <table>
+        <thead>
+        <tr>
+            <th>DATE</th>
+            <th>CATEGORY</th>
+            <th>DESCRIPTION</th>
+            <th>AMOUNT</th>
+            <th>UNIT COUNT</th>
+            <th>ASSIGNED ASSET</th>
+            <th>VENDORS</th>
+            <th>DEBITED FROM</th>
+
+
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="expense : ${expenses.listExpenses}">
+
+            <td th:text="${expense.date}">date</td>
+            <td th:text="${expense.category}">category</td>
+            <td th:text="${expense.description}">description</td>
+            <td th:text="${expense.amount} ?: '-'">amount</td>
+            <td th:text="${expense.unitCount} ?: '-'">unitCount</td>
+            <td th:text="${expense.assignedAssets} ?: '-'">assignedAssets</td>
+            <td th:text="${expense.vendors}">vendors</td>
+            <td th:text="${expense.debitedFrom}">debitedFrom</td>
+
+
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="footer-date">
+        <span th:text="${expenses.footerInfo.date}">31 Jan 2026</span>
+        <span th:text="${expenses.footerInfo.time}">10:30</span>
+    </div>
+
+</div>
+
 </body>
 </html>

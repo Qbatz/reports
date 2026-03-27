@@ -119,18 +119,22 @@ public class TransactionV1Service {
 
         if (transactionV1.getType() != null) {
             if (transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
-                labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-refunded.png";
+//                labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-refunded.png";
+                labelUrl = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/ss-refunded.png";
             }
             else {
-                labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
+//                labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
+                //for production;
+                labelUrl = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
             }
         }
 
         else {
-            labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
+//            labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
+            labelUrl = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
         }
 
-        String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Only";
+        String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Rupees Only";
         String paymentMode = bankingService.getPaymentMode(transactionV1.getBankId());
         ReceiptInfo receiptInfo = new ReceiptInfo(transactionV1.getTransactionReferenceId(),
                 Utils.dateToString(transactionV1.getPaymentDate()),
