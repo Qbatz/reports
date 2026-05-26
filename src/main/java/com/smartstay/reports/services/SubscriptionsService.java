@@ -1,24 +1,24 @@
 package com.smartstay.reports.services;
 
 import com.smartstay.reports.dao.HostelV1;
-import com.smartstay.reports.dao.OrderHistory;
 import com.smartstay.reports.dao.Plans;
 import com.smartstay.reports.dao.Subscription;
 import com.smartstay.reports.repositories.HostelV1Repository;
 import com.smartstay.reports.repositories.OrderHistoryRepository;
 import com.smartstay.reports.repositories.PlansRepository;
 import com.smartstay.reports.repositories.SubscriptionRepository;
-import com.smartstay.reports.responses.hostel.HostelInfo;
 import com.smartstay.reports.responses.hostel.HostelInfoInvoice;
+import com.smartstay.reports.responses.invoice.InvoiceInfo;
 import com.smartstay.reports.responses.subscription.BankInfo;
 import com.smartstay.reports.responses.subscription.OrderInfo;
 import com.smartstay.reports.responses.subscription.SubscriptionInfo;
 import com.smartstay.reports.responses.subscription.SubscriptionResponse;
+import com.smartstay.reports.service.PDFServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.thymeleaf.context.Context;
 
 @Service
 public class SubscriptionsService {
@@ -35,40 +35,31 @@ public class SubscriptionsService {
     @Autowired
     private HostelV1Repository hostelV1Repository;
 
+    @Autowired
+    private PDFServices invoicePDFServices;
+
     public ResponseEntity<?> getSubscriptionDetails(String hostelId, String subscriptionId) {
         Subscription subscription = subscriptionRepository.findBySubscriptionId(subscriptionId);
         if (subscription==null) {
             return ResponseEntity.notFound().build();
         }
-//        Subscription subscription = subscriptionOpt.get();
-//        System.out.println("Subscriptions");
-
-//        Optional<OrderHistory> orderHistoryOpt = orderHistoryRepository.findBySubscriptionId(subscriptionId);
-//        if (orderHistoryOpt.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        OrderHistory orderHistory = orderHistoryOpt.get();
 
         Plans plans = plansRepository.findPlanByPlanCode(subscription.getPlanCode());
         if (plans==null) {
             return ResponseEntity.notFound().build();
         }
-//        Plans plans = plansOpt.get();
 
         HostelV1 hostel = hostelV1Repository.findByHostelId(hostelId);
         if (hostel==null) {
             return ResponseEntity.notFound().build();
         }
-//        HostelV1 hostel = hostelOpt.get();
 
-//        String address = String.format("%s, %s, %s, %s, %s, %d",
-//                hostel.getHouseNo() != null ? hostel.getHouseNo() : "",
-//                hostel.getStreet() != null ? hostel.getStreet() : "",
-//                hostel.getLandmark() != null ? hostel.getLandmark() : "",
-//                hostel.getCity() != null ? hostel.getCity() : "",
-//                hostel.getState() != null ? hostel.getState() : "",
-//                hostel.getPincode());
+        SubscriptionResponse response = getSubscriptionResponse(hostel, plans, subscription);
 
+        return ResponseEntity.ok(response);
+    }
+
+    private SubscriptionResponse getSubscriptionResponse(HostelV1 hostel, Plans plans, Subscription subscription) {
         HostelInfoInvoice hostelInfo = new HostelInfoInvoice(
                 hostel.getHostelName() != null ? hostel.getHostelName() : "",
                 hostel.getMainImage() != null ? hostel.getMainImage() : "",
@@ -134,6 +125,32 @@ public class SubscriptionsService {
                 bankInfo
         );
 
-        return ResponseEntity.ok(response);
+        return response;
+    }
+
+    public ResponseEntity<?> getSubscriptionPdf(String hostelId, String subscriptionId) {
+        Subscription subscription = subscriptionRepository.findBySubscriptionId(subscriptionId);
+        if (subscription==null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Plans plans = plansRepository.findPlanByPlanCode(subscription.getPlanCode());
+        if (plans==null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HostelV1 hostel = hostelV1Repository.findByHostelId(hostelId);
+        if (hostel==null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        SubscriptionResponse response = getSubscriptionResponse(hostel, plans, subscription);
+//        InvoiceInfo invoiceInfo = getInvoiceInfo(invoicesV1);
+        Context context = new Context();
+        context.setVariable("subscription", response);
+
+        String invoiceUrl = invoicePDFServices.generateSubscriptionPdf(subscriptionId, "subscription", context);
+
+        return new ResponseEntity<>(invoiceUrl, HttpStatus.OK);
     }
 }

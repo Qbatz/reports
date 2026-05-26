@@ -18,4 +18,11 @@ public class SubscriptionsController {
             @PathVariable("subscriptionId") String subscriptionId) {
         return subscriptionsService.getSubscriptionDetails(hostelId, subscriptionId);
     }
+
+    @GetMapping("/{hostelId}/{subscriptionId}")
+    public ResponseEntity<?> getSubscriptionPdf(
+            @PathVariable("hostelId") String hostelId,
+            @PathVariable("subscriptionId") String subscriptionId) {
+        return subscriptionsService.getSubscriptionPdf(hostelId, subscriptionId);
+    }
 }
