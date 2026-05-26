@@ -153,4 +153,27 @@ public class PDFServices {
             throw new RuntimeException("Failed to generate PDF", e);
         }
     }
+
+    public String generateSubscriptionPdf(String subscriptionId, String templateName, Context context) {
+        String html = templateEngine.process(templateName, context);
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFont(
+                    () -> Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream("fonts/ARIAL.TTF"),
+                    "Arial"
+            );
+            builder.withHtmlContent(html, null);
+            builder.toStream(outputStream);
+
+            builder.run();
+
+            File pdfFile = FilesConfig.writePdf(outputStream.toByteArray(), "subscription-");
+            return uploadFileToS3.uploadFileToS3(pdfFile, "subscriptions");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+    }
 }
