@@ -41,17 +41,17 @@ public class SubscriptionsService {
     public ResponseEntity<?> getSubscriptionDetails(String hostelId, String subscriptionId) {
         Subscription subscription = subscriptionRepository.findBySubscriptionId(subscriptionId);
         if (subscription==null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Plans plans = plansRepository.findPlanByPlanCode(subscription.getPlanCode());
         if (plans==null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         HostelV1 hostel = hostelV1Repository.findByHostelId(hostelId);
         if (hostel==null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         SubscriptionResponse response = getSubscriptionResponse(hostel, plans, subscription);
@@ -131,17 +131,17 @@ public class SubscriptionsService {
     public ResponseEntity<?> getSubscriptionPdf(String hostelId, String subscriptionId) {
         Subscription subscription = subscriptionRepository.findBySubscriptionId(subscriptionId);
         if (subscription==null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Plans plans = plansRepository.findPlanByPlanCode(subscription.getPlanCode());
         if (plans==null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         HostelV1 hostel = hostelV1Repository.findByHostelId(hostelId);
         if (hostel==null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         SubscriptionResponse response = getSubscriptionResponse(hostel, plans, subscription);
