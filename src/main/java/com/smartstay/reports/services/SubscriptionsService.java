@@ -9,6 +9,7 @@ import com.smartstay.reports.repositories.OrderHistoryRepository;
 import com.smartstay.reports.repositories.PlansRepository;
 import com.smartstay.reports.repositories.SubscriptionRepository;
 import com.smartstay.reports.responses.hostel.HostelInfo;
+import com.smartstay.reports.responses.hostel.HostelInfoInvoice;
 import com.smartstay.reports.responses.subscription.BankInfo;
 import com.smartstay.reports.responses.subscription.OrderInfo;
 import com.smartstay.reports.responses.subscription.SubscriptionInfo;
@@ -60,17 +61,25 @@ public class SubscriptionsService {
         }
 //        HostelV1 hostel = hostelOpt.get();
 
-        String address = String.format("%s, %s, %s, %s, %s, %d",
+//        String address = String.format("%s, %s, %s, %s, %s, %d",
+//                hostel.getHouseNo() != null ? hostel.getHouseNo() : "",
+//                hostel.getStreet() != null ? hostel.getStreet() : "",
+//                hostel.getLandmark() != null ? hostel.getLandmark() : "",
+//                hostel.getCity() != null ? hostel.getCity() : "",
+//                hostel.getState() != null ? hostel.getState() : "",
+//                hostel.getPincode());
+
+        HostelInfoInvoice hostelInfo = new HostelInfoInvoice(
+                hostel.getHostelName() != null ? hostel.getHostelName() : "",
+                hostel.getMainImage() != null ? hostel.getMainImage() : "",
                 hostel.getHouseNo() != null ? hostel.getHouseNo() : "",
-                hostel.getStreet() != null ? hostel.getStreet() : "",
                 hostel.getLandmark() != null ? hostel.getLandmark() : "",
+                hostel.getStreet() != null ? hostel.getStreet() : "",
                 hostel.getCity() != null ? hostel.getCity() : "",
                 hostel.getState() != null ? hostel.getState() : "",
-                hostel.getPincode());
-
-        HostelInfo hostelInfo = new HostelInfo(
-                hostel.getHostelName() != null ? hostel.getHostelName() : "",
-                address
+                hostel.getEmailId() != null ? hostel.getEmailId() : "",
+                String.valueOf(hostel.getPincode()),
+                hostel.getMobile() != null ? hostel.getMobile() : ""
         );
 
         double price = plans.getPrice() != null ? plans.getPrice() : 0.0;

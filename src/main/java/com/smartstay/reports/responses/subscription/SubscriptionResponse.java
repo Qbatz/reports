@@ -1,6 +1,7 @@
 package com.smartstay.reports.responses.subscription;
 
 import com.smartstay.reports.responses.hostel.HostelInfo;
+import com.smartstay.reports.responses.hostel.HostelInfoInvoice;
 
 public record SubscriptionResponse(
         String companyLogo,
@@ -13,7 +14,7 @@ public record SubscriptionResponse(
         String placeOfSupply,
         String notes,
         String tandc,
-        HostelInfo hostelInfo,
+        HostelInfoInvoice hostelInfo,
         SubscriptionInfo subscriptionInfo,
         OrderInfo orderInfo,
         BankInfo bankInfo
