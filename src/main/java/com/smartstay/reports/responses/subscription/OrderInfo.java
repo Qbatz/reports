@@ -4,6 +4,7 @@ public record OrderInfo(
         String invoiceNumber,
         String invoiceDate,
         String terms,
-        String dueDate
+        String dueDate,
+        String referenceNumber
 ) {
 }

@@ -8,7 +8,7 @@ public record HostelInfoInvoice(
         String street,
         String city,
         String state,
-        String email_id,
+        String emailId,
         String pincode,
         String mobile
 ) {
