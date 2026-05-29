@@ -44,6 +44,8 @@ public class InvoiceService {
     @Autowired
     private BedsService bedsService;
     @Autowired
+    private InvoiceDiscountService invoiceDiscountService;
+    @Autowired
     private TemplateService templateService;
     @Autowired
     private PDFServices pdfServices;
@@ -76,6 +78,7 @@ public class InvoiceService {
 
     public InvoiceInfo getInvoiceInfo(InvoicesV1 invoicesV1) {
         double paidAmount = 0.0;
+        double discount = 0.0;
         if (invoicesV1.getPaidAmount() != null) {
             paidAmount = invoicesV1.getPaidAmount();
         }
@@ -83,6 +86,10 @@ public class InvoiceService {
         double totalDeductionAmount = 0.0;
         List<InvoiceItems> invoiceItems = new ArrayList<>();
         List<Deductions> listDeductions = new ArrayList<>();
+
+        String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
+
+        discount = invoiceDiscountService.getInoiceDiscount(invoicesV1.getHostelId(), invoicesV1.getInvoiceId());
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
 
@@ -144,14 +151,16 @@ public class InvoiceService {
         }
 
         String invoiceType = null;
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             invoiceType = "Payment Bill";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            rentalPeriod = "";
             invoiceType = "Security Deposit(Booking)";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
             invoiceType = "Security Deposit";
+            rentalPeriod = "";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             invoiceType = "Settlement";
@@ -169,7 +178,7 @@ public class InvoiceService {
 
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
 
-        String rentalPeriod = Utils.dateToMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToMonth(invoicesV1.getInvoiceEndDate());
+
         InvoiceInfo invoiceInfo = new InvoiceInfo(
                 invoicesV1.getInvoiceNumber(),
                 Utils.dateToString(invoicesV1.getInvoiceStartDate()),
@@ -180,7 +189,7 @@ public class InvoiceService {
                 String.valueOf(Math.round(paidAmount)),
                 String.valueOf(Math.round(balanceAmount)),
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
-                String.valueOf(0),
+                String.valueOf(Math.round(discount)),
                 invoiceType,
                 invoiceItems,
                 listDeductions,

@@ -11,6 +11,9 @@ public record SubscriptionInfo(
         double sgst,
         double cgstAmount,
         double sgstAmount,
-        double total
+        double total,
+        String planStartDate,
+        String planEndDate,
+        String subTotal
 ) {
 }

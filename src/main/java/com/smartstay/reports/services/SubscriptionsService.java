@@ -3,6 +3,7 @@ package com.smartstay.reports.services;
 import com.smartstay.reports.dao.HostelV1;
 import com.smartstay.reports.dao.Plans;
 import com.smartstay.reports.dao.Subscription;
+import com.smartstay.reports.dto.subscription.FooterInfo;
 import com.smartstay.reports.repositories.HostelV1Repository;
 import com.smartstay.reports.repositories.OrderHistoryRepository;
 import com.smartstay.reports.repositories.PlansRepository;
@@ -14,11 +15,14 @@ import com.smartstay.reports.responses.subscription.OrderInfo;
 import com.smartstay.reports.responses.subscription.SubscriptionInfo;
 import com.smartstay.reports.responses.subscription.SubscriptionResponse;
 import com.smartstay.reports.service.PDFServices;
+import com.smartstay.reports.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
+
+import java.util.Date;
 
 @Service
 public class SubscriptionsService {
@@ -90,14 +94,18 @@ public class SubscriptionsService {
                 sgst,
                 (price * cgst / 100),
                 (price * sgst / 100),
-                finalPrice
+                finalPrice,
+                Utils.dateToString(subscription.getPlanStartsAt()),
+                Utils.dateToString(subscription.getPlanEndsAt()),
+                String.valueOf(Double.parseDouble(Utils.roundOffWithTwoDigit(subscription.getPaidAmount()).toString()))
         );
 
         OrderInfo orderInfo = new OrderInfo(
                 subscription.getSubscriptionNumber() != null ? subscription.getSubscriptionNumber() : "",
                 subscription.getCreatedAt() != null ? subscription.getCreatedAt().toString() : "",
                 "Due on Receipt",
-                subscription.getCreatedAt() != null ? subscription.getCreatedAt().toString() : ""
+                subscription.getCreatedAt() != null ? subscription.getCreatedAt().toString() : "",
+                "REC-001"
         );
 
         BankInfo bankInfo = new BankInfo(
@@ -107,10 +115,13 @@ public class SubscriptionsService {
                 "Canara bank",
                 "VK Pudur"
         );
+        FooterInfo footerInfo = new FooterInfo(Utils.dateToTime(new Date()),
+                Utils.dateToString(new Date()));
 
         SubscriptionResponse response = new SubscriptionResponse(
-                "", // companyLogo
+                "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png", // companyLogo
                 "S3 Remotica Technologies",
+                "+91 ",
                 "S3",
                 "7/96,North Street, Athisayapuram Tenkasi Tamil Nadu 627861 India",
                 "33AEXFS4390A1ZT",
@@ -122,7 +133,8 @@ public class SubscriptionsService {
                 hostelInfo,
                 subscriptionInfo,
                 orderInfo,
-                bankInfo
+                bankInfo,
+                footerInfo
         );
 
         return response;
