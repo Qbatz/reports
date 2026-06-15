@@ -55,4 +55,8 @@ public class Utils {
     public static Double roundOffWithTwoDigit(double number) {
         return Math.round(number * 100.0) / 100.0;
     }
+
+    public static Double roundOfDouble(double number) {
+        return (double) Math.round(number);
+    }
 }

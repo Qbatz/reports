@@ -28,6 +28,10 @@ public class BedsService {
         return new BedInfo(bd.toString());
     }
 
+    public BedDetails getBedFullDetails(Integer bedId) {
+        return bedsRepository.findByBedId(bedId);
+    }
+
 
     public List<BedInformations> getBedInformations(List<Integer> bedIds) {
         return bedsRepository.findByBedIds(bedIds);
