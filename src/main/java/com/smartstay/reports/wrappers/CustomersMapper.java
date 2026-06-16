@@ -167,11 +167,7 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                 rent);
         StayInfo stayInfo = new StayInfo(bedName,
                 floorName,
-                roomName,
-                sharingType,
-                checkInDate,
-                checkoutDate,
-                stayDuration);
+                roomName);
 
         return new com.smartstay.reports.dto.customer.Customers(customerInfo, stayInfo);
     }

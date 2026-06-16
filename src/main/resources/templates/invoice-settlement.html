@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Final Settlement Invoice</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family: Arial, sans-serif;
+            font-size:12px;
+            color:#222222;
+            padding:20px;
+        }
+
+        .invoice-container{
+            border:1px solid #D7DAE0;
+            border-radius:8px;
+            padding:15px;
+        }
+
+        .heading{
+            text-align:center;
+            font-size:16px;
+            font-weight:bold;
+            margin:15px 0;
+        }
+
+        .border-table{
+            border:1px solid #D7DAE0;
+            border-radius:8px;
+        }
+
+        .section-header{
+            background:#F9F9F9;
+            border-top:1px solid #E5E7EB;
+            border-bottom:1px solid #E5E7EB;
+            font-weight:bold;
+            text-transform:uppercase;
+            padding:10px;
+            font-size: 10px;
+        }
+
+        .label{
+            color:#4B4B4B;
+            font-size:9px;
+        }
+
+        .value{
+            color:#171717;
+            font-weight:600;
+            font-size:11px;
+
+        }
+
+        .item-title{
+            font-size:11px;
+            font-weight:bold;
+            color:#1A1C21;
+        }
+
+        .item-description{
+            color:#6B7280;
+            font-size:10px;
+            line-height:20px;
+        }
+
+        .amount{
+            text-align:right;
+            font-size:10px;
+            font-weight:bold;
+        }
+
+        .summary-table td{
+            padding:6px 0;
+        }
+
+        .total-row{
+            border-top:1px solid #E5E7EB;
+            font-size:15px;
+            font-weight:bold;
+        }
+
+        .signature{
+            width:130px;
+            height:60px;
+        }
+
+        .qr-code{
+            width:150px;
+        }
+
+        .terms{
+            margin-top:15px;
+            font-size:11px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="invoice-container">
+
+
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+
+            <td width="45%" valign="top">
+
+                <img
+                        th:src="${settlement.hostelLogo}"
+                        alt="Logo"
+                        style="max-width:134px;" />
+
+                <div style="margin-top:10px; font-size: 10px;"
+                     th:text="${settlement.emailId}"> test@gmail.com
+                </div>
+
+                <div style="margin-top:5px;  font-size: 10px;"
+                     th:text="'+' + ${settlement.countryCode} + ' ' + ${settlement.mobile}"> +91 2565845857
+                </div>
+
+            </td>
+
+            <td width="55%" valign="top" align="right">
+
+                <div style="font-size:14px;font-weight:bold;"
+                     th:text="${settlement.stayInfo.hostelName}"> Smartstay
+                </div>
+
+                <div style="margin-top:5px; font-size: 10px;"
+                     th:text="${settlement.configurations.address}"> 255, Chennai - 6000002
+                </div>
+
+                <div style="margin-top:5px; font-size: 10px;">
+                    GST IN : XXXXXXXXXX
+                </div>
+
+            </td>
+
+        </tr>
+    </table>
+
+
+
+    <div class="heading">
+        Final Settlement Invoice
+    </div>
+
+
+
+    <table width="100%" cellpadding="5" cellspacing="0">
+
+        <tr>
+
+            <td width="50%" valign="top">
+
+                <div style="font-weight:bold;margin-bottom:10px; font-size: 10px;">
+                    Billed To:
+                </div>
+
+                <div class="value"
+                     th:text="${settlement.fullName}"> mathu
+                </div>
+
+                <div style="margin-top:5px; font-size: 10px;"
+                     th:text="${settlement.fullAddress}"> Anna nagar
+                </div>
+
+                <div style="margin-top:5px; font-size: 10px;"
+                     th:text="'+' + ${settlement.countryCode} + ' ' + ${settlement.customerMobileNo}"> +91 9965000000
+                </div>
+
+            </td>
+
+            <td width="50%" valign="top">
+
+                <table align="right">
+
+                    <tr>
+                        <td class="label">Invoice :</td>
+                        <td style="font-size: 10px;"
+                            th:text="${settlement.invoiceNumber}"> INV-Test
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Invoice Date :</td>
+                        <td style="font-size: 10px;"
+                            th:text="${settlement.invoiceDate}"> 10-06-2026
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Due Date :</td>
+                        <td style="font-size: 10px;"
+                            th:text="${settlement.dueDate}"> 15-06-2026
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Joining Date :</td>
+                        <td style="font-size: 10px;"
+                            th:text="${settlement.customerInfo.joiningDate}"> 01-05-2026
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Rental Period :</td>
+                        <td style="font-size: 10px;"
+                            th:text="${settlement.invoiceInfo.invoicePeriod}"> Apr 01 - May 01
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+    <br>
+
+
+
+    <table width="100%" cellpadding="10" cellspacing="0">
+
+        <tr class="section-header">
+            <td style="padding: 10px;">Item Detail</td>
+            <td align="right" style="padding: 10px;">Amount</td>
+        </tr>
+
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-top: 10px; padding-bottom: 10px">
+                    Unpaid Invoices
+                </div>
+
+                <div class="item-description" >
+                    INV141 - ₹ 500<br>
+                    INV075 - ₹ 2100
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ 2,600.00
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;">
+                    Electricity Bill
+                </div>
+
+                <div class="item-description">
+                    Ground Floor - G005 - B03 - ₹270 (27 Units)<br>
+                    First Floor - F002 - B01 - ₹230 (23 Units)
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ 500.00
+            </td>
+        </tr>
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;">
+                    Refundable Advance
+                </div>
+
+                <div class="item-description">
+                    Total Paid ₹ 10,000<br>
+                    INV001 - ₹ 5000<br>
+                    INV654 - ₹ 700
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ 3,300.00
+            </td>
+        </tr>
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;">
+                    Refundable Bookings
+                </div>
+
+                <div class="item-description">
+                    Total Paid ₹ 10,000<br>
+                    INV001 - ₹ 5000<br>
+                    INV654 - ₹ 700
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ 3,300.00
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;">
+                    Refundable Rent
+                </div>
+
+                <div class="item-description">
+                    Last Rent Paid ₹10,000<br>
+                    Current Stay Days - 14 - ₹2,800<br>
+                    Other Charges - ₹700<br>
+                    EB - ₹700<br>
+                    Laundry - ₹700
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ 3,300.00
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;">
+                   Wallet
+                </div>
+
+
+
+            </td>
+
+            <td class="amount">
+                ₹ 300.00
+            </td>
+        </tr>
+
+
+        <tr>
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-top: 10px; padding-bottom: 10px">
+                   Discount
+                </div>
+
+                <div class="item-description" >
+                    Change bed - ₹ 500<br>
+
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ 500.00
+            </td>
+        </tr>
+
+
+
+    </table>
+
+    <br>
+
+
+
+    <table width="40%" align="right" class="summary-table">
+
+        <tr>
+            <td style="font-size: 10px;">Subtotal</td>
+            <td   align="right" style="font-size: 10px;">₹ 999.00</td>
+        </tr>
+
+        <tr>
+            <td style="font-size: 10px;" >Tax GST (8%)</td>
+            <td align="right" style="font-size: 10px;">₹ 79.33</td>
+        </tr>
+
+        <tr>
+            <td style="font-size: 10px;">Deductions Non Refundable</td>
+            <td align="right" style="font-size: 10px;">₹ 5225.25</td>
+        </tr>
+
+        <tr>
+            <td style="font-size: 10px;">Unpaid Invoices</td>
+            <td align="right" style="font-size: 10px;">₹ 79.33</td>
+        </tr>
+
+        <tr>
+            <td style="font-size: 10px;">Electricity Bill</td>
+            <td align="right" style="font-size: 10px;">₹ 79.33</td>
+        </tr>
+
+        <tr class="total-row">
+            <td style="font-size: 10px;">Total</td>
+            <td align="right" style="font-size: 10px;">₹ 1078.33</td>
+        </tr>
+
+    </table>
+
+    <br><br><br><br>
+
+
+
+    <table width="100%">
+
+        <tr>
+
+            <td width="60%" valign="top">
+
+                <h4 style="font-size: 10px;">ACCOUNT DETAILS</h4>
+
+                <br>
+
+                <div style="padding-bottom:5px;font-size: 10px;">
+                    Account No :
+                    <span th:text="${settlement.accountNo}">
+                    </span>
+                </div>
+
+                <div style="padding-bottom:5px;font-size: 10px;">
+                    IFSC :
+                    <span th:text="${settlement.ifscCode}">
+                    </span>
+                </div>
+
+                <div style="padding-bottom:5px;font-size: 10px;">
+                    Bank Name :
+                    <span th:text="${settlement.bankName}">
+                    </span>
+                </div>
+
+                <div style="padding-bottom:5px;font-size: 10px;">
+                    UPI :
+                    <span th:text="${settlement.upiId}">
+                    </span>
+                </div>
+
+            </td>
+
+            <td width="40%" align="center">
+
+                <img class="qr-code"
+                     th:if="${settlement.qrCode != null}"
+                     th:src="${settlement.qrCode}"
+                     alt="QR">
+
+                <div style="padding-top:5px;font-size: 10px; ">
+                    Scan QR for Payment
+                </div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+    <br>
+
+
+
+    <table width="100%">
+
+        <tr>
+
+            <td width="50%">
+
+                <img class="signature"
+                     th:if="${settlement.signatureUrl != null}"
+                     th:src="${settlement.signatureUrl}"
+                     alt="Signature">
+
+                <div style="font-size: 10px;">
+                    Authorized Signature
+                </div>
+
+            </td>
+
+            <td width="50%" align="right">
+
+                <div style="padding-bottom:5px;font-size: 10px;"><b>Status : <span style="color:#038C3D;">Paid</span></b></div>
+                <div style="padding-bottom:5px;font-size: 10px;">Thanks for the business.</div>
+                <div style="padding-bottom:5px;font-size: 10px;">Download Date & Time</div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+<div class="terms">
+
+    <b>T & C :</b>
+
+    <span th:text="${settlement.termAndCondition}">
+    </span>
+
+</div>
+
+</body>
+</html>

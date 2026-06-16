@@ -59,4 +59,9 @@ public class HostelService {
 
         return null;
     }
+
+    public HostelV1 getHostel(String hostelId) {
+        HostelV1 hostelV1 = hostelV1Repository.findByHostelId(hostelId);
+        return hostelV1;
+    }
 }
