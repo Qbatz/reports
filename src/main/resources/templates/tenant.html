@@ -230,10 +230,10 @@
 
             <td th:text="${tenant.customerInfo.fullName}">Murugan</td>
             <td th:text="${tenant.customerInfo.mobile}">9876543210</td>
-            <td th:text="${tenant.stayInfo.sharingType}">Single</td>
-            <td th:text="${tenant.stayInfo.checkInDate} ?: '-'">10 May 2024</td>
-            <td th:text="${tenant.stayInfo.checkoutDate} ?: '-'">-</td>
-            <td th:text="${tenant.stayInfo.stayDuration} ?: '-'">20</td>
+            <td th:text="${tenant.stayInfo.shareType}">Single</td>
+            <td th:text="${tenant.customerInfo.checkInOn} ?: '-'">10 May 2024</td>
+            <td th:text="${tenant.customerInfo.checkOutOn} ?: '-'">-</td>
+            <td th:text="${tenant.customerInfo.duration} ?: '-'">20</td>
             <td th:text="${tenant.stayInfo.roomName}">101</td>
             <td th:text="${tenant.stayInfo.bedName}">Bed 06</td>
             <td th:text="${tenant.customerInfo.status} ?: '-'">Active</td>

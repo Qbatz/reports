@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>Final Settlement Invoice</title>
 
     <style>
@@ -28,7 +28,7 @@
         .heading{
             text-align:center;
             font-size:16px;
-            font-weight:bold;
+            font-weight:500;
             margin:15px 0;
         }
 
@@ -41,7 +41,7 @@
             background:#F9F9F9;
             border-top:1px solid #E5E7EB;
             border-bottom:1px solid #E5E7EB;
-            font-weight:bold;
+            font-weight:500;
             text-transform:uppercase;
             padding:10px;
             font-size: 10px;
@@ -61,7 +61,7 @@
 
         .item-title{
             font-size:11px;
-            font-weight:bold;
+            font-weight:500;
             color:#1A1C21;
         }
 
@@ -74,7 +74,7 @@
         .amount{
             text-align:right;
             font-size:10px;
-            font-weight:bold;
+            font-weight:500;
         }
 
         .summary-table td{
@@ -84,7 +84,7 @@
         .total-row{
             border-top:1px solid #E5E7EB;
             font-size:15px;
-            font-weight:bold;
+            font-weight:500;
         }
 
         .signature{
@@ -116,31 +116,39 @@
             <td width="45%" valign="top">
 
                 <img
-                        th:src="${settlement.hostelLogo}"
+
+                        th:src="${invoice.headerInfo.hostelImage ?: invoice.configInfo.hostelLogo}"
                         alt="Logo"
                         style="max-width:134px;" />
 
                 <div style="margin-top:10px; font-size: 10px;"
-                     th:text="${settlement.emailId}"> test@gmail.com
+                     th:text="${invoice.configInfo.emailId}"> test@gmail.com
                 </div>
 
-                <div style="margin-top:5px;  font-size: 10px;"
-                     th:text="'+' + ${settlement.countryCode} + ' ' + ${settlement.mobile}"> +91 2565845857
+                <div
+                        style="margin-top:5px;font-size:10px;"
+                        th:text="${'+' + invoice.headerInfo.countryCode + ' ' + invoice.headerInfo.phoneNumber}">
+                    +91 2565845857
                 </div>
 
             </td>
 
             <td width="55%" valign="top" align="right">
 
-                <div style="font-size:14px;font-weight:bold;"
-                     th:text="${settlement.stayInfo.hostelName}"> Smartstay
+                <div style="font-size:14px;font-weight:500;"
+
+                >
                 </div>
 
-                <div style="margin-top:5px; font-size: 10px;"
-                     th:text="${settlement.configurations.address}"> 255, Chennai - 6000002
+                <div style="margin-top:5px; font-size:10px;"
+                     th:text="${invoice.headerInfo.houseNo} + ' ' +
+              ${invoice.headerInfo.street} + ', ' +
+              ${invoice.headerInfo.city} + ', ' +
+              ${invoice.headerInfo.state} + ' - ' +
+              ${invoice.headerInfo.pincode}">
                 </div>
 
-                <div style="margin-top:5px; font-size: 10px;">
+                <div style="margin-top:5px; font-size: 10px;" th:text="${invoice.headerInfo.gstNumber}">
                     GST IN : XXXXXXXXXX
                 </div>
 
@@ -163,20 +171,27 @@
 
             <td width="50%" valign="top">
 
-                <div style="font-weight:bold;margin-bottom:10px; font-size: 10px;">
+                <div style="font-weight:500;margin-bottom:10px; font-size: 10px;">
                     Billed To:
                 </div>
 
+
                 <div class="value"
-                     th:text="${settlement.fullName}"> mathu
+                     th:text="${invoice.customerInfo.fullName}">
+                </div>
+                <div style="margin-top:5px; font-size:10px;"
+                     th:text="${invoice.stayInfo.floorName} + ', ' +
+              ${invoice.stayInfo.roomName} + ', ' +
+              ${invoice.stayInfo.bedName}">
+
                 </div>
 
                 <div style="margin-top:5px; font-size: 10px;"
-                     th:text="${settlement.fullAddress}"> Anna nagar
+                     th:text="${invoice.customerInfo.address}">
                 </div>
 
                 <div style="margin-top:5px; font-size: 10px;"
-                     th:text="'+' + ${settlement.countryCode} + ' ' + ${settlement.customerMobileNo}"> +91 9965000000
+                     th:text="${invoice.customerInfo.mobile}">
                 </div>
 
             </td>
@@ -187,38 +202,43 @@
 
                     <tr>
                         <td class="label">Invoice :</td>
-                        <td style="font-size: 10px;"
-                            th:text="${settlement.invoiceNumber}"> INV-Test
+                        <td style="font-size:10px;"
+                            th:text="${invoice.invoiceInfo.invoiceNo}">
+
                         </td>
                     </tr>
 
                     <tr>
                         <td class="label">Invoice Date :</td>
-                        <td style="font-size: 10px;"
-                            th:text="${settlement.invoiceDate}"> 10-06-2026
+                        <td style="font-size:10px;"
+                            th:text="${invoice.invoiceInfo.invoiceDate}">
+
                         </td>
                     </tr>
 
                     <tr>
                         <td class="label">Due Date :</td>
-                        <td style="font-size: 10px;"
-                            th:text="${settlement.dueDate}"> 15-06-2026
+                        <td style="font-size:10px;"
+                            th:text="${invoice.invoiceInfo.dueDate}">
+                            15-06-2026
                         </td>
                     </tr>
 
                     <tr>
                         <td class="label">Joining Date :</td>
-                        <td style="font-size: 10px;"
-                            th:text="${settlement.customerInfo.joiningDate}"> 01-05-2026
+                        <td style="font-size:10px;"
+                            th:text="${invoice.customerInfo.joiningDate}">
+
                         </td>
                     </tr>
 
-                    <tr>
-                        <td class="label">Rental Period :</td>
-                        <td style="font-size: 10px;"
-                            th:text="${settlement.invoiceInfo.invoicePeriod}"> Apr 01 - May 01
-                        </td>
-                    </tr>
+                    <!--                    <tr>-->
+                    <!--                        <td class="label">Rental Period :</td>-->
+                    <!--                        <td style="font-size:10px;"-->
+                    <!--                            th:text="${invoice.invoiceInfo.rentalPeriod}">-->
+
+                    <!--                        </td>-->
+                    <!--                    </tr>-->
 
                 </table>
 
@@ -228,41 +248,48 @@
 
     </table>
 
-    <br>
 
 
 
-    <table width="100%" cellpadding="10" cellspacing="0">
+
+    <table width="100%" cellpadding="10" cellspacing="0" style="margin-bottom:40px;">
 
         <tr class="section-header">
             <td style="padding: 10px;">Item Detail</td>
             <td align="right" style="padding: 10px;">Amount</td>
         </tr>
 
+        <!--unpiad invoices-->
 
-
-        <tr>
+        <tr th:if="${invoice.unpaidInvoiceInfo != null and invoice.unpaidInvoiceInfo.noOfUnpaidInvoices > 0}">
             <td style="padding-bottom:10px;">
 
-                <div class="item-title" style="padding-top: 10px; padding-bottom: 10px">
+                <div class="item-title" style="padding-top:10px; padding-bottom:10px;">
                     Unpaid Invoices
                 </div>
 
-                <div class="item-description" >
-                    INV141 - ₹ 500<br>
-                    INV075 - ₹ 2100
+                <div class="item-description">
+                    <th:block th:each="item : ${invoice.unpaidInvoiceInfo.unpaidInvoiceItems}">
+                        <span th:text="${item.invoiceNumber}">INV141</span>
+                        -
+                        ₹ <span th:text="${item.pendingAmount}">500</span>
+                        <br/>
+                    </th:block>
                 </div>
 
             </td>
 
             <td class="amount">
-                ₹ 2,600.00
+                ₹ <span th:text="${invoice.unpaidInvoiceInfo.unpaidInvoiceTotalAmount}">2600</span>
             </td>
         </tr>
 
 
+        <!--eb-->
 
-        <tr>
+
+        <tr th:if="${invoice.currentMonthEbInfo != null
+            and invoice.currentMonthEbInfo.currentMonthEbAmount > 0}">
             <td style="padding-bottom:10px;">
 
                 <div class="item-title" style="padding-bottom:10px;">
@@ -270,118 +297,184 @@
                 </div>
 
                 <div class="item-description">
-                    Ground Floor - G005 - B03 - ₹270 (27 Units)<br>
-                    First Floor - F002 - B01 - ₹230 (23 Units)
+                    <div th:each="eb : ${invoice.currentMonthEbInfo.ebItemsList}">
+                        <!--                        <span th:text="${#dates.format(eb.fromDate,'dd/MM/yyyy')}"></span>-->
+                        <!--                        - -->
+                        <!--                        <span th:text="${#dates.format(eb.toDate,'dd/MM/yyyy')}"></span>-->
+                        <!--                        - -->
+                        ₹<span th:text="${eb.totalAmount}"></span>
+                        (<span th:text="${eb.consumption}"></span> Units)
+                    </div>
                 </div>
 
             </td>
 
             <td class="amount">
-                ₹ 500.00
+                ₹ <span th:text="${invoice.currentMonthEbInfo.currentMonthEbAmount}">0.00</span>
             </td>
         </tr>
 
 
-        <tr>
+
+
+        <!--          Refundable Advance-->
+        <tr >
             <td style="padding-bottom:10px;">
 
-                <div class="item-title" style="padding-bottom:10px;">
+                <div class="item-title" style="padding-bottom:10px;"
+                     th:text="${invoice.advanceItems.label}">
                     Refundable Advance
                 </div>
 
                 <div class="item-description">
-                    Total Paid ₹ 10,000<br>
-                    INV001 - ₹ 5000<br>
-                    INV654 - ₹ 700
+
+                    Total Paid ₹
+                    <span th:text="${invoice.advanceItems.paidAmount}">0</span>
+                    <br/>
+
+                    <th:block th:each="item : ${invoice.advanceItems.redeemedList}">
+                        <span th:text="${item.invoiceNumber}">INV-001</span>
+                        -
+                        ₹<span th:text="${item.redeemedAmount}">250</span>
+                        <br/>
+                    </th:block>
+
                 </div>
 
             </td>
 
             <td class="amount">
-                ₹ 3,300.00
+                ₹ <span th:text="${invoice.advanceItems.availableAdvanceBalance}">0</span>
             </td>
         </tr>
 
-
-        <tr>
+        <!--booking -->
+        <tr >
             <td style="padding-bottom:10px;">
 
-                <div class="item-title" style="padding-bottom:10px;">
+                <div class="item-title" style="padding-bottom:10px;"
+                     th:text="${invoice.bookingItems.label}">
                     Refundable Bookings
                 </div>
 
                 <div class="item-description">
-                    Total Paid ₹ 10,000<br>
-                    INV001 - ₹ 5000<br>
-                    INV654 - ₹ 700
+
+                    Total Paid ₹
+                    <span th:text="${invoice.bookingItems.paidAmount}">0</span>
+                    <br/>
+
+                    <th:block th:each="item : ${invoice.bookingItems.redeemedList}">
+                        <span th:text="${item.invoiceNumber}">INV-001</span>
+                        -
+                        ₹<span th:text="${item.redeemedAmount}">0</span>
+                        <br/>
+                    </th:block>
+
                 </div>
 
             </td>
 
             <td class="amount">
-                ₹ 3,300.00
+                ₹ <span th:text="${invoice.bookingItems.availableAdvanceBalance}">0</span>
             </td>
         </tr>
 
 
-
-        <tr>
+        <!--rent details -->
+        <tr th:if="${invoice.currentMonthRentInfo != null}">
             <td style="padding-bottom:10px;">
 
-                <div class="item-title" style="padding-bottom:10px;">
-                    Refundable Rent
+                <div class="item-title" style="padding-bottom:10px;"
+                     th:text="${invoice.currentMonthRentInfo.currentMonthPayableAmount <= 0} ?
+              'Refundable Rent' :
+              'Payable Rent'">
+
                 </div>
 
                 <div class="item-description">
-                    Last Rent Paid ₹10,000<br>
-                    Current Stay Days - 14 - ₹2,800<br>
-                    Other Charges - ₹700<br>
-                    EB - ₹700<br>
-                    Laundry - ₹700
+                    Last Rent Paid -
+                    ₹<span th:text="${invoice.currentMonthRentInfo.currentMonthPaidAmount}">0</span><br/>
+
+                    <div th:each="rent : ${invoice.currentMonthRentInfo.listBreakup}">
+                        Current Stay Days (Rent) -
+                        <span th:text="${rent.noOfDays}"></span> Days -
+                        ₹<span th:text="${rent.totalRent}"></span>
+
+                        <span th:text="${rent.floorName}"></span> -
+                        <span th:text="${rent.roomName}"></span> -
+                        <span th:text="${rent.bedName}"></span> -
+                        (<span th:text="${rent.noOfDays}"></span> days ×
+                        ₹<span th:text="${rent.rentPerDay}"></span>)
+
+                    </div>
+
+                    <th:block th:if="${invoice.currentMonthRentInfo.currentMonthOtherItemAmount > 0}">
+
+
+
+                        <th:block th:each="item : ${invoice.currentMonthRentInfo.listCurrentMonthOtherItems}">
+                            <span th:text="${item.item}"></span>
+                            -
+                            ₹<span th:text="${item.amount}"></span>
+                            <br/>
+                        </th:block>
+
+                    </th:block>
+
                 </div>
 
             </td>
 
             <td class="amount">
-                ₹ 3,300.00
+                ₹ <span th:text="${invoice.currentMonthRentInfo.currentMonthPayableAmount}">0</span>
             </td>
         </tr>
 
 
-
+        <!--wallet info-->
         <tr>
             <td style="padding-bottom:10px;">
 
-                <div class="item-title" style="padding-bottom:10px;">
-                   Wallet
+                <div class="item-title" style="padding-bottom:10px;" >
+                    Wallet
                 </div>
 
+                <div class="item-description">
 
+
+                    <div th:each="rent : ${invoice.walletInfo.walletItems}">
+
+                        <span th:text="${rent.name}"></span> -
+                        ₹<span th:text="${rent.amount}"></span><br/>
+
+
+                    </div>
+                </div>
 
             </td>
 
-            <td class="amount">
+            <td class="amount" th:text="${invoice.walletInfo.totalWalletAmount}" >
                 ₹ 300.00
             </td>
         </tr>
 
-
+        <!--discount-->
         <tr>
             <td style="padding-bottom:10px;">
 
                 <div class="item-title" style="padding-top: 10px; padding-bottom: 10px">
-                   Discount
+                    Discount
                 </div>
 
                 <div class="item-description" >
-                    Change bed - ₹ 500<br>
+
 
                 </div>
 
             </td>
 
-            <td class="amount">
-                ₹ 500.00
+            <td class="amount" >
+
             </td>
         </tr>
 
@@ -389,49 +482,65 @@
 
     </table>
 
-    <br>
 
 
 
-    <table width="40%" align="right" class="summary-table">
+
+    <table width="40%" align="right" class="summary-table" style="margin-bottom:150px;">
 
         <tr>
-            <td style="font-size: 10px;">Subtotal</td>
-            <td   align="right" style="font-size: 10px;">₹ 999.00</td>
+            <td style="font-size: 10px;">Total Refundable</td>
+            <td   align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.subTotal}">₹ 999.00</td>
         </tr>
 
         <tr>
-            <td style="font-size: 10px;" >Tax GST (8%)</td>
-            <td align="right" style="font-size: 10px;">₹ 79.33</td>
+            <td style="font-size: 10px;" >Tax GST (0%)</td>
+            <td align="right" style="font-size: 10px;" >₹ 00.00</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Deductions Non Refundable</td>
-            <td align="right" style="font-size: 10px;">₹ 5225.25</td>
+            <td align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.deductionAmount}" >₹ 5225.25</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Unpaid Invoices</td>
-            <td align="right" style="font-size: 10px;">₹ 79.33</td>
+            <td align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.unpaidInvoiceAmount}">₹ 79.33</td>
+        </tr>
+
+        <tr>
+            <td style="font-size: 10px;">Payable Rent</td>
+            <td align="right" style="font-size: 10px;" >₹ 79.33</td>
+        </tr>
+        <tr>
+            <td style="font-size: 10px;">Wallet</td>
+            <td align="right" style="font-size: 10px;" th:text="${invoice.walletInfo.totalWalletAmount}" >₹ 79.33</td>
+        </tr>
+
+        <tr>
+            <td style="font-size: 10px;">Discount</td>
+            <td align="right" style="font-size: 10px;" >₹ 79.33</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Electricity Bill</td>
-            <td align="right" style="font-size: 10px;">₹ 79.33</td>
+            <td align="right" style="font-size: 10px;"  th:text="${invoice.invoiceInfo.electricityAmount}" >₹ 79.33</td>
         </tr>
 
         <tr class="total-row">
             <td style="font-size: 10px;">Total</td>
-            <td align="right" style="font-size: 10px;">₹ 1078.33</td>
+            <td align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.finalAmount}" >₹ 1078.33</td>
         </tr>
 
-    </table>
-
-    <br><br><br><br>
+    </table >
 
 
 
-    <table width="100%">
+
+
+    <!--account details-->
+
+    <table width="100%" style="margin-top:350px;">
 
         <tr>
 
@@ -439,30 +548,32 @@
 
                 <h4 style="font-size: 10px;">ACCOUNT DETAILS</h4>
 
-                <br>
+                <br/>
+
+
 
                 <div style="padding-bottom:5px;font-size: 10px;">
                     Account No :
-                    <span th:text="${settlement.accountNo}">
-                    </span>
+                    <!--                    <span th:text="${invoice.accountNo}">-->
+                    <!--                    </span>-->
                 </div>
 
                 <div style="padding-bottom:5px;font-size: 10px;">
                     IFSC :
-                    <span th:text="${settlement.ifscCode}">
-                    </span>
+                    <!--                    <span th:text="${invoice.ifscCode}">-->
+                    <!--                    </span>-->
                 </div>
 
                 <div style="padding-bottom:5px;font-size: 10px;">
                     Bank Name :
-                    <span th:text="${settlement.bankName}">
-                    </span>
+                    <!--                    <span th:text="${invoice.bankName}">-->
+                    <!--                    </span>-->
                 </div>
 
                 <div style="padding-bottom:5px;font-size: 10px;">
                     UPI :
-                    <span th:text="${settlement.upiId}">
-                    </span>
+                    <!--                    <span th:text="${invoice.upiId}">-->
+                    <!--                    </span>-->
                 </div>
 
             </td>
@@ -470,8 +581,8 @@
             <td width="40%" align="center">
 
                 <img class="qr-code"
-                     th:if="${settlement.qrCode != null}"
-                     th:src="${settlement.qrCode}"
+                     th:if="${invoice.configInfo.qrCode != null}"
+                     th:src="${invoice.configInfo.qrCode}"
                      alt="QR">
 
                 <div style="padding-top:5px;font-size: 10px; ">
@@ -482,21 +593,19 @@
 
         </tr>
 
-    </table>
-
-    <br>
+    </table >
 
 
 
-    <table width="100%">
+    <table width="100%" style="margin-bottom:10px;">
 
         <tr>
 
             <td width="50%">
 
                 <img class="signature"
-                     th:if="${settlement.signatureUrl != null}"
-                     th:src="${settlement.signatureUrl}"
+                     th:if="${invoice.configInfo.signature != null}"
+                     th:src="${invoice.configInfo.signature}"
                      alt="Signature">
 
                 <div style="font-size: 10px;">
@@ -507,9 +616,23 @@
 
             <td width="50%" align="right">
 
-                <div style="padding-bottom:5px;font-size: 10px;"><b>Status : <span style="color:#038C3D;">Paid</span></b></div>
+                <div style="padding-bottom:5px;font-size:10px;">
+                    <div>
+                        Status :
+                        <span
+                                th:text="${invoice.invoiceInfo.status}"
+                                th:style="${
+                invoice.invoiceInfo.status == 'PENDING' ? 'color:#F59E0B;' :
+                invoice.invoiceInfo.status == 'PAID' ? 'color:#038C3D;' :
+                invoice.invoiceInfo.status == 'OVERDUE' ? 'color:#DC2626;' :
+                'color:#6B7280;'
+            }">
+            Paid
+        </span>
+                    </div>
+                </div>
                 <div style="padding-bottom:5px;font-size: 10px;">Thanks for the business.</div>
-                <div style="padding-bottom:5px;font-size: 10px;">Download Date & Time</div>
+                <div style="padding-bottom:5px;font-size: 10px;"></div>
 
             </td>
 
@@ -521,9 +644,9 @@
 
 <div class="terms">
 
-    <b>T & C :</b>
+    <div>T &amp; C :</div>
 
-    <span th:text="${settlement.termAndCondition}">
+    <span th:text="${invoice.configInfo.termsAndCondition}">
     </span>
 
 </div>

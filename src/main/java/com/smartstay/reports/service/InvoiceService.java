@@ -68,6 +68,12 @@ public class InvoiceService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+            SettlementItems settlementItems = settlementItemService.getSettlementItems(invoiceId);
+            if (settlementItems != null) {
+                return getInvoiceReportNew(invoicesV1.getHostelId(), invoiceId);
+            }
+        }
         InvoiceInfo invoiceInfo = getInvoiceInfo(invoicesV1);
         Context context = new Context();
         context.setVariable("invoice", invoiceInfo);
@@ -481,7 +487,7 @@ public class InvoiceService {
             if (bedDetails != null) {
                 stayInfo = new StayInfo(bedDetails.getBedName(),
                         bedDetails.getFloorName(),
-                        bedDetails.getRoomName());
+                        bedDetails.getRoomName(), "");
             }
         }
 
