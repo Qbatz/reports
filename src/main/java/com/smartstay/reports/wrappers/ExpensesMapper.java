@@ -27,13 +27,14 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
     @Override
     public ExpensesList apply(ExpensesV1 expensesV1) {
         String categoryName = "NA";
-        String subCategoryName = "NA";
+        String subCategoryName = null;
         String description = "NA";
         String amount = "NA";
         String unitCount = "NA";
         String assignedAssets = "NA";
-        String vendorName = "NA";
-        String debitedFrom = "NA";
+        String vendorName = null;
+        String debitedFrom = null;
+        String balanceAmount = null;
 
         if (expensesV1.getDescription() != null) {
             description = expensesV1.getDescription();
@@ -44,6 +45,9 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
         }
         if (expensesV1.getUnitCount() != null) {
             unitCount = String.valueOf(expensesV1.getUnitCount());
+        }
+        if (expensesV1.getBalanceAmount() != null) {
+            balanceAmount = String.valueOf(Utils.roundOffWithTwoDigit(expensesV1.getBalanceAmount()));
         }
 
         if (listBanks != null) {
@@ -62,7 +66,7 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
             if (listSubCategories != null) {
                 ExpenseSubCategory subCategory = listSubCategories
                         .stream()
-                        .filter(i -> i.getSubCategoryId().equals(expensesV1.getCategoryId()))
+                        .filter(i -> i.getSubCategoryId().equals(expensesV1.getSubCategoryId()))
                         .findFirst()
                         .orElse(null);
 
@@ -90,6 +94,7 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
                 subCategoryName,
                 description,
                 amount,
+                balanceAmount,
                 unitCount,
                 assignedAssets,
                 vendorName,

@@ -8,5 +8,8 @@ public record CustomerInfo(String firstName,
                            String mobile,
                            String status,
                            String lastPayment,
-                           String rent) {
+                           String rent,
+                           String checkInOn,
+                           String checkOutOn,
+                           String duration) {
 }

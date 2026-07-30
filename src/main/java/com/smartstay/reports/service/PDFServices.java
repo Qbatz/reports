@@ -54,7 +54,7 @@ public class PDFServices {
             builder.useFont(
                     () -> Thread.currentThread()
                             .getContextClassLoader()
-                            .getResourceAsStream("fonts/ARIAL.ttf"),
+                            .getResourceAsStream("fonts/ARIAL.TTF"),
                     "Arial"
             );
             builder.run();

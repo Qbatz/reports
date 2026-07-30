@@ -11,6 +11,7 @@ import java.util.List;
 public record ReceiptsResponse(String invoiceNumber,
                                String invoiceDate,
                                String invoiceAmount,
+                               String rentalPeriod,
                                String paidAmount,
                                String dueAmount,
                                String amountInWords,

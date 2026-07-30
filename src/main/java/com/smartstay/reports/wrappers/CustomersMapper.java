@@ -6,6 +6,7 @@ import com.smartstay.reports.dao.Rooms;
 import com.smartstay.reports.dao.TransactionV1;
 import com.smartstay.reports.dto.beds.BedInformations;
 import com.smartstay.reports.dto.customer.CustomerInfo;
+import com.smartstay.reports.dto.customer.CustomerStayInfo;
 import com.smartstay.reports.dto.customer.StayInfo;
 import com.smartstay.reports.ennum.BookingStatus;
 import com.smartstay.reports.ennum.CustomerStatus;
@@ -93,7 +94,13 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                         stayDuration = String.valueOf(duration);
                     }
                     else if (bookingsV1.getCurrentStatus().equalsIgnoreCase(BookingStatus.VACATED.name())) {
-                        long duration = Utils.findNumberOfDays(bookingsV1.getJoiningDate(), bookingsV1.getCheckoutDate());
+                        long duration = 0;
+                        if (bookingsV1.getCheckoutDate() == null) {
+                            duration = Utils.findNumberOfDays(bookingsV1.getJoiningDate(), bookingsV1.getSettlementGeneratedDate());
+                        } else {
+                            duration = Utils.findNumberOfDays(bookingsV1.getJoiningDate(), bookingsV1.getCheckoutDate());
+                        }
+
                         stayDuration = String.valueOf(duration) +" days";
                         checkoutDate = Utils.dateToString(bookingsV1.getCheckoutDate());
                     }
@@ -164,10 +171,13 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                 customers.getMobile(),
                 status,
                 lastPayment,
-                rent);
-        StayInfo stayInfo = new StayInfo(bedName,
+                rent,
+                checkInDate,
+                checkoutDate,
+                stayDuration);
+        CustomerStayInfo stayInfo = new CustomerStayInfo(bedName,
                 floorName,
-                roomName);
+                roomName, sharingType);
 
         return new com.smartstay.reports.dto.customer.Customers(customerInfo, stayInfo);
     }
