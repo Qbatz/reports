@@ -1,14 +1,14 @@
 package com.smartstay.reports.dao;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.smartstay.reports.converters.StringListConverter;
+import com.smartstay.reports.ennum.ExpensePaymentStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "expensesv1")
 @Data
@@ -25,10 +25,13 @@ public class ExpensesV1 {
     private String hostelId;
     private String bankId;
 
-//    this is for single product amount
+    //    this is for single product amount
     private Double unitPrice;
     private Integer unitCount;
+    // Final payable amount (after discount); used by all existing financial calculations.
     private Double totalPrice;
+    // Original total amount before any discount; for display/reporting only.
+    private Double actualTotalPrice;
     private Double gst;
     private Double cgst;
     private Double sgst;
@@ -48,6 +51,30 @@ public class ExpensesV1 {
     private Date createdAt;
     private Date updatedAt;
     private String createdBy;
+    private String updatedBy;
     private boolean isActive;
     private String description;
+
+    private String title;
+    private Boolean isVendorExpense;
+
+    @Enumerated(EnumType.STRING)
+    private ExpensePaymentStatus paymentStatus;
+
+    private Double paidAmount;
+    private Double balanceAmount;
+    private String paymentMethod;
+    private String note;
+    private Integer creditPeriod;
+
+    // Payment/transaction reference for the expense.
+    private String transactionId;
+    // Tax amount applicable to the expense.
+    private Double tax;
+    // Discount amount applied to the expense.
+    private Double discount;
+    // S3 URLs of the images uploaded with the expense.
+    @Convert(converter = StringListConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private List<String> images;
 }

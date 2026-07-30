@@ -105,6 +105,10 @@ public class InvoiceService {
         List<InvoiceItems> invoiceItems = new ArrayList<>();
         List<Deductions> listDeductions = new ArrayList<>();
 
+        String invoiceDate = Utils.dateToString(invoicesV1.getInvoiceStartDate());
+        if (invoicesV1.getInvoiceDate() != null) {
+            invoiceDate = Utils.dateToString(invoicesV1.getInvoiceDate());
+        }
         String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
 
         discount = invoiceDiscountService.getInoiceDiscount(invoicesV1.getHostelId(), invoicesV1.getInvoiceId());
@@ -188,7 +192,13 @@ public class InvoiceService {
 
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
-        CustomersBedHistory cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+        CustomersBedHistory cbh = null;
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            cbh = customerBedHistoryService.getBookedBed(invoicesV1.getCustomerId());
+        }
+        else {
+            cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+        }
         BedInfo bedInfo = null;
         if (cbh != null) {
             bedInfo = bedsService.getBedDetails(cbh.getBedId());
@@ -199,7 +209,7 @@ public class InvoiceService {
 
         InvoiceInfo invoiceInfo = new InvoiceInfo(
                 invoicesV1.getInvoiceNumber(),
-                Utils.dateToString(invoicesV1.getInvoiceStartDate()),
+                invoiceDate,
                 Utils.dateToString(invoicesV1.getInvoiceDueDate()),
                 rentalPeriod,
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),

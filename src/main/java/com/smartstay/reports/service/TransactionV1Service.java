@@ -75,6 +75,7 @@ public class TransactionV1Service {
         List<String> headers = null;
         String labelUrl = null;
         BedInfo bedInfo = null;
+        StringBuilder rentalPeriod = new StringBuilder();
 
         BookingsV1 bookingsV1 = bookingsService.findByCustomerId(invoicesV1.getCustomerId(), invoicesV1.getHostelId());
         if (bookingsV1 != null) {
@@ -86,7 +87,7 @@ public class TransactionV1Service {
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             title = "Payment Receipt";
-            description = "Payment";
+            description = "";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             title = "Final Settlement Receipt";
@@ -108,6 +109,7 @@ public class TransactionV1Service {
            headers.add("Sl No");
            headers.add("Description");
            headers.add("Amount");
+           rentalPeriod.append("NA");
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             headers = new ArrayList<>();
@@ -115,6 +117,9 @@ public class TransactionV1Service {
             headers.add("Invoice Date");
             headers.add("Invoice Amount");
             headers.add("Payment Amount");
+            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()));
+            rentalPeriod.append(" - ");
+            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate()));
         }
 
         if (transactionV1.getType() != null) {
@@ -162,6 +167,7 @@ public class TransactionV1Service {
         return new ReceiptsResponse(invoicesV1.getInvoiceNumber(),
                 Utils.dateToString(invoicesV1.getInvoiceStartDate()),
                 String.valueOf(Math.round(totalAmount)),
+                rentalPeriod.toString(),
                 String.valueOf(Math.round(paidAmount)),
                 String.valueOf(Math.round(dueAmount)),
                 paidAmountInWords,

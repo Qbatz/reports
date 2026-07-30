@@ -2,12 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <style>
 
@@ -586,6 +581,14 @@ font-weight:600;
 
                     </span>
                 </p>
+
+                <p>
+                    <span class="label">Rental Period</span>
+                    <span class="colon">:</span>
+                    <span class="invoice-style" th:text="${receipt.rentalPeriod}">
+
+                    </span>
+                </p>
             </div>
 
         </div>
@@ -602,13 +605,13 @@ font-weight:600;
 
             <div th:text="${T(java.lang.Integer).parseInt(receipt.invoiceAmount) < 0}
         ? '(Settlement)'
-        : '(Security Deposit (Advance))'">
+        : ${receipt.description}">
             </div>
 
         </div>
         <div class="amount-right">
             <div class="amount-value" th:text="'₹' + ${receipt.paidAmount}">
-                ₹ 464
+
             </div>
             <div class="amount-words" th:text="${receipt.amountInWords}">
                 Four Hundred and Sixty Four Rupees Only.
