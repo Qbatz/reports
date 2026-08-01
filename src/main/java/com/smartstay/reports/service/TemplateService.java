@@ -16,6 +16,7 @@ public class TemplateService {
 
     public TemplateInfo getTemplateDetails(String hostelId, String invoiceType) {
         BillTemplates billTemplates = billTemplateRepository.getByHostelId(hostelId);
+        String bankId = null;
         if (billTemplates != null) {
             BillTemplateType billTemplateType = null;
             if (invoiceType.equalsIgnoreCase(InvoiceType.RENT.name()) || invoiceType.equalsIgnoreCase(InvoiceType.SETTLEMENT.name()) ||  invoiceType.equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
@@ -67,6 +68,7 @@ public class TemplateService {
             String signatureUrl = null;
             String notes = null;
             String qrCode = null;
+            bankId = billTemplateType.getBankAccountId();
 
             if (billTemplates.isLogoCustomized()) {
                 hostelLogo = billTemplateType.getInvoiceLogoUrl();
@@ -112,7 +114,8 @@ public class TemplateService {
                     hostelEmailId,
                     signatureUrl,
                     termsAndCondition,
-                    notes);
+                    notes,
+                    bankId);
         }
 
         return null;
@@ -204,7 +207,8 @@ public class TemplateService {
                     hostelEmailId,
                     signatureUrl,
                     termsAndCondition,
-                    notes);
+                    notes,
+                    billTemplateType.getBankAccountId());
         }
 
         return null;

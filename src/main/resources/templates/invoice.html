@@ -738,10 +738,10 @@ font-weight:400;
                         ACCOUNT DETAILS
                     </p>
 
-                    <p>Account No : <span>N/A</span></p>
-                    <p>IFSC Code : <span>N/A</span></p>
-                    <p>Bank Name : <span>N/A</span></p>
-                    <p>UPI Details : <span>N/A</span></p>
+                    <p>Account No : <span th:text="${invoice.accountInfo.accountNo}">N/A</span></p>
+                    <p>IFSC Code : <span th:text="${invoice.accountInfo.ifscCode}">N/A</span></p>
+                    <p>Bank Name : <span th:text="${invoice.accountInfo.bankName}">N/A</span></p>
+                    <p>UPI Details : <span th:text="${invoice.accountInfo.upiId}">N/A</span></p>
                 </div>
 
                 <!-- RIGHT SIDE -->
