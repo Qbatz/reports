@@ -7,5 +7,6 @@ public record TemplateInfo(String colorCode,
                            String emailId,
                            String signature,
                            String termsAndCondition,
-                           String notes) {
+                           String notes,
+                           String bankId) {
 }

@@ -352,12 +352,12 @@
 
                 <div class="text"
                      th:text="${subscription.supportEmail}">
-                    support@email.com
+                    support@s3remotica.com
                 </div>
-
+                <!-- th:text="${subscription.companyMobile}"-->
                 <div class="text"
-                     th:text="${subscription.companyMobile}">
-                    +91 9876543210
+                >
+                    +91 9429693581
                 </div>
 
             </div>
@@ -365,21 +365,24 @@
 
 
             <div class="header-cell header-right">
+                <!--                th:text="${subscription.companyName}"-->
                 <div class="company-name"
-                     th:text="${subscription.companyName}">
-                    Smartstay
+                >
+                    S3 REMOTICA TECHNOLOGIES PRIVATE LIMITED
                 </div>
+                <!--                th:text="${subscription.companyAddress}"-->
                 <div class="company-address"
-                     th:text="${subscription.companyAddress}">
-                    Company Address
+                >
+                    7/65 , North Street, Rajagopalaperi, Atisayapuram, Tenkasi ,Tamil Nadu , 627861
+
                 </div>
 
                 <div class="gst">
                     <span class="text">GST IN :</span>
-
+                    <!--th:text="${subscription.companyGSTIN}"-->
                     <span class="company-address"
-                          th:text="${subscription.companyGSTIN}">
-                        GSTIN
+                    >
+                        33ABRCS4228D1ZC
                     </span>
                 </div>
 
@@ -415,7 +418,7 @@
                               <span th:text="${subscription.hostelInfo.houseNo}">
                             houseNo
                         </span>
-                             <span th:text="${subscription.hostelInfo.street}">
+                            <span th:text="${subscription.hostelInfo.street}">
                             Street
                         </span>
                         </div>
@@ -441,7 +444,7 @@
                         </div>
 
                         <div th:text="${subscription.hostelInfo.mobile}">
-                            9876543210
+
                         </div>
 
                     </div>
@@ -583,18 +586,18 @@
                     >
 
                     </span>
-                    -
-                    <span th:text="${subscription.subscriptionInfo.planEndDate}" style="color: #5E6470; font-size: 12px; padding:3px;"
-                >
+                        -
+                        <span th:text="${subscription.subscriptionInfo.planEndDate}" style="color: #5E6470; font-size: 12px; padding:3px;"
+                        >
 
                 </span>
                     </div>
 
                 </td>
 
-                <td style="color: #5E6470; font-size: 12px; padding:3px;">1</td>
+                <td   style="color: #5E6470; font-size: 12px; padding-left:10px;">1</td>
 
-                <td class="text-right" style="color: #5E6470; font-size: 10px; padding:3px;">
+                <td class="text-right" style="color: #5E6470; font-size: 12px; padding:3px;">
                     ₹
                     <span th:text="${subscription.subscriptionInfo.rate}">
                         0
@@ -727,13 +730,13 @@
 
                     <div >
                         <span  class="invoice-date"
-                                th:text="${subscription.footerInfo.paidDate}"
-                               >
+                               th:text="${subscription.footerInfo.paidDate}"
+                        >
                         </span>
 
                         <span class="invoice-date"
-                                th:text="${subscription.footerInfo.paidTime}"
-                                >
+                              th:text="${subscription.footerInfo.paidTime}"
+                        >
                         </span>
                     </div>
 
@@ -748,18 +751,18 @@
 
 
 
-<!--    <div class="terms">-->
+    <!--    <div class="terms">-->
 
-<!--        <div class="terms-title">-->
-<!--            Terms &amp; Conditions-->
-<!--        </div>-->
+    <!--        <div class="terms-title">-->
+    <!--            Terms &amp; Conditions-->
+    <!--        </div>-->
 
-<!--        <div class="terms-text"-->
-<!--             th:text="${subscription.tandc}">-->
-<!--            Terms and conditions-->
-<!--        </div>-->
+    <!--        <div class="terms-text"-->
+    <!--             th:text="${subscription.tandc}">-->
+    <!--            Terms and conditions-->
+    <!--        </div>-->
 
-<!--    </div>-->
+    <!--    </div>-->
 
 </div>
 

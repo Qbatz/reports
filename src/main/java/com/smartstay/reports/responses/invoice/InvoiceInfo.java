@@ -1,6 +1,7 @@
 package com.smartstay.reports.responses.invoice;
 
 import com.smartstay.reports.dto.customer.Deductions;
+import com.smartstay.reports.dto.invoice.AccountDetails;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
 import com.smartstay.reports.responses.hostel.TemplateInfo;
@@ -23,6 +24,7 @@ public record InvoiceInfo(String invoiceNumber,
                           HostelInfo hostelInfo,
                           CustomerInfo customerInfo,
                           BedInfo bedInfo,
-                          TemplateInfo templateInfo) {
+                          TemplateInfo templateInfo,
+                          AccountDetails accountInfo) {
 
 }

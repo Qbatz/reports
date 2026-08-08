@@ -1,6 +1,7 @@
 package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.BankingV1;
+import com.smartstay.reports.dto.invoice.AccountDetails;
 import com.smartstay.reports.ennum.BankAccountType;
 import com.smartstay.reports.repositories.BankingRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,5 +43,14 @@ public class BankingService {
 
     public List<BankingV1> findByBankIds(List<String> bankIds) {
         return bankingRepository.findAllById(bankIds);
+    }
+
+    public AccountDetails getBankAccountDetails(String bankId, String qrCode) {
+        AccountDetails accountDetails = new AccountDetails(null, null, null, null, qrCode);
+        BankingV1 bankingV1 = bankingRepository.findById(bankId).orElse(null);
+        if (bankingV1 != null) {
+            accountDetails = new AccountDetails(bankingV1.getAccountNumber(), bankingV1.getIfscCode(), bankingV1.getBankName(), bankingV1.getUpiId(), qrCode);
+        }
+        return accountDetails;
     }
 }

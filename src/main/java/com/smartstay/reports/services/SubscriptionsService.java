@@ -94,17 +94,16 @@ public class SubscriptionsService {
                 sgst,
                 (price * cgst / 100),
                 (price * sgst / 100),
-                finalPrice,
+                subscription.getPaidAmount(),
                 Utils.dateToString(subscription.getPlanStartsAt()),
                 Utils.dateToString(subscription.getPlanEndsAt()),
-                String.valueOf(Double.parseDouble(Utils.roundOffWithTwoDigit(subscription.getPaidAmount()).toString()))
-        );
+                        String.valueOf(finalPrice));
 
         OrderInfo orderInfo = new OrderInfo(
                 subscription.getSubscriptionNumber() != null ? subscription.getSubscriptionNumber() : "",
-                subscription.getCreatedAt() != null ? subscription.getCreatedAt().toString() : "",
+                subscription.getCreatedAt() != null ? Utils.dateToDateTime(subscription.getCreatedAt()) : "",
                 "Due on Receipt",
-                subscription.getCreatedAt() != null ? subscription.getCreatedAt().toString() : "",
+                subscription.getCreatedAt() != null ? Utils.dateToDateTime(subscription.getCreatedAt()) : "",
                 "REC-001"
         );
 

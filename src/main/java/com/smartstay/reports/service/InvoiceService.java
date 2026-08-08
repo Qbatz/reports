@@ -60,6 +60,8 @@ public class InvoiceService {
     @Autowired
     private SettlementItemService settlementItemService;
     @Autowired
+    private BankingService bankingService;
+    @Autowired
     private InvoiceRedemptionService invoiceRedemptionService;
 
     public ResponseEntity<?> getInvoiceReport(String hostelId, String invoiceId) {
@@ -204,8 +206,13 @@ public class InvoiceService {
             bedInfo = bedsService.getBedDetails(cbh.getBedId());
         }
 
+        AccountDetails accountDetails = new AccountDetails("", "", "", "", "");
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
-
+        if (templateInfo != null) {
+            if (templateInfo.bankId() != null) {
+                accountDetails = bankingService.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
+            }
+        }
 
         InvoiceInfo invoiceInfo = new InvoiceInfo(
                 invoicesV1.getInvoiceNumber(),
@@ -224,7 +231,8 @@ public class InvoiceService {
                 hostelInfo,
                 customerInfo,
                 bedInfo,
-                templateInfo
+                templateInfo,
+                accountDetails
         );
 
         return invoiceInfo;
