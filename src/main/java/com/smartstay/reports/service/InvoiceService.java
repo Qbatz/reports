@@ -548,12 +548,27 @@ public class InvoiceService {
     }
 
     public ResponseEntity<?> getInvoiceReportDetailDetails(String hostelId, String startDate, String endDate) {
-        InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, startDate, endDate);
+        InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, null, null, null, null, null, null, null, null, null, null, startDate, endDate);
         return new ResponseEntity<>(invoicePdfResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getInvoiceReport(String hostelId, String startDate, String endDate) {
-        InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, startDate, endDate);
+    public ResponseEntity<?> getInvoiceReport(String hostelId,
+                                              String search,
+                                              List<String> paymentStatus,
+                                              List<String> invoiceModes,
+                                              List<String> invoiceTypes,
+                                              List<String> createdBy,
+                                              String period,
+                                              Double minPaidAmount,
+                                              Double maxPaidAmount,
+                                              Double minOutstandingAmount,
+                                              Double maxOutstandingAmount,
+                                              String startDate,
+                                              String endDate) {
+        System.out.println("hostelId: " + hostelId);
+        System.out.println("search: " + search);
+        System.out.println("paymentStatus: " + paymentStatus);
+        InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, search, paymentStatus, invoiceModes, invoiceTypes, createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, startDate, endDate);
         Context context = new Context();
         context.setVariable("invoices", invoicePdfResponse);
 
@@ -561,11 +576,57 @@ public class InvoiceService {
         return new ResponseEntity<>(invoiceReportUrl, HttpStatus.OK);
     }
 
-    public InvoicePdfResponse getInvoiceDetails(String hostelId, String startDate, String endDate) {
+    public InvoicePdfResponse getInvoiceDetails(String hostelId,
+                                                String search,
+                                                List<String> paymentStatus,
+                                                List<String> invoiceModes,
+                                                List<String> invoiceTypes,
+                                                List<String> createdBy,
+                                                String period,
+                                                Double minPaidAmount,
+                                                Double maxPaidAmount,
+                                                Double minOutstandingAmount,
+                                                Double maxOutstandingAmount,
+                                                String startDate,
+                                                String endDate) {
         Date sDate = Utils.stringToDate(startDate.replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         Date eDate = Utils.stringToDate(endDate.replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
 
-        List<InvoicesV1> listInvoices = invoicesV1Repository.findByHostelId(hostelId, sDate, eDate);
+        if (invoiceTypes == null || invoiceTypes.isEmpty()) {
+            invoiceTypes = new ArrayList<>();
+            invoiceTypes.add(InvoiceType.RENT.name());
+            invoiceTypes.add(InvoiceType.ADVANCE.name());
+            invoiceTypes.add(InvoiceType.REASSIGN_RENT.name());
+            invoiceTypes.add(InvoiceType.BOOKING.name());
+        }
+
+        Boolean isCancelled = null;
+        if (paymentStatus != null) {
+            if (paymentStatus.contains("ALL")) {
+                paymentStatus = null;
+            } else if (paymentStatus.contains("CANCELLED")) {
+                isCancelled = true;
+                paymentStatus = null;
+            }
+        }
+
+        List<InvoicesV1> listInvoices;
+        if (search != null && !search.isEmpty()) {
+            List<com.smartstay.reports.dao.Customers> customersList = customerServices.searchCustomer(hostelId, search);
+            List<String> searchCustomerIds = customersList.stream().map(com.smartstay.reports.dao.Customers::getCustomerId).toList();
+            if (searchCustomerIds.isEmpty()) {
+                listInvoices = new ArrayList<>();
+            } else {
+                listInvoices = invoicesV1Repository.findInvoicesByFiltersWithCustomers(hostelId, sDate, eDate,
+                        searchCustomerIds, paymentStatus, invoiceModes, invoiceTypes, createdBy,
+                        minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, isCancelled);
+            }
+        } else {
+            listInvoices = invoicesV1Repository.findInvoicesByFilters(hostelId, sDate, eDate,
+                    paymentStatus, invoiceModes, invoiceTypes, createdBy,
+                    minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, isCancelled);
+        }
+        
         List<String> customerIds = listInvoices
                 .stream()
                 .map(InvoicesV1::getCustomerId)
