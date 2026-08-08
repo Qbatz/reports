@@ -13,6 +13,7 @@ public class Utils {
     public static final String OUTPUT_MONTH_FORMAT = "MMM YYYY";
     public static final String OUTPUT_DATE_MONTH_FORMAT = "dd MMM";
     public static final String USER_INPUT_DATE_FORMAT = "dd-MM-yyyy";
+    public static final String OUTPUT_DATE_TO_DATE_TIME_FORMAT = "dd/MM/yyyy hh:mm:ss a";
     public static String dateToString(Date date) {
         if (date == null) {
             return "";
@@ -58,5 +59,12 @@ public class Utils {
 
     public static Double roundOfDouble(double number) {
         return (double) Math.round(number);
+    }
+
+    public static String dateToDateTime(Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new SimpleDateFormat(OUTPUT_DATE_TO_DATE_TIME_FORMAT).format(date);
     }
 }
