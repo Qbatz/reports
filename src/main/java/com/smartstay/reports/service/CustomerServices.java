@@ -61,4 +61,8 @@ public class CustomerServices {
     public List<Customers> findByCustomerIds(List<String> customerIds) {
         return customersRepository.findAllById(customerIds);
     }
+
+    public List<Customers> searchCustomer(String hostelId, String search) {
+        return customersRepository.searchCustomer(hostelId, search);
+    }
 }
