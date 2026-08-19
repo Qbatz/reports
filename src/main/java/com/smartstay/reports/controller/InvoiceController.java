@@ -33,6 +33,10 @@ public class InvoiceController {
     public ResponseEntity<?> getInvoiceReportsDetailsSettlementNew(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
         return invoiceService.getNewSettlementDetails(hostelId, invoiceId);
     }
+    @GetMapping("/new/retainer/details/{hostelId}/{invoiceId}")
+    public ResponseEntity<?> getInvoiceReportsDetailsRetainers(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
+        return invoiceService.getNewRetainerDetails(hostelId, invoiceId);
+    }
     @GetMapping("/pdf/details/{hostelId}")
     public ResponseEntity<?> getInvoiceReportDetails(@PathVariable("hostelId") String hostelId, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
         return invoiceService.getInvoiceReportDetailDetails(hostelId, startDate, endDate);

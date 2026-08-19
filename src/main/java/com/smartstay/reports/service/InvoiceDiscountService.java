@@ -2,6 +2,7 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.InvoiceDiscounts;
 import com.smartstay.reports.repositories.InvoiceDiscountRepository;
+import com.smartstay.reports.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ public class InvoiceDiscountService {
     public double getInoiceDiscount(String hostelId, String invoiceId) {
         InvoiceDiscounts invoiceDiscounts = invoiceDiscountRepository.findByHostelIdAndInvoiceId(hostelId, invoiceId);
         if (invoiceDiscounts != null) {
-            return invoiceDiscounts.getDiscountAmount();
+            return Utils.roundOffWithTwoDigit(invoiceDiscounts.getDiscountAmount());
         }
         return 0.0;
     }

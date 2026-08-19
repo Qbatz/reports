@@ -34,6 +34,14 @@ public class TemplateService {
                         .findFirst()
                         .orElse(null);
             }
+            else if (invoiceType.equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+                billTemplateType = billTemplates
+                        .getTemplateTypes()
+                        .stream()
+                        .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
+                        .findFirst()
+                        .orElse(null);
+            }
             if (billTemplateType == null) {
                 return null;
             }

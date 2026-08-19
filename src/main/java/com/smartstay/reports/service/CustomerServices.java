@@ -31,19 +31,19 @@ public class CustomerServices {
             fullName.append(customers.getLastName());
         }
 
-        if (customers.getHouseNo() != null) {
+        if (customers.getHouseNo() != null && !customers.getHouseNo().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getHouseNo());
             fullAddress.append(", ");
         }
-        if (customers.getStreet() != null) {
+        if (customers.getStreet() != null && !customers.getStreet().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getStreet());
             fullAddress.append(", ");
         }
-        if (customers.getCity() != null) {
+        if (customers.getCity() != null && !customers.getCity().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getCity());
             fullAddress.append(", ");
         }
-        if (customers.getState() != null) {
+        if (customers.getState() != null && !customers.getState().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getState());
             fullAddress.append("-");
         }

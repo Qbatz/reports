@@ -7,9 +7,8 @@ import com.smartstay.reports.dto.customer.FooterInfo;
 import com.smartstay.reports.dto.customer.HostelInformation;
 import com.smartstay.reports.dto.customer.StayInfo;
 import com.smartstay.reports.dto.invoice.*;
-import com.smartstay.reports.dto.settlement.FinalSettlementInvoiceInfo;
-import com.smartstay.reports.dto.settlement.RentInfo;
-import com.smartstay.reports.dto.settlement.WalltetItems;
+import com.smartstay.reports.dto.invoice.EBItems;
+import com.smartstay.reports.dto.settlement.*;
 import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.ennum.PaymentStatus;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
@@ -20,6 +19,7 @@ import com.smartstay.reports.responses.hostel.ListInvoiceItems;
 import com.smartstay.reports.responses.hostel.TemplateInfo;
 import com.smartstay.reports.responses.invoice.*;
 import com.smartstay.reports.responses.invoice.InvoiceItems;
+import com.smartstay.reports.responses.invoice.RetainerInfo;
 import com.smartstay.reports.services.InvoiceRedemptionService;
 import com.smartstay.reports.services.SettlementItemService;
 import com.smartstay.reports.utils.Utils;
@@ -76,12 +76,25 @@ public class InvoiceService {
                 return getInvoiceReportNew(invoicesV1.getHostelId(), invoiceId);
             }
         }
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+            return getRetainerInvoice(invoicesV1);
+        }
         InvoiceInfo invoiceInfo = getInvoiceInfo(invoicesV1);
         Context context = new Context();
         context.setVariable("invoice", invoiceInfo);
 
         String invoiceUrl = invoicePDFServices.generatePdf(invoiceId, "invoice", context);
 
+        return new ResponseEntity<>(invoiceUrl, HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> getRetainerInvoice(InvoicesV1 invoicesV1) {
+        RetainerInfo retainerInfo = getRetainerInfo(invoicesV1);
+
+        Context context = new Context();
+        context.setVariable("invoice", retainerInfo);
+
+        String invoiceUrl = invoicePDFServices.generatePdf(invoicesV1.getInvoiceId(), "retainer-invoice", context);
         return new ResponseEntity<>(invoiceUrl, HttpStatus.OK);
     }
 
@@ -190,6 +203,10 @@ public class InvoiceService {
             invoiceType = "Settlement";
 
         }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || 
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+            invoiceType = "Retainer";
+        }
 
 
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
@@ -244,9 +261,13 @@ public class InvoiceService {
 
         double subTotal = 0.0;
         double deductionAmount = 0.0;
+        double discountAmount = 0.0;
         double unpaidInvoiceAmount = 0.0;
         double electricityAmount = 0.0;
         double finalAmount = 0.0;
+        double refundable = 0.0;
+        double nonRefundable = 0.0;
+        double payableRent = 0.0;
 
         double currentPayablemount = 0.0;
         double currentPaidAmount = 0.0;
@@ -335,12 +356,14 @@ public class InvoiceService {
 
         if (advanceItems != null) {
             if (advanceItems.availableAdvanceBalance() != null) {
+                refundable = advanceItems.availableAdvanceBalance();
 //                subTotal = subTotal - advanceItems.availableAdvanceBalance();
             }
         }
         if (bookingItems != null) {
             if (bookingItems.availableAdvanceBalance() != null) {
 //                subTotal = subTotal - bookingItems.availableAdvanceBalance();
+                refundable = refundable + bookingItems.availableAdvanceBalance();
             }
         }
         RentInfo rentInfo = null;
@@ -376,6 +399,9 @@ public class InvoiceService {
             currentPaidAmount = settlementItems.getCurrentMonthPaidAmount();
             currentPayablemount = currentPayablemount - currentPaidAmount;
 //            subTotal = subTotal - currentPaidAmount;
+        }
+        if (currentPayablemount > 0) {
+            payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
         }
         if (listRentBreakUp != null) {
             if (!listRentBreakUp.isEmpty()) {
@@ -446,6 +472,9 @@ public class InvoiceService {
                         return 0.0;
                     })
                     .sum();
+            if (walletAmount <= 0) {
+                refundable = refundable + walletAmount;
+            }
             List<WalletItems> listwalletItems = listWalletItems
                     .stream()
                     .map(i -> new WalletItems(i.getType(), i.getType(), Utils.roundOffWithTwoDigit(i.getAmount())))
@@ -454,12 +483,47 @@ public class InvoiceService {
         }
 
         currentRentInfo = new CurrentRentInfo(currentPaidAmount,
-                currentPayablemount,
+                Utils.roundOffWithTwoDigit(currentPayablemount),
                 stayDays,
                 currentMonthPayableRent,
                 currentMonthOtherAmounts,
                 listRentBreakUp,
                 listCurrentMonthOtherItems);
+
+        com.smartstay.reports.dto.settlement.RetainerInfo retainerInfo = null;
+        if (settlementItems.getRetainerItems() != null) {
+            List<RetainerItems> listRetainerItems = settlementItems.getRetainerItems();
+            double totalRetainerApplied = listRetainerItems
+                    .stream()
+                    .mapToDouble(i -> {
+                        if (i.getAmount() != null) {
+                            return i.getAmount();
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+            refundable = refundable + totalRetainerApplied;
+
+            double totalRetainerAmount = listRetainerItems
+                    .stream()
+                    .mapToDouble(i -> {
+                        if (i.getTotalAmount() != null) {
+                            return i.getTotalAmount();
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+
+            List<RetainerItemsList> items = listRetainerItems
+                    .stream()
+                    .map(i -> new RetainerItemsList(i.getInvoiceNo(),
+                            i.getInvoiceDate(),
+                            String.valueOf(Utils.roundOffWithTwoDigit(i.getAmount()))))
+                    .toList();
+            retainerInfo = new com.smartstay.reports.dto.settlement.RetainerInfo(String.valueOf(Utils.roundOffWithTwoDigit(totalRetainerApplied)),
+                    String.valueOf(Utils.roundOffWithTwoDigit(totalRetainerAmount)),
+                    items);
+        }
 
         FinalSettlementHeaderInfo headerInfo = null;
         if (hostelV1 != null) {
@@ -476,6 +540,8 @@ public class InvoiceService {
                     hostelV1.getEmailId());
         }
 
+        nonRefundable = unpaidInvoiceAmount + electricityAmount;
+        discountAmount = invoiceDiscountService.getInoiceDiscount(hostelV1.getHostelId(), invoicesV1.getInvoiceId());
         subTotal = subTotal + Utils.roundOfDouble(invoicesV1.getTotalAmount()) + deductionAmount;
         finalAmount = Utils.roundOfDouble(invoicesV1.getTotalAmount()) + deductionAmount;
         finalAmount = finalAmount + unpaidInvoiceAmount + electricityAmount ;
@@ -488,11 +554,15 @@ public class InvoiceService {
                     Utils.dateToString(invoicesV1.getInvoiceDueDate()),
                     null,
                     null,
+                    Utils.roundOffWithTwoDigit(payableRent),
                     Utils.roundOffWithTwoDigit(subTotal),
                     deductionAmount,
                     unpaidInvoiceAmount,
                     electricityAmount,
+                    discountAmount,
                     Utils.roundOfDouble(invoicesV1.getTotalAmount()),
+                    Utils.roundOffWithTwoDigit(refundable),
+                    Utils.roundOffWithTwoDigit(nonRefundable),
                     true,
                     invoicesV1.getPaymentStatus());
         }
@@ -524,6 +594,7 @@ public class InvoiceService {
                 bookingItems,
                 currentRentInfo,
                 currentMonthEbInfo,
+                retainerInfo,
                 walletInfo,
                 invoiceInfo);
 
@@ -565,9 +636,6 @@ public class InvoiceService {
                                               Double maxOutstandingAmount,
                                               String startDate,
                                               String endDate) {
-        System.out.println("hostelId: " + hostelId);
-        System.out.println("search: " + search);
-        System.out.println("paymentStatus: " + paymentStatus);
         InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, search, paymentStatus, invoiceModes, invoiceTypes, createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, startDate, endDate);
         Context context = new Context();
         context.setVariable("invoices", invoicePdfResponse);
@@ -600,12 +668,8 @@ public class InvoiceService {
             invoiceTypes.add(InvoiceType.BOOKING.name());
         }
 
-        Boolean isCancelled = null;
         if (paymentStatus != null) {
             if (paymentStatus.contains("ALL")) {
-                paymentStatus = null;
-            } else if (paymentStatus.contains("CANCELLED")) {
-                isCancelled = true;
                 paymentStatus = null;
             }
         }
@@ -617,14 +681,14 @@ public class InvoiceService {
             if (searchCustomerIds.isEmpty()) {
                 listInvoices = new ArrayList<>();
             } else {
-                listInvoices = invoicesV1Repository.findInvoicesByFiltersWithCustomers(hostelId, sDate, eDate,
-                        searchCustomerIds, paymentStatus, invoiceModes, invoiceTypes, createdBy,
-                        minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, isCancelled);
+                listInvoices = invoicesV1Repository.findInvoicesByFilters(hostelId, sDate, eDate, searchCustomerIds,
+                        paymentStatus, invoiceModes, invoiceTypes, createdBy,
+                        minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount);
             }
         } else {
-            listInvoices = invoicesV1Repository.findInvoicesByFilters(hostelId, sDate, eDate,
+            listInvoices = invoicesV1Repository.findInvoicesByFilters(hostelId, sDate, eDate, null,
                     paymentStatus, invoiceModes, invoiceTypes, createdBy,
-                    minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, isCancelled);
+                    minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount);
         }
         
         List<String> customerIds = listInvoices
@@ -823,5 +887,185 @@ public class InvoiceService {
 
     public List<InvoicesV1> findInvoices(List<String> targetInvoiceIds) {
         return invoicesV1Repository.findByInvoiceIdIn(targetInvoiceIds);
+    }
+
+    public ResponseEntity<?> getNewRetainerDetails(String hostelId, String invoiceId) {
+        InvoicesV1 invoicesV1 = invoicesV1Repository.findByHostelIdAndInvoiceId(hostelId, invoiceId);
+        if (invoicesV1 == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        RetainerInfo invoiceInfo = getRetainerInfo(invoicesV1);
+
+        return new ResponseEntity<>(invoiceInfo, HttpStatus.OK);
+    }
+
+    private RetainerInfo getRetainerInfo(InvoicesV1 invoicesV1) {
+        double paidAmount = 0.0;
+        double discount = 0.0;
+        if (invoicesV1.getPaidAmount() != null) {
+            paidAmount = invoicesV1.getPaidAmount();
+        }
+        double balanceAmount = calculateBalance(invoicesV1.getTotalAmount(), paidAmount, invoicesV1.getPaymentStatus());
+        double totalDeductionAmount = 0.0;
+        List<InvoiceItems> invoiceItems = new ArrayList<>();
+        List<Deductions> listDeductions = new ArrayList<>();
+
+        String invoiceDate = Utils.dateToString(invoicesV1.getInvoiceStartDate());
+        if (invoicesV1.getInvoiceDate() != null) {
+            invoiceDate = Utils.dateToString(invoicesV1.getInvoiceDate());
+        }
+        String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
+
+        discount = invoiceDiscountService.getInoiceDiscount(invoicesV1.getHostelId(), invoicesV1.getInvoiceId());
+
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+
+            totalDeductionAmount = invoicesV1.getInvoiceItems()
+                    .stream()
+                    .mapToDouble(com.smartstay.reports.dao.InvoiceItems::getAmount)
+                    .sum();
+            listDeductions = invoicesV1.getInvoiceItems().stream().map(i -> {
+                Deductions d = new Deductions();
+                if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
+                    if (i.getOtherItem() != null) {
+                        i.setInvoiceItem(i.getOtherItem());
+                    }
+                } else {
+                    i.setInvoiceItem(i.getInvoiceItem());
+                }
+                d.setType(i.getInvoiceItem());
+                d.setAmount(i.getAmount());
+
+                return d;
+            }).toList();
+
+            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getBasePrice()), invoicesV1.getInvoiceNumber()));
+        }
+        else {
+            invoiceItems = invoicesV1
+                    .getInvoiceItems()
+                    .stream()
+                    .map(i -> {
+                        String item = null;
+                        String amount = null;
+                        if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.RENT.name())) {
+                            item = "Rent";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
+                            item = "Electricity";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
+                            item = "Amenity";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
+                            item = "Security Deposit (Advance)";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
+                            item = "Security Deposit (Advance)";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
+                            item = "Maintenance";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(InvoiceType.EB_HOLDING.name())) {
+                            item = "Advance EB";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+                            item = "Advance Rent";
+                        }
+                        else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
+                            if (i.getOtherItem().equalsIgnoreCase(InvoiceType.EB_HOLDING.name())) {
+                                item = "Advance EB";
+                            }
+                            else if (i.getOtherItem().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+                                item = "Advance Rent";
+                            }
+                            else {
+                                item = i.getOtherItem();
+                            }
+                        }
+
+                        amount = String.valueOf(Math.round(i.getAmount()));
+
+                        return new InvoiceItems(item, amount, invoicesV1.getInvoiceNumber());
+                    })
+                    .toList();
+        }
+
+        String invoiceType = null;
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+            invoiceType = "Payment Bill";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            rentalPeriod = "";
+            invoiceType = "Security Deposit(Booking)";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
+            invoiceType = "Security Deposit";
+            rentalPeriod = "";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+            invoiceType = "Settlement";
+
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+            invoiceType = "Retainer";
+        }
+
+
+        HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
+        CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
+        CustomersBedHistory cbh = null;
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            cbh = customerBedHistoryService.getBookedBed(invoicesV1.getCustomerId());
+        }
+        else {
+            cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+        }
+        BedInfo bedInfo = null;
+        if (cbh != null) {
+            bedInfo = bedsService.getBedDetails(cbh.getBedId());
+        }
+
+        AccountDetails accountDetails = new AccountDetails("", "", "", "", "");
+        TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
+        if (templateInfo != null) {
+            if (templateInfo.bankId() != null) {
+                accountDetails = bankingService.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
+            }
+        }
+
+        RetainerInfo invoiceInfo = new RetainerInfo(
+                invoicesV1.getInvoiceNumber(),
+                invoiceDate,
+                Utils.dateToString(invoicesV1.getInvoiceDueDate()),
+                rentalPeriod,
+                String.valueOf(Math.round(invoicesV1.getTotalAmount())),
+                String.valueOf(Math.round(totalDeductionAmount)),
+                String.valueOf(Math.round(paidAmount)),
+                String.valueOf(Math.round(balanceAmount)),
+                String.valueOf(Math.round(invoicesV1.getTotalAmount())),
+                String.valueOf(Math.round(discount)),
+                invoiceType,
+                invoiceItems,
+                listDeductions,
+                hostelInfo,
+                customerInfo,
+                bedInfo,
+                templateInfo,
+                accountDetails
+        );
+
+        return invoiceInfo;
+    }
+
+
+    public List<String> findInvoiceIdsByHostelIdAndTypeIn(String hostelId, List<String> invoiceTypes) {
+        List<String> listInvoiceIds = invoicesV1Repository.findInvoiceIdsByHostelIdAndTypeIn(hostelId, invoiceTypes);
+        if (listInvoiceIds == null) {
+            return new ArrayList<>();
+        }
+        return listInvoiceIds;
     }
 }

@@ -379,6 +379,36 @@
             </td>
         </tr>
 
+        <!--retainer -->
+        <tr >
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;">
+                    Retainer Invoice
+                </div>
+
+                <div class="item-description">
+
+                    Total Paid ₹
+                    <span th:text="${invoice.retainerInfo != null and invoice.retainerInfo.totalInvoiceAmount != null ? invoice.retainerInfo.totalInvoiceAmount : 0}">0</span>
+                    <br/>
+
+                    <th:block th:each="item : ${invoice.retainerInfo != null and invoice.retainerInfo.retainerItemsList != null ? invoice.retainerInfo.retainerItemsList : {}}">
+                        <span th:text="${item.invoiceNumber}">INV-001</span>
+                        -
+                        ₹<span th:text="${item.amount}">0</span>
+                        <br/>
+                    </th:block>
+
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ <span th:text="${invoice.retainerInfo != null and invoice.retainerInfo.totalInvoiceAmount != null ? invoice.retainerInfo.appliedAmount: 0}">0</span>
+            </td>
+        </tr>
+
 
         <!--rent details -->
         <tr th:if="${invoice.currentMonthRentInfo != null}">
@@ -490,7 +520,7 @@
 
         <tr>
             <td style="font-size: 10px;">Total Refundable</td>
-            <td   align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.subTotal}">₹ 999.00</td>
+            <td   align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.refundableAmount}">₹ 0.00</td>
         </tr>
 
         <tr>
@@ -500,36 +530,36 @@
 
         <tr>
             <td style="font-size: 10px;">Deductions Non Refundable</td>
-            <td align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.deductionAmount}" >₹ 5225.25</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.deductionAmount}" >₹ 0.0</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Unpaid Invoices</td>
-            <td align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.unpaidInvoiceAmount}">₹ 79.33</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.unpaidInvoiceAmount}">₹ 0.0</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Payable Rent</td>
-            <td align="right" style="font-size: 10px;" >₹ 79.33</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.payableRent}">₹ 0.0</td>
         </tr>
         <tr>
             <td style="font-size: 10px;">Wallet</td>
-            <td align="right" style="font-size: 10px;" th:text="${invoice.walletInfo.totalWalletAmount}" >₹ 79.33</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.walletInfo.totalWalletAmount}" >₹ 0.0</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Discount</td>
-            <td align="right" style="font-size: 10px;" >₹ 79.33</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.discountAmount}" >₹ 0.0</td>
         </tr>
 
         <tr>
             <td style="font-size: 10px;">Electricity Bill</td>
-            <td align="right" style="font-size: 10px;"  th:text="${invoice.invoiceInfo.electricityAmount}" >₹ 79.33</td>
+            <td align="right" style="font-size: 10px;"  th:text="'₹'+${invoice.invoiceInfo.electricityAmount}" >₹ 0.0</td>
         </tr>
 
         <tr class="total-row">
             <td style="font-size: 10px;">Total</td>
-            <td align="right" style="font-size: 10px;" th:text="${invoice.invoiceInfo.finalAmount}" >₹ 1078.33</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.finalAmount}" >₹ 1078.33</td>
         </tr>
 
     </table >
@@ -583,7 +613,7 @@
                 <img class="qr-code"
                      th:if="${invoice.configInfo.qrCode != null}"
                      th:src="${invoice.configInfo.qrCode}"
-                     alt="QR">
+                     alt="QR" />
 
                 <div style="padding-top:5px;font-size: 10px; ">
                     Scan QR for Payment
@@ -606,7 +636,7 @@
                 <img class="signature"
                      th:if="${invoice.configInfo.signature != null}"
                      th:src="${invoice.configInfo.signature}"
-                     alt="Signature">
+                     alt="Signature" />
 
                 <div style="font-size: 10px;">
                     Authorized Signature

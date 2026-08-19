@@ -3,6 +3,7 @@ package com.smartstay.reports.responses.invoice;
 import com.smartstay.reports.dto.customer.StayInfo;
 import com.smartstay.reports.dto.invoice.*;
 import com.smartstay.reports.dto.settlement.FinalSettlementInvoiceInfo;
+import com.smartstay.reports.dto.settlement.RetainerInfo;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.TemplateInfo;
 
@@ -17,6 +18,7 @@ public record FinalSettlementInfo(FinalSettlementHeaderInfo headerInfo,
                                   AdvanceItems bookingItems,
                                   CurrentRentInfo currentMonthRentInfo,
                                   CurrentMonthEbInfo currentMonthEbInfo,
+                                  RetainerInfo retainerInfo,
                                   WalletInfo walletInfo,
                                   FinalSettlementInvoiceInfo invoiceInfo) {
 }

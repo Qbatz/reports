@@ -21,10 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,6 +118,16 @@ public class TransactionV1Service {
             rentalPeriod.append(" - ");
             rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate()));
         }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name())) {
+            headers = new ArrayList<>();
+            headers.add("Invoice No");
+            headers.add("Invoice Date");
+            headers.add("Invoice Amount");
+            headers.add("Payment Amount");
+            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()));
+            rentalPeriod.append(" - ");
+            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate()));
+        }
 
         if (transactionV1.getType() != null) {
             if (transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
@@ -205,8 +212,8 @@ public class TransactionV1Service {
         return listTransactions;
     }
 
-    public ResponseEntity<?> getReceiptReports(String hostelId, String startDate, String endDate) {
-        ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate);
+    public ResponseEntity<?> getReceiptReports(String hostelId, String startDate, String endDate, List<String> invoiceTypes, List<String> collectedBy, List<String> paymentModes) {
+        ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate, invoiceTypes, collectedBy, paymentModes);
 
         Context context = new Context();
         context.setVariable("receipts", receiptsReports);
@@ -216,18 +223,50 @@ public class TransactionV1Service {
         return new ResponseEntity<>(receiptReportUrl, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getReceiptReportsDetails(String hostelId, String startDate, String endDate) {
-        ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate);
+    public ResponseEntity<?> getReceiptReportsDetails(String hostelId, String startDate, String endDate, List<String> invoiceTypes, List<String> collectedBy, List<String> paymentModes) {
+        ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate, invoiceTypes, collectedBy, paymentModes);
         return new ResponseEntity<>(receiptsReports, HttpStatus.OK);
     }
 
-    public ReceiptsReports getReceiptReportDetails(String hostelId, String startDate, String endDate) {
+    public ReceiptsReports getReceiptReportDetails(String hostelId, String startDate, String endDate, List<String> invoiceType, List<String> collectedBy, List<String> paymentMode) {
         HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
+        FooterInfo footerInfo = new FooterInfo(Utils.dateToString(new Date()), Utils.dateToTime(new Date()));
+        ReceiptHeader receiptHeader = null;
+
         Date sDate = Utils.stringToDate(startDate.replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         Date eDate = Utils.stringToDate(endDate.replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
-        List<TransactionV1> listTransactions = transactionRepository.getTransactionsList(hostelId, sDate, eDate);
-        ReceiptHeader receiptHeader = null;
-        FooterInfo footerInfo = new FooterInfo(Utils.dateToString(new Date()), Utils.dateToTime(new Date()));
+
+        List<String> bankIds = null;
+        if (paymentMode != null && !paymentMode.isEmpty()) {
+            List<String> normalizedModes = paymentMode.stream().map(String::toUpperCase).collect(Collectors.toList());
+
+            bankIds = bankingService.findBankIdsByAccountTypes(hostelId, normalizedModes);
+            if (bankIds.isEmpty()) {
+                return new ReceiptsReports(hostelInformation,
+                        receiptHeader,
+                        footerInfo,
+                        Collections.emptyList());
+            }
+        }
+
+        List<String> invoiceIds = null;
+        if (invoiceType != null && !invoiceType.isEmpty()) {
+            List<String> normalizedTypes = invoiceType.stream().map(String::toUpperCase).collect(Collectors.toList());
+            invoiceIds = invoiceService.findInvoiceIdsByHostelIdAndTypeIn(hostelId, normalizedTypes);
+
+            if (invoiceIds.isEmpty()) {
+                return new ReceiptsReports(hostelInformation,
+                        receiptHeader,
+                        footerInfo,
+                        Collections.emptyList());
+            }
+        }
+
+
+//        List<TransactionV1> listTransactions = transactionRepository.getTransactionsList(hostelId, sDate, eDate);
+        List<TransactionV1> listTransactions = transactionRepository.findTransactionsByFiltersNew(hostelId, sDate,
+                eDate, bankIds, collectedBy, invoiceIds);
+
 
         ReceiptsReports receiptsReports = null;
         if (listTransactions != null) {
