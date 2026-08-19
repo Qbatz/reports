@@ -53,4 +53,8 @@ public class BankingService {
         }
         return accountDetails;
     }
+
+    public List<String> findBankIdsByAccountTypes(String hostelId, List<String> accountTypes) {
+        return bankingRepository.findBankIdsByAccountTypes(hostelId, accountTypes);
+    }
 }

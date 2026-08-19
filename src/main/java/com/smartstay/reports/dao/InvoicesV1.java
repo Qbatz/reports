@@ -1,8 +1,10 @@
 package com.smartstay.reports.dao;
 
+import com.smartstay.reports.converters.CancelledInvoiceConverter;
 import com.smartstay.reports.converters.DeductionsConverter;
 import com.smartstay.reports.converters.StringListConverter;
 import com.smartstay.reports.dto.customer.Deductions;
+import com.smartstay.reports.dto.invoice.CancelledInvoice;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,6 +50,9 @@ public class InvoicesV1 {
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "TEXT")
     List<String> cancelledInvoices;
+    @Convert(converter = CancelledInvoiceConverter.class)
+    @Column(columnDefinition = "TEXT")
+    List<CancelledInvoice> newCancelledInvoices;
     @Column(columnDefinition = "TEXT")
     @Convert(converter = DeductionsConverter.class)
     List<Deductions> deductions;
