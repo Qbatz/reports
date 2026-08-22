@@ -5,6 +5,7 @@ public record InvoiceHeader(String startDate,
                             String totalInvoices,
                             String totalAmount,
                             String paidAmount,
+                            String bookingAmount,
                             String outstandingAmount,
                             String refundedBookingAmount,
                             String cancelledAmount) {

@@ -215,6 +215,9 @@ public class TransactionV1Service {
     public ResponseEntity<?> getReceiptReports(String hostelId, String startDate, String endDate, List<String> invoiceTypes, List<String> collectedBy, List<String> paymentModes) {
         ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate, invoiceTypes, collectedBy, paymentModes);
 
+        if (receiptsReports.listReceipts().isEmpty()) {
+            return new ResponseEntity<>("No Transactions found", HttpStatus.BAD_REQUEST);
+        }
         Context context = new Context();
         context.setVariable("receipts", receiptsReports);
 
@@ -262,6 +265,11 @@ public class TransactionV1Service {
             }
         }
 
+        if (collectedBy != null && collectedBy.isEmpty()) {
+            collectedBy = null;
+        }
+
+
 
 //        List<TransactionV1> listTransactions = transactionRepository.getTransactionsList(hostelId, sDate, eDate);
         List<TransactionV1> listTransactions = transactionRepository.findTransactionsByFiltersNew(hostelId, sDate,
@@ -272,7 +280,7 @@ public class TransactionV1Service {
         if (listTransactions != null) {
             double receivedAmount = listTransactions
                     .stream()
-                    .filter(i ->  i.getType() == null)
+                    .filter(i ->  i.getType() == null ||  (i.getType() != null && i.getType().equalsIgnoreCase(TransactionType.ADVANCE_HOLDING.name())))
                     .mapToDouble(TransactionV1::getPaidAmount)
                     .sum();
 

@@ -67,4 +67,17 @@ public class Utils {
         }
         return new SimpleDateFormat(OUTPUT_DATE_TO_DATE_TIME_FORMAT).format(date);
     }
+
+    public static String capitalize(String value) {
+        if (value == null || value.isEmpty()) return value;
+        String[] words = value.split("[\\s_]+");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase());
+                sb.append(" ");
+            }
+        }
+        return sb.toString().trim();
+    }
 }

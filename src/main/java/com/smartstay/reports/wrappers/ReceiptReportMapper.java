@@ -1,6 +1,7 @@
 package com.smartstay.reports.wrappers;
 
 import com.smartstay.reports.dao.*;
+import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.ennum.TransactionType;
 import com.smartstay.reports.responses.receipts.ReceiptList;
 import com.smartstay.reports.utils.NameUtils;
@@ -28,6 +29,7 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
         String receiptNo = transactionV1.getTransactionReferenceId();
         String paidDate = Utils.dateToString(transactionV1.getPaymentDate());
         String tenantName = null;
+        String invoiceType = null;
         String invoiceNumber = "NA";
         String paidAmount = String.valueOf(transactionV1.getPaidAmount());
         String paymentMode = null;
@@ -79,6 +81,7 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
                     .orElse(null);
             if (invoicesV1 != null) {
                 invoiceNumber = invoicesV1.getInvoiceNumber();
+                invoiceType = Utils.capitalize(invoicesV1.getInvoiceType());
             }
         }
 
@@ -87,6 +90,7 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
                 paidDate,
                 tenantName,
                 invoiceNumber,
+                invoiceType,
                 paidAmount,
                 paymentMode,
                 collectedBy,
