@@ -199,10 +199,13 @@
             <th>DATE</th>
             <th>CATEGORY</th>
             <th>SUB CATEGORY</th>
+            <th>TITLE</th>
+            <th>STATUS</th>
             <th>DESCRIPTION</th>
-            <th>AMOUNT</th>
-            <th>BALANCE</th>
-            <th>UNIT COUNT</th>
+            <th>TOTAL AMOUNT</th>
+            <th>PAID AMOUNT</th>
+            <th>BALANCE AMOUNT</th>
+<!--            <th>UNIT COUNT</th>-->
             <th>ASSIGNED ASSET</th>
             <th>VENDORS</th>
             <th>DEBITED FROM</th>
@@ -217,10 +220,12 @@
             <td th:text="${expense.date}">date</td>
             <td th:text="${expense.category}">category</td>
             <td th:text="${expense.subCategory}">sub category</td>
+            <td th:text="${expense.expenseTitle}">Title</td>
+            <td th:text="${expense.status}">Status</td>
             <td th:text="${expense.description}">description</td>
-            <td th:text="'₹'+${expense.amount} ?: '-'">amount</td>
+            <td th:text="'₹'+${expense.totalAmount} ?: '-'">amount</td>
+            <td th:text="'₹'+${expense.paidAmount} ?: '-'">paid amount</td>
             <td th:text="'₹'+${expense.balance} ?: '-'">balance</td>
-            <td th:text="${expense.unitCount} ?: '-'">unitCount</td>
             <td th:text="${expense.assignedAssets} ?: '-'">assignedAssets</td>
             <td th:text="${expense.vendors}">vendors</td>
             <td th:text="${expense.debitedFrom}">debitedFrom</td>

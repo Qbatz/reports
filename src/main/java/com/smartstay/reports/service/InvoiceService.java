@@ -403,6 +403,9 @@ public class InvoiceService {
         if (currentPayablemount > 0) {
             payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
         }
+        else {
+            refundable = refundable + (currentPayablemount * -1);
+        }
         if (listRentBreakUp != null) {
             if (!listRentBreakUp.isEmpty()) {
                 stayDays = listRentBreakUp
@@ -767,12 +770,22 @@ public class InvoiceService {
                 })
                 .sum();
 
+        double totalBookingAmount = listInvoices.stream()
+                .filter(i -> i.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name()))
+                .mapToDouble(i -> {
+                    if (i.getTotalAmount() == null) return 0.0;
+                    if (i.getTotalAmount() < 0) return i.getTotalAmount() * -1;
+                    return i.getTotalAmount();
+                })
+                .sum();
+
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(new Date()), Utils.dateToTime(new Date()));
         HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
         InvoiceHeader invoiceHeader = new InvoiceHeader(Utils.dateToString(sDate), Utils.dateToString(eDate),
                 totalInvoice,
                 String.valueOf(totalInvoiceAmount),
                 String.valueOf(paidAmount),
+                String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)),
                 String.valueOf(outstandingAmount),
                 String.valueOf(returnInvoiceAmount),
                 String.valueOf(cancelledAmount));

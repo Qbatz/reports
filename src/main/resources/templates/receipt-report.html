@@ -183,6 +183,11 @@
         </div>
 
         <div class="summary-cell">
+            Total Amount:
+            <strong th:text="${receipts.headerInfo.receivedAmount}">10</strong>
+        </div>
+
+        <div class="summary-cell">
             Collected Amount:
             <strong th:text="${receipts.headerInfo.receivedAmount}">10</strong>
         </div>
@@ -202,6 +207,7 @@
             <th>PAID DATE</th>
             <th>TENANT NAME</th>
             <th>INVOICE NO</th>
+            <th>TYPE</th>
             <th>AMOUNT</th>
             <th>PAYMENT MODE</th>
             <th>COLLECTED BY</th>
@@ -216,6 +222,7 @@
             <td th:text="${receipt.paidDate}">paidDate</td>
             <td th:text="${receipt.tenant}">tenant</td>
             <td th:text="${receipt.invoiceNumber} ?: '-'">invoiceNumber</td>
+            <td th:text="${receipt.invoiceType} ?: '-'">Type</td>
             <td th:text="${receipt.amount} ?: '-'">amount</td>
             <td th:text="${receipt.paymentMode} ?: '-'">paymentMode</td>
             <td th:text="${receipt.collectedBy}">collectedBy</td>
