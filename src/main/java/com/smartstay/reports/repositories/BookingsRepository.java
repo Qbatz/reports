@@ -28,4 +28,20 @@ public interface BookingsRepository extends JpaRepository<BookingsV1, String> {
 
     BookingsV1 findByCustomerIdAndHostelId(@Param("customerId") String customerId,
                                            @Param("hostelId") String hostelId);
+
+    @Query(value = """
+                    SELECT b FROM bookingsv1 b WHERE b.hostelId = :hostelId
+                    AND
+            (b.joiningDate IS NOT NULL AND DATE(b.joiningDate) <= DATE(:endDate)
+            OR
+            (b.joiningDate IS NULL AND DATE(b.expectedJoiningDate) <= DATE(:endDate)))
+            AND
+            (b.currentStatus <> 'CANCELLED' OR (b.currentStatus = 'CANCELLED' AND DATE(b.cancelDate) >= DATE(:startDate) AND
+            DATE(b.cancelDate) <= DATE(:endDate))) AND
+            (b.checkoutDate IS NULL OR DATE(b.checkoutDate) >= DATE(:startDate))
+                    AND (:customerIds IS NULL OR b.customerId IN :customerIds)
+                    AND (:statuses IS NULL OR b.currentStatus IN :statuses)
+                    AND (:roomIds IS NULL OR b.roomId IN :roomIds)
+                    AND (:floorIds IS NULL OR b.floorId IN :floorIds)""")
+    List<BookingsV1> findAllBookingsWithFilters(@Param("hostelId") String hostelId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("customerIds") List<String> customerIds, @Param("statuses") List<String> statuses, @Param("roomIds") List<Integer> roomIds, @Param("floorIds") List<Integer> floorIds);
 }

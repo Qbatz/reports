@@ -1,801 +1,501 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html style="height: 100%; margin: 0;" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-
-
-    <style>
-
-        html,
-       body {
-    height: 100%;
-    margin: 0;
-}
-       body {
-        font-family: 'Arial', sans-serif;
-    }
-
-
-         .container {
- width: 100%;
- box-sizing: border-box;
-    min-height: 100vh;
-    position: relative;
-border-radius: 12px;
- padding-top: 32px;
- padding-bottom:32px;
- padding-left: 20px;
- padding-right: 20px;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
- border: 1px solid #E5E7EB;
-
-         }
-
-
-.header-table {
-    width: 100%;
-    font-size: 13px;
-}
-
-.header-row {
-    width: 100%;
-}
-
-.header-cell {
-    float: left;
-}
-
-.header-left {
-    width: 40%;
-}
-
-.header-right {
-    width: 60%;
-    text-align: right;
-}
-
-.logo {
-    max-height: 60px;
-}
-
-
-         .title {
-             text-align: center;
-                      font-size: 20px;
-             margin-top: 20px;
-         }
-
-         .label {
-             color: #777;
-             width: 120px;
-             display: inline-block;
-         }
-
-         .value {
-             font-weight: 500;
-         }
-
-         .section-title {
-             color: #1E45E1;
-             margin: 25px 0 10px;
-             font-weight: 500;
-             font-size: 12px;
-         }
-
-.table-wrapper {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.table-wrapper table {
-       width: 100%;
-             font-size: 12px;
-             border-radius: 10px;
-             overflow: hidden;
-             border-collapse: separate;
-   }
-
-
-         th, td {
-             padding: 12px;
-             border-bottom: 1px solid #e5e7eb;
-         }
-
-         th {
-             background: #FAFBFF;
-             text-align: left;
-             font-weight: 400;
-         }
-         .table-wrapper table thead tr th:first-child {
-    border-top-left-radius: 10px;
-}
-
-
-.table-wrapper table thead tr th:last-child {
-    border-top-right-radius: 10px;
-}
-
-
-.table-wrapper table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-         .summary {
-             margin-top: 20px;
-             border: 1px solid #ddd;
-             padding: 15px;
-              background: #FAFBFF;
-               border-radius: 6px;
-               color:#4B4B4B;
-
-         }
-
-         .summary-row {
-             display: flex;
-             justify-content: space-between;
-             margin-bottom: 8px;
-             color:#4B4B4B;
-              font-weight: 500;
-         }
-.right {
-    text-align: right;
-    white-space: nowrap;
-}
-
-.amount {
-    display: inline-block;
-    min-width: 80px;
-    text-align: right;
-}
-         .paid {
-             color: green;
-             font-weight: 500;
-         }
-
-         .due {
-             color: red;
-             font-weight: 500;
-         }
-
-
-
-.row-container {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    margin-top: 8px;
-}
-.empty-box {
- width: 60%;
-   display: table-cell;
- }
-
-
-.summary-box {
-     display: table-cell;
-    width: 40%;
-    border-radius: 12px;
-    background: #F8F8F8;
-    padding: 8px 12px;
-    font-size: 11px;
-    table-layout: auto;
-}
-
-.summary-row {
-    display: table-row;
-}
-
-.summary-row > div {
-    display: table-cell;
-   padding: 6px 8px;
-
-}
-
-.summary-box .label {
-    text-align: left;
-    color: #4B4B4B;
-
-}
-
-.summary-box .value {
-     text-align: right;
-    white-space: nowrap;
-
-}
-
-.summary-box .paid {
-    color: green;
-}
-
-.summary-box .due {
-    color: red;
-}
-
-
-.bill-table {
-    display: table;
-    width: 100%;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.bill-row {
-    display: table-row;
-}
-
-.bill-cell {
-    display: table-cell;
-       vertical-align: top;
-}
-        .bill-right {
-            width: 40%;
-            text-align: left;
-        }
-.bill-left {
-    text-align: left;
-    width: 40%;
-}
-
-
-.bill-left .invoice-style {
-    display: table;
-    width: 100%;
-    margin: 6px 0;
-}
-
-.bill-left .invoice-icon,
-.bill-left .colon,
-.bill-left .info-text {
-    display: table-cell;
-    vertical-align: top;
-}
-
-.bill-left .invoice-icon {
-    width: 25px;
-    text-align: center;
-}
-
-.bill-left .colon {
-    width: 15px;
-    text-align: center;
-}
-
-.bill-left .info-text {
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-.bill-center {
-width: 20%;
-}
-
-
-.bill-cell p {
-    margin: 12px 0;
-}
-
-.label {
-    color: #4B4B4B;
-    font-size: 12px;
-}
-
-.bill-right p {
-
-    font-size: 12px;
-       display: grid;
-    grid-template-columns: 120px 10px auto;
-    margin: 8px 0;
-    }
-
-.bill-right .label {
-
-       color: #4B4B4B;
-}
-
-.bill-right .colon {
-    width: 10px;
-    text-align: center;
-}
-
-.bill-right .invoice-style,
-.bill-right strong {
-    flex: 1;
-     text-align: left;
-}
-
-
-
-.invoice-style {
-color: #222;
-font-size: 12px;
-margin-top: 2px
-}
-
-
-.condition-box {
-    display: table;
-    width: 100%;
-    margin-top: 5px;
-    font-size: 12px;
-}
-
-.condition-row {
-    display: table-row;
-}
-
-.condition-row > div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 8px 6px;
-}
-
-
-.condition-left {
-    width: 50%;
-    text-align: left;
-    color: #333;
-}
-
-.termscondition {
-    margin-top: 6px;
-    line-height: 1.5;
-}
-
-
-.condition-right {
-    width: 50%;
-    text-align: right;
-}
-
-
-.signature-box {
-    display: inline-block;
-    text-align: center;   /* center image + text */
-}
-
-
-.condition-right img {
-    display: block;
-    margin: 0 auto 5px auto;
-    max-height: 45px;
-}
-
-
-.signature-text {
-    font-size: 12px;
-}
-
-.footer {
-    margin-top: 25px;
-    font-size: 12px;
-    font-weight: 400;
-}
-
-.footer-box {
-    display: table;
-    width: 100%;
-}
-
-.footer-row {
-    display: table-row;
-}
-
-.footer-row > div {
-    display: table-cell;
-    padding: 6px 0;
-    vertical-align: middle;
-    color: #555;
-}
-
-.footer-left {
-    text-align: left;
-}
-
-.footer-right {
-    text-align: right;
-}
-
-.invoice-hr {
-    border: none;
-    border-top: 1px solid;
-    margin: 15px 0;
-}
-.footer-style {
-color:#000;
-font-weight:400;
-        }
-
-
-    .invoice-type {
-    font-size: 15px;
-    font-weight: 600;
-    text-align: center;
-}
-.account-box {
-    display: table;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 13px;
-}
-
-.account-row {
-    display: table-row;
-}
-
-.account-row > div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 8px 6px;
-}
-
-
-.account-left {
-    width: 65%;
-    text-align: left;
-}
-
-
-.account-right {
-    width: 35%;
-    text-align: right;
-}
-
-
-.qr-image {
-    max-height: 150px;
-}
-.tenant-address {
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-
-    </style>
+    <meta charset="utf-8"/>
 </head>
+<body style='height: 100%; margin: 0; font-family: "Arial", sans-serif;'>
+<div style="
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 100vh;
+    height: 100%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+">
+    <div style="flex: 1;">
+        <table cellpadding="0" cellspacing="0" style="border: none;" width="100%">
+            <tr style="border: none;">
 
-<body>
-<div class="container">
-
-    <div class="header-table">
-
-        <div class="header-row">
-
-
-            <div class="header-cell header-left">
-                <img class="logo"
-                     th:src="${invoice.templateInfo.hostelLogo}"
-                     alt="logo" />
-            </div>
-
-
-            <div class="header-cell header-right">
-                <div>
-                    <div  style="font-weight:400;" th:text="${invoice.hostelInfo.hostelName}">
-                        Hostel Name
-                    </div>
-                </div>
-
-                <div th:text="${invoice.hostelInfo.address}">
-                    Hostel Address
-                </div>
-            </div>
-
-        </div>
-
-        <div style="clear: both;"></div>
-
-    </div>
-
-
-    <hr class="invoice-hr"
-        th:style="'border-color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"/>
-    <div class="invoice-type"
-         th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">
-        <strong th:text="${invoice.invoiceType}"></strong>
-    </div>
-
-
-
-    <!-- BILL DETAILS -->
-
-
-    <div class="bill-table">
-
-        <div class="bill-row">
-
-
-            <div class="bill-cell bill-left">
-                <p th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">
-                    <strong>Bill to: </strong>
-                </p>
-
-                <p class="invoice-style">
-                    <i class="fa-regular fa-user invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
-                    <span class="colon">:</span>
-                    <span class="info-text" th:text="${invoice.customerInfo.fullName}"></span>
-                </p>
-
-                <p class="invoice-style">
-                    <i class="fa-solid fa-phone invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
-                    <span class="colon">:</span>
-                    <span  class="info-text" th:text="${invoice.customerInfo.mobile}"></span>
-                </p>
-
-                <p class="invoice-style">
-                    <i class="fa-solid fa-bed invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
-                    <span class="colon">:</span>
-                    <span class="info-text"
-                          th:text="${invoice.bedInfo != null ? invoice.bedInfo.bedName : ''}">
-                    </span>
-                </p>
-
-                <p class="invoice-style">
-                    <i class="fa-solid fa-location-dot invoice-icon"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"></i>
-                    <span class="colon">:</span>
-                    <span class="info-text" th:text="${invoice.customerInfo.address}"></span>
-                </p>
-            </div>
-
-            <div class ="bill-cell bill-center"></div>
-
-            <div class="bill-cell bill-right">
-                <p>
-                    <span class="label">Invoice</span>
-                    <span class="colon">:</span>
-                    <span th:text="${invoice.invoiceNumber}"></span>
-                </p>
-
-                <p>
-                    <span class="label">Invoice Date</span>
-                    <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${invoice.invoiceDate}"></span>
-                </p>
-
-                <p>
-                    <span class="label">Due Date</span>
-                    <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${invoice.dueDate}"></span>
-                </p>
-
-                <p>
-                    <span class="label">Joining Date</span>
-                    <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${invoice.customerInfo.joiningDate}"></span>
-                </p>
-
-                <p>
-                    <span class="label">Rent Period</span>
-                    <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${invoice.rentalPeriod}">
-                        Feb 2026 - Mar 2026
-                    </span>
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- PAYMENT SUMMARY -->
-    <div class="section-title" th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">Payment Summary
-    </div>
-
-    <div class="table-wrapper" th:if="${invoice.listDeductions != null and invoice.listDeductions.size() > 0}">
-
-        <table >
-            <thead style="background:#f5f5f5;">
-            <tr>
-                <th style="padding:8px; text-align:left; font-weight: 400;"
-                    th:text="${invoice.totalAmount != null and invoice.totalAmount.startsWith('-') ? 'REFUND' : 'PAYMENT'}">
-                </th>
-                <th style="padding:8px; text-align:right; font-weight: 400;">AMOUNT / INR</th>
-                <th style="padding:8px; text-align:left; font-weight: 400;">DEDUCTIONS</th>
-                <th style="padding:8px; text-align:right; font-weight: 400;">AMOUNT / INR</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr>
-                <td style="padding:10px 10px 25px 10px;"
-                    th:text="${invoice.invoiceItems[0].item}">
-                </td>
-
-                <td style="padding:10px 10px 25px 10px; text-align:right;">
-                    <span th:text="'₹'+${invoice.invoiceItems[0].amount}"></span>
-                </td>
-
-                <td style="padding:10px 10px 25px 10px;">
-                    <div th:each="deduction : ${invoice.listDeductions}">
-                        <span th:text="${deduction.type}"></span><br/>
+                <td style="border: none; padding: 12px; " valign="top" width="45%">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img alt="Logo" style="max-width: 134px; max-height: 60px;" th:src="${invoice.templateInfo.hostelLogo}"/>
+                        <div style="font-size: 10px; line-height: 1.5;">
+                            <div th:text="${invoice.templateInfo.emailId}">
+                                test@gmail.com
+                            </div>
+                            <div style="margin-top: 5px;" th:text="${invoice.templateInfo.phone}">
+                                +91 2565845857
+                            </div>
+                        </div>
                     </div>
                 </td>
 
-                <td style="padding:10px 10px 25px 10px; text-align:right;">
-                    <div th:each="deduction : ${invoice.listDeductions}">
-                        <span th:text="'₹'+${deduction.amount}"></span><br/>
+                <td align="right" style="border: none; padding: 12px;" valign="top" width="55%">
+                    <div style="font-size: 14px; font-weight: 500;" th:text="${invoice.hostelInfo.hostelName}">
+                    </div>
+                    <div style="margin-top: 5px; font-size: 10px;" th:text="${invoice.hostelInfo.address}">
+                    </div>
+                    <div style="margin-top: 5px; font-size: 10px;">
+                        GST IN : XXXXXXXXXX
                     </div>
                 </td>
             </tr>
-
-
-            <tr style="border-top:1px solid #ddd;">
-                <td style="padding:8px; font-weight: 400;">Total</td>
-                <td style="padding:8px; text-align:right;">
-                    <span th:text="'₹'+${invoice.totalAmount}"></span>
-                </td>
-
-                <td style="padding:8px; font-weight: 400;">Total Deductions</td>
-                <td style="padding:8px; text-align:right; ">
-                    <span th:text="'₹'+${invoice.totalDeductionAmount}" ></span>
-                </td>
-            </tr>
-
-            </tbody>
         </table>
-
-    </div>
-
-
-
-    <div class="table-wrapper" th:if="${invoice.listDeductions == null or invoice.listDeductions.size() == 0}">
-
-        <table >
-            <thead style="background:#f5f5f5;">
-            <tr>
-                <th style="padding:8px;  font-weight: 400">INV NO</th>
-                <th style="padding:8px; text-align:center;font-weight: 400">DESCRIPTION</th>
-                <th style="padding:8px; text-align:right;  font-weight: 400">AMOUNT / INR</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr th:each="item : ${invoice.invoiceItems}">
-                <td style="padding:8px;"
-                    th:text="${invoice.invoiceNumber}">
-                </td>
-
-                <td style="padding:8px; text-align:center;"
-                    th:text="${item.item}">
-                </td>
-
-                <td style="padding:8px; text-align:right;">
-                    ₹ <span th:text="${item.amount}"></span>
-                </td>
-            </tr>
-
-            <tr style="border-top:1px solid #ddd;  font-weight: 400;">
-                <td colspan="2" style="padding:8px;">Total</td>
-                <td style="padding:8px; text-align:right;">
-                    ₹ <span th:text="${invoice.totalAmount}"></span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-    </div>
-    <div class="row-container">
-        <div class="empty-box">
-
+        <div style="color: #171717; font-size: 15px; font-weight: 600; text-align: center;">
+            <strong th:text="${invoice.invoiceType}">
+            </strong>
         </div>
+        <div style="border-radius: 12px; padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; border: 1px solid #E5E7EB;">
 
-        <div class="summary-box">
-            <div class="summary-row">
-                <div class="label"  style="font-weight: 400;">Grand Total</div>
-                <div class="value" th:text="'₹ ' + ${invoice.totalAmount}"></div>
-            </div>
-
-            <div class="summary-row">
-                <div class="label" style="font-weight: 400;">Payment Made</div>
-                <div class="value paid" th:text="'₹ ' + ${invoice.paidAmount}"></div>
-            </div>
-            <div class="summary-row"  th:if="${invoice.invoiceType == 'Settlement' or invoice.invoiceType == 'Payment Bill'}">
-                <div class="label" style="font-weight: 400;">Discount Applied</div>
-                <div class="value due" th:text="'₹ ' + ${invoice.discount}"></div>
-            </div>
-
-            <div class="summary-row">
-                <div class="label" style="font-weight: 400;">Balance Due</div>
-                <div class="value due" th:text="'₹ ' + ${invoice.balanceAmount}"></div>
-            </div>
-        </div>
-
-    </div>
-    <div class="account">
-        <div class="account-box">
-            <div class="account-row">
-
-                <!-- LEFT SIDE -->
-                <div class="account-left">
-                    <p class="section-title"
-                       th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">
-                        ACCOUNT DETAILS
-                    </p>
-
-                    <p>Account No : <span th:text="${invoice.accountInfo.accountNo}">N/A</span></p>
-                    <p>IFSC Code : <span th:text="${invoice.accountInfo.ifscCode}">N/A</span></p>
-                    <p>Bank Name : <span th:text="${invoice.accountInfo.bankName}">N/A</span></p>
-                    <p>UPI Details : <span th:text="${invoice.accountInfo.upiId}">N/A</span></p>
-                </div>
-
-                <!-- RIGHT SIDE -->
-                <div class="account-right">
-                    <img class="qr-image"
-                         th:src="${invoice.templateInfo.qrCode}"
-                         alt="QR Code" />
-                </div>
-
-            </div>
-        </div>
-
-
-
-        <div class="condition-box">
-            <div class="condition-row">
-
-
-                <div class="condition-left">
-                    <div th:style="'color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')">
-                        Terms and Conditions
+            <div style="display: table; width: 100%; font-size: 12px; margin-top: 2px;">
+                <div style="display: table-row;">
+                    <div style="display: table-cell; vertical-align: top; text-align: left; width: 40%;">
+                        <p style="color: #5E6470; margin: 12px 0;">
+                            <strong>
+                                Bill to:
+                            </strong>
+                        </p>
+                        <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
+        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.customerInfo.fullName}">
+        </span>
+                        </p>
+                        <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
+        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.customerInfo.mobile}">
+        </span>
+                        </p>
+                        <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
+        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.bedInfo != null ? invoice.bedInfo.bedName : ''}">
+        </span>
+                        </p>
+                        <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
+        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.customerInfo.address}">
+        </span>
+                        </p>
                     </div>
-                    <div class="termscondition"
-                         th:text="${invoice.templateInfo.termsAndCondition}">
+                    <div style="display: table-cell; vertical-align: top; width: 20%;">
+                    </div>
+                    <div style="display: table-cell; vertical-align: top; width: 40%; text-align: left;">
+                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+        <span style="color: #4B4B4B; font-size: 12px;">
+         Invoice
+        </span>
+                            <span style="width: 10px; text-align: center;">
+         :
+        </span>
+                            <span th:text="${invoice.invoiceNumber}">
+        </span>
+                        </p>
+                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+        <span style="color: #4B4B4B; font-size: 12px;">
+         Invoice Date
+        </span>
+                            <span style="width: 10px; text-align: center;">
+         :
+        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.invoiceDate}">
+        </span>
+                        </p>
+                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+        <span style="color: #4B4B4B; font-size: 12px;">
+         Due Date
+        </span>
+                            <span style="width: 10px; text-align: center;">
+         :
+        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.dueDate}">
+        </span>
+                        </p>
+                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+        <span style="color: #4B4B4B; font-size: 12px;">
+         Joining Date
+        </span>
+                            <span style="width: 10px; text-align: center;">
+         :
+        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.customerInfo.joiningDate}">
+        </span>
+                        </p>
+                        <p th:if="${invoice.invoiceType != 'Security Deposit' and invoice.invoiceType != 'Security Deposit(Booking)'}"
+                           style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+        <span style="color: #4B4B4B; font-size: 12px;">
+         Rent Period
+        </span>
+                            <span style="width: 10px; text-align: center;">
+         :
+        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.rentalPeriod}">
+
+        </span>
+                        </p>
                     </div>
                 </div>
+            </div>
+
+            <div style=" border-radius: 10px; overflow: hidden;" th:if="${invoice.listDeductions != null and invoice.listDeductions.size() &gt; 0}">
+                <table style="width: 100%; font-size: 12px; border-radius: 10px; overflow: hidden; border-collapse: separate;">
+                    <thead style="background: #f5f5f5;">
+                    <tr>
+                        <th style="padding: 8px; text-align: left; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-left-radius: 10px;" th:text="${invoice.totalAmount != null and invoice.totalAmount.startsWith('-') ? 'REFUND' : 'PAYMENT'}">
+                        </th>
+                        <th style="padding: 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF;">
+                            AMOUNT / INR
+                        </th>
+                        <th style="padding: 8px; text-align: left; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF;">
+                            DEDUCTIONS
+                        </th>
+                        <th style="padding: 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-right-radius: 10px;">
+                            AMOUNT / INR
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="padding: 10px 10px 25px 10px; border-bottom: 1px solid #e5e7eb;" th:text="${invoice.invoiceItems[0].item}">
+                        </td>
+                        <td style="padding: 10px 10px 25px 10px; text-align: right; border-bottom: 1px solid #e5e7eb;">
+         <span th:text="'₹'+${invoice.invoiceItems[0].amount}">
+         </span>
+                        </td>
+                        <td style="padding: 10px 10px 25px 10px; border-bottom: 1px solid #e5e7eb;">
+                            <div th:each="deduction : ${invoice.listDeductions}">
+          <span th:text="${deduction.type}">
+          </span>
+                                <br/>
+                            </div>
+                        </td>
+                        <td style="padding: 10px 10px 25px 10px; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                            <div th:each="deduction : ${invoice.listDeductions}">
+          <span th:text="'₹'+${deduction.amount}">
+          </span>
+                                <br/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border-top: 1px solid #ddd;">
+                        <td style="padding: 8px; font-weight: 400; border-bottom: 1px solid #e5e7eb;">
+                            Total
+                        </td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
+         <span th:text="'₹'+${invoice.totalAmount}">
+         </span>
+                        </td>
+                        <td style="padding: 8px; font-weight: 400; border-bottom: 1px solid #e5e7eb;">
+                            Total Deductions
+                        </td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
+         <span th:text="'₹'+${invoice.totalDeductionAmount}">
+         </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style=" border-radius: 10px; overflow: hidden;" th:if="${invoice.listDeductions == null or invoice.listDeductions.size() == 0}">
+                <table style="width: 100%; font-size: 12px; border-radius: 10px; overflow: hidden; border-collapse: separate;">
+                    <thead style="background: #f5f5f5;">
+                    <tr>
+
+                        <th style="padding: 8px; text-align: left; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF;">
+                            DESCRIPTION
+                        </th>
+                        <th style="padding: 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-right-radius: 10px;">
+                            AMOUNT / INR
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${invoice.invoiceItems}">
+
+                        <td style="padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb;" th:text="${item.item}">
+                        </td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                            ₹
+                            <span th:text="${item.amount}">
+         </span>
+                        </td>
+                    </tr>
+                    <tr style="border-top: 1px solid #ddd; font-weight: 400;">
+                        <td  style="padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb;">
+                            Total
+                        </td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                            ₹
+                            <span th:text="${invoice.totalAmount}">
+         </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="
+    width: 40%;
+    margin-left: auto;
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 8px 0;
+    box-sizing: border-box;
+    font-size: 11px;
+">
+
+                <table style="
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        border: none;
+    ">
+
+                    <tr>
+                        <td style="
+                width: 60%;
+                padding: 4px 0;
+                text-align: left;
+                white-space: nowrap;
+                font-weight: 400;
+                color: #4B4B4B;
+                font-size: 11px;
+                border: none;
+            ">
+                            Grand Total
+                        </td>
+
+                        <td style="
+                width: 40%;
+                padding: 4px 0;
+                text-align: right;
+                white-space: nowrap;
+                font-weight: 500;
+                color: #000000;
+                font-size: 11px;
+                border: none;
+            ">
+                            <span th:text="'₹ ' + ${invoice.totalAmount}"></span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="
+                width: 60%;
+                padding: 4px 0;
+                text-align: left;
+                white-space: nowrap;
+                font-weight: 400;
+                color: #4B4B4B;
+                font-size: 11px;
+                border: none;
+            ">
+                            Payment Made
+                        </td>
+
+                        <td style="
+                width: 40%;
+                padding: 4px 0;
+                text-align: right;
+                white-space: nowrap;
+                font-weight: 500;
+                color: green;
+                font-size: 11px;
+                border: none;
+            ">
+                            <span th:text="'₹ ' + ${invoice.paidAmount}"></span>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${invoice.invoiceType == 'Settlement' or invoice.invoiceType == 'Payment Bill'}">
+                        <td style="
+                width: 60%;
+                padding: 4px 0;
+                text-align: left;
+                white-space: nowrap;
+                font-weight: 400;
+                color: #4B4B4B;
+                font-size: 11px;
+                border: none;
+            ">
+                            Discount Applied
+                        </td>
+
+                        <td style="
+                width: 40%;
+                padding: 4px 0;
+                text-align: right;
+                white-space: nowrap;
+                font-weight: 500;
+                color: red;
+                font-size: 11px;
+                border: none;
+            ">
+                            <span th:text="'₹ ' + ${invoice.discount}"></span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="
+                width: 60%;
+                padding: 4px 0;
+                text-align: left;
+                white-space: nowrap;
+                font-weight: 400;
+                color: #4B4B4B;
+                font-size: 11px;
+                border: none;
+            ">
+                            Balance Due
+                        </td>
+
+                        <td style="
+                width: 40%;
+                padding: 4px 0;
+                text-align: right;
+                white-space: nowrap;
+                font-weight: 500;
+                color: red;
+                font-size: 11px;
+                border: none;
+            ">
+                            <span th:text="'₹ ' + ${invoice.balanceAmount}"></span>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
 
 
-                <div class="condition-right">
-                    <div class="signature-box">
-                        <img th:src="${invoice.templateInfo.signature}" alt="signature"/>
-                        <div class="signature-text">
-                            <div>Authorized Signature</div>
+            <div>
+                <div style="display: table; width: 100%; margin-top: 10px; font-size: 13px;">
+                    <div style="display: table-row;">
+
+                        <div style="display: table-cell; vertical-align: top; padding: 8px 6px; width: 65%; text-align: left;">
+                            <p style="color: #171717; margin: 25px 0 10px; font-weight: 500; font-size: 12px;">
+                                ACCOUNT DETAILS
+                            </p>
+                            <p>
+                                Account No :
+                                <span th:text="${invoice.accountInfo.accountNo}">
+          N/A
+         </span>
+                            </p>
+                            <p>
+                                IFSC Code :
+                                <span th:text="${invoice.accountInfo.ifscCode}">
+          N/A
+         </span>
+                            </p>
+                            <p>
+                                Bank Name :
+                                <span th:text="${invoice.accountInfo.bankName}">
+          N/A
+         </span>
+                            </p>
+                            <p>
+                                UPI Details :
+                                <span th:text="${invoice.accountInfo.upiId}">
+          N/A
+         </span>
+                            </p>
+                        </div>
+
+                        <div style="display: table-cell; vertical-align: top; padding: 8px 6px; width: 35%; text-align: right;">
+                            <img alt="QR Code" style="max-height: 150px;" th:src="${invoice.templateInfo.qrCode}"/>
+                            <div style="fontsize: 10px; color: #3D3D3D;">
+                                Scan QR for Payment
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div style="width: 100%; display: table; table-layout: fixed; margin-top: 20px;">
+                    <div style="display: table-row;">
 
-            </div>
-        </div>
+                        <div style="display: table-cell; width: 50%; text-align: left; vertical-align: bottom;">
+                            <div style="display: inline-block; text-align: left;">
+                                <img alt="signature" style="max-width: 120px; max-height: 50px; display: block;" th:src="${invoice.templateInfo.signature}"/>
+                                <div style="font-size: 10px; margin-top: 5px;white-space: nowrap;">
+                                    Authorized Signature
+                                </div>
+                            </div>
+                        </div>
 
-
-
-        <div class="footer">
-            <hr class="invoice-hr"
-                th:style="'border-color:' + (${invoice.templateInfo.colorCode} ?: '#1E45E1')"/>
-
-            <div class="footer-box">
-                <div class="footer-row">
-                    <div class="footer-left">
-                        Email: <span class="footer-style"   th:text="${invoice.templateInfo.emailId}"></span>
-                    </div>
-                    <div class="footer-right">
-                        Contact: <span class="footer-style" th:text="${invoice.templateInfo.phone}"></span>
+                        <div style="display: table-cell; width: 50%; text-align: right; vertical-align: bottom;">
+                            <div style="font-size: 10px; padding-bottom: 5px;">
+                                Status :
+                            </div>
+                            <div style="font-size: 10px; padding-bottom: 5px;">
+                                Thanks for your stay.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+
+
+        <div style="display: table; width: 100%; margin-top: 5px; font-size: 12px;">
+            <div style="display: table-row;">
+
+                <div style="
+        display: table-cell;
+        width: 50%;
+        vertical-align: top;
+        padding: 8px 6px;
+        color: #333;
+        white-space: nowrap;
+    ">
+        <span style="color: #5E6470;">
+            T and C :
+        </span>
+
+                    <span
+                            style="
+                margin-left: 6px;
+                line-height: 1.5;
+                color: #1A1C21;
+                white-space: normal;
+            "
+                            th:text="${invoice.templateInfo.termsAndCondition}">
+        </span>
+                </div>
+
+            </div>
+
+        </div>
     </div>
+
+    <div style="
+    width: 100%;
+    margin-top: auto;
+    font-size: 12px;
+    font-weight: 400;
+">
+
+        <hr style="
+        border: none;
+        border-top: 1px solid #DFDFDF;
+        margin: 15px 0 8px;
+    "/>
+        <div style="display: table; width: 100%;">
+            <div style="display: table-row;">
+                <div style="display: table-cell; padding: 6px 0; vertical-align: middle; color: #555; text-align: left;">
+                    Email:
+                    <span style="color: #000; font-weight: 400;" th:text="${invoice.templateInfo.emailId}">
+        </span>
+                </div>
+                <div style="display: table-cell; padding: 6px 0; vertical-align: middle; color: #555; text-align: right;">
+                    Contact:
+                    <span style="color: #000; font-weight: 400;" th:text="${invoice.templateInfo.phone}">
+        </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
 </div>
 </body>
 </html>

@@ -25,4 +25,8 @@ public class BookingsService {
     public BookingsV1 findByCustomerId(String customerId, String hostelId) {
         return bookingsRepository.findByCustomerIdAndHostelId(customerId, hostelId);
     }
+
+    public List<BookingsV1> findAllBookingsWithFilters(String hostelId, Date startDate, Date endDate, List<String> customerIds, List<String> status, List<Integer> roomIds, List<Integer> floorIds) {
+        return bookingsRepository.findAllBookingsWithFilters(hostelId, startDate, endDate, (customerIds != null && !customerIds.isEmpty()) ? customerIds : null, (status != null && !status.isEmpty()) ? status : null, (roomIds != null && !roomIds.isEmpty()) ? roomIds : null, (floorIds != null && !floorIds.isEmpty()) ? floorIds : null);
+    }
 }
