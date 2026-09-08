@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Rooms, Integer> {
+    List<Rooms> findByHostelIdAndSharingTypeIn(String hostelId, List<Integer> shareType);
 }

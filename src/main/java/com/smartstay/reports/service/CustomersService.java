@@ -36,8 +36,9 @@ public class CustomersService {
     @Autowired
     private TransactionV1Service transactionV1Service;
 
-    public ResponseEntity<?> getCustomers(String hostelId, String startDate, String endDate) {
-        CustomersDetails details = getCustomerDetails(hostelId, startDate, endDate);
+    public ResponseEntity<?> getCustomers(String hostelId, String search, List<String> status, List<Integer> room, List<Integer> floor, List<String> sharingType, String startDate, String endDate) {
+
+        CustomersDetails details = getCustomerDetails(hostelId, search, status, room, floor, sharingType, startDate, endDate);
         Context context = new Context();
         context.setVariable("tenants", details);
 
@@ -45,26 +46,57 @@ public class CustomersService {
         return new ResponseEntity<>(receiptsUrl, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getCustomersDetails(String hostelId, String startDate, String endDate) {
-        CustomersDetails details = getCustomerDetails(hostelId, startDate, endDate);
+    public ResponseEntity<?> getCustomersDetails(String hostelId, String search, List<String> status, List<Integer> room, List<Integer> floor, List<String> sharingType, String startDate, String endDate) {
+        CustomersDetails details = getCustomerDetails(hostelId, search, status, room, floor, sharingType, startDate, endDate);
         return new ResponseEntity<>(details, HttpStatus.OK);
 
     }
 
 
-    public CustomersDetails getCustomerDetails(String hostelId, String startDate, String endDate) {
+    public CustomersDetails getCustomerDetails(String hostelId,String search, List<String> status, List<Integer> rooms, List<Integer> floor, List<String> sharingType, String startDate, String endDate) {
         Date sDate = Utils.stringToDate(startDate.replace("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         Date eDate = Utils.stringToDate(endDate.replace("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
-        List<BookingsV1> listBookings = bookingsService.findBookingsByHostelIdAndStartDateAndEndDate(hostelId, sDate, eDate);
 
-        List<String> customerIds = listBookings
-                .stream()
-                .map(BookingsV1::getCustomerId)
-                .toList();
-        List<Customers> listCustomers = customersRepository.findAllById(customerIds);
-        List<TransactionV1> listTransactions = transactionV1Service.findTransactions(hostelId, customerIds);
+        if (sharingType != null) {
+            List<Integer> shareTypes = sharingType
+                    .stream()
+                    .map(Integer::parseInt)
+                    .toList();
+            if (rooms == null) {
+                rooms = roomsService.findByHostelIdAndShareType(hostelId, shareTypes)
+                        .stream()
+                        .map(Rooms::getRoomId)
+                        .toList();
+            }
+        }
 
-        List<Integer> bedIds = listBookings
+        List<String> customerIds = null;
+        if (search != null && !search.isEmpty()) {
+            List<Customers> lCustomers = customersRepository.findByHostelIdAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(hostelId, search, search);
+            if (lCustomers != null) {
+                customerIds = lCustomers
+                        .stream()
+                        .map(Customers::getCustomerId)
+                        .distinct()
+                        .toList();
+            }
+        }
+
+        List<BookingsV1> allBookings = bookingsService.findAllBookingsWithFilters(hostelId, sDate, eDate,
+                customerIds, status, rooms, floor);
+//        List<BookingsV1> listBookings = bookingsService.findBookingsByHostelIdAndStartDateAndEndDate(hostelId, sDate, eDate);
+
+        List<String> cIds = null;
+        if (allBookings != null) {
+            cIds = allBookings
+                    .stream()
+                    .map(BookingsV1::getCustomerId)
+                    .toList();
+        }
+        List<Customers> listCustomers = customersRepository.findAllById(cIds);
+        List<TransactionV1> listTransactions = transactionV1Service.findTransactions(hostelId, cIds);
+
+        List<Integer> bedIds = allBookings
                 .stream()
                 .map(BookingsV1::getBedId)
                 .toList();
@@ -72,7 +104,7 @@ public class CustomersService {
         List<BedInformations> listBedInformations = bedsService.getBedInformations(bedIds);
         List<com.smartstay.reports.dto.customer.Customers> listCustomerInfo = listCustomers
                 .stream()
-                .map(i -> new CustomersMapper(listBookings, listBedInformations, listTransactions).apply(i))
+                .map(i -> new CustomersMapper(allBookings, listBedInformations, listTransactions).apply(i))
                 .toList();
         HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
 
@@ -83,27 +115,27 @@ public class CustomersService {
         long inactiveCount = 0;
         long bookingCount = 0;
 
-        activeCounts = listBookings.stream()
+        activeCounts = allBookings.stream()
                 .filter(i -> i.getCurrentStatus().equalsIgnoreCase(BookingStatus.CHECKIN.name()))
                 .count();
 
-        noticePeriodCount = listBookings
+        noticePeriodCount = allBookings
                 .stream()
                 .filter(i -> i.getCurrentStatus().equalsIgnoreCase(BookingStatus.NOTICE.name()))
                 .count();
 
-        checkoutCount = listBookings
+        checkoutCount = allBookings
                 .stream()
                 .filter(i -> i.getCurrentStatus().equalsIgnoreCase(BookingStatus.VACATED.name()) ||
                         i.getCurrentStatus().equalsIgnoreCase(BookingStatus.TERMINATED.name()))
                 .count();
 
-        inactiveCount = listBookings
+        inactiveCount = allBookings
                 .stream()
                 .filter(i -> i.getCurrentStatus().equalsIgnoreCase(BookingStatus.CANCELLED.name()))
                 .count();
 
-        bookingCount = listBookings
+        bookingCount = allBookings
                 .stream()
                 .filter(i -> i.getCurrentStatus().equalsIgnoreCase(BookingStatus.BOOKED.name()))
                 .count();

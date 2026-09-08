@@ -13,4 +13,8 @@ public interface CustomersRepository extends JpaRepository<Customers, String> {
 
     @Query("SELECT c FROM Customers c WHERE c.hostelId = :hostelId AND (LOWER(c.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(c.lastName) LIKE LOWER(CONCAT('%', :search, '%')))")
     List<Customers> searchCustomer(@Param("hostelId") String hostelId, @Param("search") String search);
+
+    List<Customers> findByHostelIdAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String hostelId,
+                                                                                                 String firstName, String lastName
+    );
 }

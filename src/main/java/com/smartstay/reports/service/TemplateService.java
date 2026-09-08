@@ -26,7 +26,7 @@ public class TemplateService {
                         .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
                         .findFirst()
                         .orElse(null);
-            } else if (invoiceType.equalsIgnoreCase(InvoiceType.BOOKING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
+            } else if (invoiceType.equalsIgnoreCase(InvoiceType.BOOKING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADVANCE.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADDITIONAL_ADVANCE.name())) {
                 billTemplateType = billTemplates
                         .getTemplateTypes()
                         .stream()
@@ -35,6 +35,14 @@ public class TemplateService {
                         .orElse(null);
             }
             else if (invoiceType.equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+                billTemplateType = billTemplates
+                        .getTemplateTypes()
+                        .stream()
+                        .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
+                        .findFirst()
+                        .orElse(null);
+            }
+            else if (invoiceType.equalsIgnoreCase(InvoiceType.OTHER.name())) {
                 billTemplateType = billTemplates
                         .getTemplateTypes()
                         .stream()

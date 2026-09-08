@@ -278,6 +278,18 @@ public class TransactionV1Service {
 
         ReceiptsReports receiptsReports = null;
         if (listTransactions != null) {
+            double totalAmount = listTransactions
+                    .stream()
+                    .mapToDouble(i -> {
+                        if (i.getPaidAmount() == null) {
+                            return 0.0;
+                        }
+                        if (i.getPaidAmount() < 0) {
+                            return i.getPaidAmount() * -1;
+                        }
+                        return i.getPaidAmount();
+                    })
+                    .sum();
             double receivedAmount = listTransactions
                     .stream()
                     .filter(i ->  i.getType() == null ||  (i.getType() != null && i.getType().equalsIgnoreCase(TransactionType.ADVANCE_HOLDING.name())))
@@ -294,8 +306,9 @@ public class TransactionV1Service {
                         return i.getPaidAmount();
                     })
                     .sum();
-            receiptHeader = new ReceiptHeader(String.valueOf(receivedAmount),
-                    String.valueOf(returnedAmount),
+            receiptHeader = new ReceiptHeader(String.valueOf(Utils.roundOffWithTwoDigit(totalAmount)),
+                    String.valueOf(Utils.roundOffWithTwoDigit(receivedAmount)),
+                    String.valueOf(Utils.roundOffWithTwoDigit(returnedAmount)),
                     String.valueOf(listTransactions.size()),
                     Utils.dateToString(sDate),
                     Utils.dateToString(eDate));
