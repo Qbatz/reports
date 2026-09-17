@@ -1,6 +1,9 @@
 package com.smartstay.reports.controller;
 
 import com.smartstay.reports.service.InvoiceService;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,6 +12,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v2/reports/invoices")
+@CrossOrigin("*")
+@SecurityScheme(name = "Authorization", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
+@SecurityRequirement(name = "Authorization")
 public class InvoiceController {
 
     @Autowired
