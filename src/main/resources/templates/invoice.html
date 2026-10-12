@@ -420,7 +420,8 @@
                         <div style="display: table-cell; width: 50%; text-align: right; vertical-align: bottom;">
                             <div style="font-size: 10px; padding-bottom: 5px;">
                                 Status :
-                                <span th:text="${invoice.paymentStatus}">
+                                <span th:text="${invoice.paymentStatus}"
+                                      th:style="${invoice.paymentStatus == 'Pending' ? 'color: #F59E0B;' : (invoice.paymentStatus == 'Paid' ? 'color: #038C3D;' : 'color: #6B7280;')}">
                                     N/A
                                 </span>
                             </div>
