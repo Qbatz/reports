@@ -22,6 +22,7 @@ public class PDFServices {
     }
 
     public String generatePdf(String invoiceId, String templateName, Context context) {
+
         String html = templateEngine.process(templateName, context);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

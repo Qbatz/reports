@@ -25,7 +25,8 @@
                             <div th:text="${invoice.templateInfo.emailId}">
                                 test@gmail.com
                             </div>
-                            <div style="margin-top: 5px;" th:text="${invoice.templateInfo.phone}">
+                            <div style="margin-top: 5px;"
+                                 th:text="${invoice.templateInfo.countryCode + ' ' + invoice.templateInfo.phone}">
                                 +91 2565845857
                             </div>
                         </div>
@@ -178,7 +179,7 @@
                             Total
                         </td>
                         <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
-         <span th:text="'₹'+${invoice.totalAmount}">
+         <span th:text="'₹'+${invoice.basePrice}">
          </span>
                         </td>
                         <td style="padding: 8px; font-weight: 400; border-bottom: 1px solid #e5e7eb;">
@@ -419,6 +420,9 @@
                         <div style="display: table-cell; width: 50%; text-align: right; vertical-align: bottom;">
                             <div style="font-size: 10px; padding-bottom: 5px;">
                                 Status :
+                                <span th:text="${invoice.paymentStatus}">
+                                    N/A
+                                </span>
                             </div>
                             <div style="font-size: 10px; padding-bottom: 5px;">
                                 Thanks for your stay.
@@ -483,7 +487,8 @@
                 </div>
                 <div style="display: table-cell; padding: 6px 0; vertical-align: middle; color: #555; text-align: right;">
                     Contact:
-                    <span style="color: #000; font-weight: 400;" th:text="${invoice.templateInfo.phone}">
+                    <span style="color: #000; font-weight: 400;"
+                          th:text="${invoice.templateInfo.countryCode + ' ' + invoice.templateInfo.phone}">
         </span>
                 </div>
             </div>
