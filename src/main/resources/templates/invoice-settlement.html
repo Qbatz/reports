@@ -142,12 +142,14 @@
                 >
                 </div>
 
-                <div style="margin-top:5px; font-size:10px;"
-                     th:text="${invoice.headerInfo.houseNo} + ' ' +
-              ${invoice.headerInfo.street} + ', ' +
-              ${invoice.headerInfo.city} + ', ' +
-              ${invoice.headerInfo.state} + ' - ' +
-              ${invoice.headerInfo.pincode}">
+                <div style="margin-top: 5px; font-size: 10px;"
+                     th:text="${(!#strings.isEmpty(invoice.headerInfo.houseNo) ? invoice.headerInfo.houseNo + ' ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.street) ? invoice.headerInfo.street + ', ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.city) ? invoice.headerInfo.city : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.city) and !#strings.isEmpty(invoice.headerInfo.state) ? ', ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.state) ? invoice.headerInfo.state : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.pincode) and (!#strings.isEmpty(invoice.headerInfo.city) or !#strings.isEmpty(invoice.headerInfo.state)) ? ' - ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.pincode) ? invoice.headerInfo.pincode : '')}">
                 </div>
 
                 <!--                <div style="margin-top:5px; font-size: 10px;" th:text="${invoice.headerInfo.gstNumber}">-->
