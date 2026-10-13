@@ -282,8 +282,11 @@ public class InvoiceService {
     }
 
     private FinalSettlementInfo newSettlementInvoice(InvoicesV1 invoicesV1) {
+
         HostelV1 hostelV1 = hostelService.getHostel(invoicesV1.getHostelId());
-        SettlementItems settlementItems = settlementItemService.getSettlementItems(invoicesV1.getInvoiceId());
+
+        SettlementItems settlementItems = settlementItemService
+                .getSettlementItems(invoicesV1.getInvoiceId());
 
         double subTotal = 0.0;
         double deductionAmount = 0.0;
@@ -301,6 +304,7 @@ public class InvoiceService {
         double currentMonthTotalAmount = 0.0;
         double stayDays = 0.0;
         double currentMonthPayableRent = 0.0;
+
         UnpaidInvoiceInfo unpaidInvoiceInfo = null;
         if (settlementItems.getUnpaidInvoices() != null) {
             if (!settlementItems.getUnpaidInvoices().isEmpty()) {
@@ -377,8 +381,10 @@ public class InvoiceService {
             }
         }
 
-        AdvanceItems advanceItems = getRedeemedListFromAdvance(invoicesV1.getHostelId(), invoicesV1.getCustomerId());
-        AdvanceItems bookingItems = getRedeemedListFromBookings(invoicesV1.getHostelId(), invoicesV1.getCustomerId());
+        AdvanceItems advanceItems = getRedeemedListFromAdvance(invoicesV1.getHostelId(),
+                invoicesV1.getCustomerId());
+        AdvanceItems bookingItems = getRedeemedListFromBookings(invoicesV1.getHostelId(),
+                invoicesV1.getCustomerId());
 
         if (advanceItems != null) {
             if (advanceItems.availableAdvanceBalance() != null) {
@@ -392,11 +398,13 @@ public class InvoiceService {
                 refundable = refundable + bookingItems.availableAdvanceBalance();
             }
         }
+
         RentInfo rentInfo = null;
         WalletInfo walletInfo = null;
         CurrentRentInfo currentRentInfo = null;
         List<RentBreakUp> listRentBreakUp = null;
         CurrentMonthEbInfo currentMonthEbInfo = null;
+
         List<CurrentMonthOtherItems> listCurrentMonthOtherItems = null;
         if (settlementItems.getCurrentRentBreakUps() != null) {
             if (!settlementItems.getCurrentRentBreakUps().isEmpty()) {
@@ -421,17 +429,20 @@ public class InvoiceService {
                 currentPayablemount = settlementItems.getCurrentMonthPayableAmount();
             }
         }
+
         if (settlementItems.getCurrentMonthPaidAmount() != null) {
             currentPaidAmount = settlementItems.getCurrentMonthPaidAmount();
             currentPayablemount = currentPayablemount - currentPaidAmount;
 //            subTotal = subTotal - currentPaidAmount;
         }
+
         if (currentPayablemount > 0) {
             payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
         }
         else {
             refundable = refundable + (currentPayablemount * -1);
         }
+
         if (listRentBreakUp != null) {
             if (!listRentBreakUp.isEmpty()) {
                 stayDays = listRentBreakUp
@@ -576,6 +587,8 @@ public class InvoiceService {
                     })
                     .sum();
 
+            refundable = refundable + additionalRefundable;
+
             List<AdditionalAdvanceItems> listAdditionalAdvanceItesm = listAdditionalAdvance
                     .stream()
                     .map(i -> new AdditionalAdvanceItems(i.getInvoiceId(), i.getInvoiceNumber(), i.getInvoiceBalance()))
@@ -607,7 +620,6 @@ public class InvoiceService {
         finalAmount = Utils.roundOfDouble(invoicesV1.getTotalAmount()) + deductionAmount;
         finalAmount = finalAmount + unpaidInvoiceAmount + electricityAmount ;
 
-
         FinalSettlementInvoiceInfo invoiceInfo = null;
         if (invoicesV1 != null) {
             invoiceInfo = new FinalSettlementInvoiceInfo(invoicesV1.getInvoiceNumber(),
@@ -629,7 +641,8 @@ public class InvoiceService {
         }
 
         StayInfo stayInfo = null;
-        CustomersBedHistory bedHistory = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+        CustomersBedHistory bedHistory = customerBedHistoryService
+                .getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
 
         if (bedHistory != null) {
             BedDetails bedDetails = bedsService.getBedFullDetails(bedHistory.getBedId());
@@ -642,7 +655,6 @@ public class InvoiceService {
 
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
-
 
         FinalSettlementInfo finalSettlementResponse = new FinalSettlementInfo(headerInfo,
                 stayInfo,
@@ -868,13 +880,16 @@ public class InvoiceService {
     }
 
     public ResponseEntity<?> getInvoiceReportNew(String hostelId, String invoiceId) {
+
         InvoicesV1 invoicesV1 = invoicesV1Repository.findByHostelIdAndInvoiceId(hostelId, invoiceId);
         if (invoicesV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        HostelV1 hostelV1 = hostelService.getHostel(invoicesV1.getHostelId());
+        HostelV1 hostel = hostelService.getHostel(invoicesV1.getHostelId());
+
         FinalSettlementInfo finalSettlementInfo = newSettlementInvoice(invoicesV1);
+
         Context context = new Context();
         context.setVariable("invoice", finalSettlementInfo);
 
