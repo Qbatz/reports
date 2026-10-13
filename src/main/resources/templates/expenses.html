@@ -79,11 +79,21 @@
             width: 100%;
             margin-top: 15px;
             margin-bottom: 15px;
+            table-layout: fixed;
         }
 
         .summary-cell {
             display: table-cell;
-            padding-right: 20px;
+            width: 20%;
+            padding: 8px 10px 8px 0;
+            font-size: 12px;
+            line-height: 1.5;
+            vertical-align: top;
+        }
+
+        .summary-cell strong {
+            display: inline;
+            margin-top: 4px;
             font-size: 12px;
         }
 
@@ -187,9 +197,20 @@
             <strong th:text="${expenses.expenseHeader.totalExpenseAmount}">10</strong>
         </div>
 
+        <div class="summary-cell">
+            Paid:
+            <strong th:text="${expenses.expenseHeader.totalPaidAmount}">10</strong>
+        </div>
 
+        <div class="summary-cell">
+            Unpaid:
+            <strong th:text="${expenses.expenseHeader.totalUnpaidAmount}">10</strong>
+        </div>
 
-
+        <div class="summary-cell">
+            Partially paid:
+            <strong th:text="${expenses.expenseHeader.totalPartiallyPaidAmount}">10</strong>
+        </div>
     </div>
 
 

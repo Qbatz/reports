@@ -49,8 +49,12 @@ public class ExpenseService {
         return new ResponseEntity<>(expenses, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getExpense(String hostelId, String startDate, String endDate, List<Long> categoryId, List<Long> subCategoryId, List<String> paymentMode, List<String> paymentStatus, List<Integer> paidTo, List<String> createdBy) {
-        ExpensesResponse expenses = getExpensesResponse(hostelId, startDate, endDate, categoryId, subCategoryId, paymentMode, paymentStatus, paidTo, createdBy);
+    public ResponseEntity<?> getExpense(String hostelId, String startDate, String endDate, List<Long> categoryId,
+                                        List<Long> subCategoryId, List<String> paymentMode, List<String> paymentStatus,
+                                        List<Integer> paidTo, List<String> createdBy) {
+
+        ExpensesResponse expenses = getExpensesResponse(hostelId, startDate, endDate, categoryId, subCategoryId,
+                paymentMode, paymentStatus, paidTo, createdBy);
 
         Context context = new Context();
         context.setVariable("expenses", expenses);
@@ -60,7 +64,10 @@ public class ExpenseService {
         return new ResponseEntity<>(invoiceUrl, HttpStatus.OK);
     }
 
-    private ExpensesResponse getExpensesResponse(String hostelId, String startDate, String endDate, List<Long> categoryId, List<Long> subCategoryId, List<String> paymentMode, List<String> paymentStatus, List<Integer> paidTo, List<String> createdBy) {
+    private ExpensesResponse getExpensesResponse(String hostelId, String startDate, String endDate, List<Long> categoryId,
+                                                 List<Long> subCategoryId, List<String> paymentMode, List<String> paymentStatus,
+                                                 List<Integer> paidTo, List<String> createdBy) {
+
         Date sDate = Utils.stringToDate(startDate.replace("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         Date eDate = Utils.stringToDate(endDate.replace("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
 
@@ -83,6 +90,7 @@ public class ExpenseService {
                 }
             });
         }
+
         if (pStatus != null && pStatus.isEmpty()) {
             pStatus = null;
         }
@@ -126,7 +134,8 @@ public class ExpenseService {
             cBy = createdBy;
         }
 
-        List<ExpensesV1> listExpenses = expensesRepository.getAllExpenses(hostelId, sDate, eDate, catId, subCatId, pMode, pStatus, pTo, cBy);
+        List<ExpensesV1> listExpenses = expensesRepository.getAllExpenses(hostelId, sDate, eDate, catId,
+                subCatId, pMode, pStatus, pTo, cBy);
         List<Integer> vendorExpenseIds = null;
         List<VendorV1> listVendors = null;
         if (listExpenses != null) {
@@ -144,15 +153,42 @@ public class ExpenseService {
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(new Date()), Utils.dateToTime(new Date()));
         ExpenseHeader expenseHeader = null;
 
-        double totalExpenseAmount = listExpenses
-                .stream()
-                .mapToDouble(ExpensesV1::getTransactionAmount)
-                .sum();
+        double totalExpenseAmount = 0;
+        double totalPaidAmount = 0;
+        double totalUnpaidAmount = 0;
+        double totalPartiallyPaidAmount = 0;
+        int noOfExpenses = 0;
 
-        expenseHeader = new ExpenseHeader(String.valueOf(listExpenses.size()),
-                String.valueOf(totalExpenseAmount),
-                Utils.dateToString(sDate),
-                Utils.dateToString(eDate));
+        if (listExpenses != null) {
+
+            noOfExpenses = listExpenses.size();
+
+            for (ExpensesV1 expense : listExpenses){
+
+                double transactionAmount = expense.getTransactionAmount() != null
+                        ? expense.getTransactionAmount() : 0;
+                double totalPrice = expense.getTotalPrice() != null
+                        ? expense.getTotalPrice() : 0;
+                double balanceAmount = expense.getBalanceAmount() != null
+                        ? expense.getBalanceAmount() : 0;
+                double paidAmount = expense.getPaidAmount() != null
+                        ? expense.getPaidAmount() : 0;
+
+                totalExpenseAmount += transactionAmount;
+                if (ExpensePaymentStatus.Full.equals(expense.getPaymentStatus())){
+                    totalPaidAmount += totalPrice;
+                }
+                totalUnpaidAmount += balanceAmount;
+                if (ExpensePaymentStatus.Partial.equals(expense.getPaymentStatus())){
+                    totalPartiallyPaidAmount += paidAmount;
+                }
+            }
+        }
+
+        expenseHeader = new ExpenseHeader(String.valueOf(noOfExpenses),
+                String.valueOf(totalExpenseAmount), String.valueOf(totalPaidAmount),
+                String.valueOf(totalUnpaidAmount), String.valueOf(totalPartiallyPaidAmount),
+                Utils.dateToString(sDate), Utils.dateToString(eDate));
 
         List<String> bankIds = listExpenses
                 .stream()
@@ -185,7 +221,8 @@ public class ExpenseService {
         List<VendorV1> finalListVendors = listVendors;
         List<ExpensesList> list = listExpenses
                 .stream()
-                .map(i -> new ExpensesMapper(listCategories, listSubcatgories, banks, finalListVendors).apply(i))
+                .map(i -> new ExpensesMapper(listCategories, listSubcatgories, banks, finalListVendors)
+                        .apply(i))
                 .toList();
 
         return new ExpensesResponse(hostelInformation,
