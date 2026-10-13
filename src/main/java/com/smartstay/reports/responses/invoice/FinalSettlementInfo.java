@@ -6,6 +6,7 @@ import com.smartstay.reports.dto.settlement.FinalSettlementInvoiceInfo;
 import com.smartstay.reports.dto.settlement.RetainerInfo;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.TemplateInfo;
+import com.smartstay.reports.responses.settlement.AdditionalAdvance;
 
 public record FinalSettlementInfo(FinalSettlementHeaderInfo headerInfo,
                                   StayInfo stayInfo,
@@ -16,6 +17,7 @@ public record FinalSettlementInfo(FinalSettlementHeaderInfo headerInfo,
                                   DeductionsInfo deductionsInfo,
                                   AdvanceItems advanceItems,
                                   AdvanceItems bookingItems,
+                                  AdditionalAdvance additionalAdvance,
                                   CurrentRentInfo currentMonthRentInfo,
                                   CurrentMonthEbInfo currentMonthEbInfo,
                                   RetainerInfo retainerInfo,

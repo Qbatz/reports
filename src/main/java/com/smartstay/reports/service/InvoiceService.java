@@ -20,6 +20,8 @@ import com.smartstay.reports.responses.hostel.TemplateInfo;
 import com.smartstay.reports.responses.invoice.*;
 import com.smartstay.reports.responses.invoice.InvoiceItems;
 import com.smartstay.reports.responses.invoice.RetainerInfo;
+import com.smartstay.reports.responses.settlement.AdditionalAdvance;
+import com.smartstay.reports.responses.settlement.AdditionalAdvanceItems;
 import com.smartstay.reports.services.InvoiceRedemptionService;
 import com.smartstay.reports.services.SettlementItemService;
 import com.smartstay.reports.utils.Utils;
@@ -528,6 +530,38 @@ public class InvoiceService {
                     items);
         }
 
+        AdditionalAdvance additionalAdvance = null;
+        if (settlementItems.getAdditionalAdvanceItems() != null) {
+            List<com.smartstay.reports.dto.settlement.AdditionalAdvance> listAdditionalAdvance = settlementItems.getAdditionalAdvanceItems();
+            Double totalPaidAmount = listAdditionalAdvance
+                    .stream()
+                    .mapToDouble(i -> {
+                        if (i.getPaidAmount() != null) {
+                            return i.getPaidAmount();
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+            Double additionalRefundable = listAdditionalAdvance
+                    .stream()
+                    .mapToDouble(i -> {
+                        if (i.getInvoiceBalance() != null) {
+                            return i.getInvoiceBalance();
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+
+            List<AdditionalAdvanceItems> listAdditionalAdvanceItesm = listAdditionalAdvance
+                    .stream()
+                    .map(i -> new AdditionalAdvanceItems(i.getInvoiceId(), i.getInvoiceNumber(), i.getInvoiceBalance()))
+                    .toList();
+            additionalAdvance = new AdditionalAdvance(listAdditionalAdvance.size(),
+                    Utils.roundOffWithTwoDigit(totalPaidAmount),
+                    Utils.roundOffWithTwoDigit(additionalRefundable),
+                    listAdditionalAdvanceItesm);
+        }
+
         FinalSettlementHeaderInfo headerInfo = null;
         if (hostelV1 != null) {
             headerInfo = new FinalSettlementHeaderInfo(invoicesV1.getInvoiceNumber(),
@@ -595,6 +629,7 @@ public class InvoiceService {
                 deductionsInfo,
                 advanceItems,
                 bookingItems,
+                additionalAdvance,
                 currentRentInfo,
                 currentMonthEbInfo,
                 retainerInfo,
@@ -669,6 +704,8 @@ public class InvoiceService {
             invoiceTypes.add(InvoiceType.ADVANCE.name());
             invoiceTypes.add(InvoiceType.REASSIGN_RENT.name());
             invoiceTypes.add(InvoiceType.BOOKING.name());
+            invoiceTypes.add(InvoiceType.OTHER.name());
+            invoiceTypes.add(InvoiceType.ADDITIONAL_ADVANCE.name());
         }
 
         if (paymentStatus != null) {
