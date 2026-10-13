@@ -17,4 +17,8 @@ public class CustomerBedHistoryService {
         CustomersBedHistory cbh = customerBedHistoryRepository.findByCustomerIdAndDate(customerId, startDate, endDate);
         return cbh;
     }
+
+    public CustomersBedHistory getBookedBed(String customerId) {
+        return customerBedHistoryRepository.findByCustomerIdAndTypeBooking(customerId);
+    }
 }

@@ -2,10 +2,12 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.Customers;
 import com.smartstay.reports.repositories.CustomersRepository;
-import com.smartstay.reports.responses.invoice.CustomerInfo;
+import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CustomerServices {
@@ -29,19 +31,19 @@ public class CustomerServices {
             fullName.append(customers.getLastName());
         }
 
-        if (customers.getHouseNo() != null) {
+        if (customers.getHouseNo() != null && !customers.getHouseNo().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getHouseNo());
             fullAddress.append(", ");
         }
-        if (customers.getStreet() != null) {
+        if (customers.getStreet() != null && !customers.getStreet().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getStreet());
             fullAddress.append(", ");
         }
-        if (customers.getCity() != null) {
+        if (customers.getCity() != null && !customers.getCity().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getCity());
             fullAddress.append(", ");
         }
-        if (customers.getState() != null) {
+        if (customers.getState() != null && !customers.getState().trim().equalsIgnoreCase("")) {
             fullAddress.append(customers.getState());
             fullAddress.append("-");
         }
@@ -54,5 +56,13 @@ public class CustomerServices {
                 "+91-" + customers.getMobile(),
                 fullAddress.toString(),
                 Utils.dateToString(customers.getJoiningDate()));
+    }
+
+    public List<Customers> findByCustomerIds(List<String> customerIds) {
+        return customersRepository.findAllById(customerIds);
+    }
+
+    public List<Customers> searchCustomer(String hostelId, String search) {
+        return customersRepository.searchCustomer(hostelId, search);
     }
 }

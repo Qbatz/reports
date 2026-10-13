@@ -15,4 +15,9 @@ public interface CustomerBedHistoryRepository extends JpaRepository<CustomersBed
             ORDER BY start_date DESC LIMIT 1
             """, nativeQuery = true)
     CustomersBedHistory findByCustomerIdAndDate(@Param("customerId") String customerId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query(value = """
+            SELECT * FROM customers_bed_history WHERE customer_id=:customerId AND type='BOOKED' LIMIT 1
+            """, nativeQuery = true)
+    CustomersBedHistory findByCustomerIdAndTypeBooking(@Param("customerId") String customerId);
 }
