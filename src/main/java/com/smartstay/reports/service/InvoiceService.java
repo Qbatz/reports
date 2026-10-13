@@ -67,6 +67,7 @@ public class InvoiceService {
     private InvoiceRedemptionService invoiceRedemptionService;
 
     public ResponseEntity<?> getInvoiceReport(String hostelId, String invoiceId) {
+
         InvoicesV1 invoicesV1 = invoicesV1Repository.findByHostelIdAndInvoiceId(hostelId, invoiceId);
         if (invoicesV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -78,9 +79,11 @@ public class InvoiceService {
                 return getInvoiceReportNew(invoicesV1.getHostelId(), invoiceId);
             }
         }
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
             return getRetainerInvoice(invoicesV1);
         }
+
         InvoiceInfo invoiceInfo = getInvoiceInfo(invoicesV1);
         Context context = new Context();
         context.setVariable("invoice", invoiceInfo);
@@ -101,7 +104,9 @@ public class InvoiceService {
     }
 
     public ResponseEntity<?> getInvoiceDetails(String hostelId, String invoiceId) {
-        InvoicesV1 invoicesV1 = invoicesV1Repository.findByHostelIdAndInvoiceId(hostelId, invoiceId);
+
+        InvoicesV1 invoicesV1 = invoicesV1Repository
+                .findByHostelIdAndInvoiceId(hostelId, invoiceId);
         if (invoicesV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -112,6 +117,7 @@ public class InvoiceService {
     }
 
     public InvoiceInfo getInvoiceInfo(InvoicesV1 invoicesV1) {
+
         double paidAmount = 0.0;
         double discount = 0.0;
         if (invoicesV1.getPaidAmount() != null) {
@@ -126,7 +132,8 @@ public class InvoiceService {
         if (invoicesV1.getInvoiceDate() != null) {
             invoiceDate = Utils.dateToString(invoicesV1.getInvoiceDate());
         }
-        String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
+        String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-" +
+                Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
 
         discount = invoiceDiscountService.getInoiceDiscount(invoicesV1.getHostelId(), invoicesV1.getInvoiceId());
 
@@ -136,6 +143,7 @@ public class InvoiceService {
                     .stream()
                     .mapToDouble(com.smartstay.reports.dao.InvoiceItems::getAmount)
                     .sum();
+
             listDeductions = invoicesV1.getInvoiceItems().stream().map(i -> {
                 Deductions d = new Deductions();
                 if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
@@ -151,7 +159,8 @@ public class InvoiceService {
                 return d;
             }).toList();
 
-            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getBasePrice()), invoicesV1.getInvoiceNumber()));
+            invoiceItems.add(new InvoiceItems(InvoiceType.SETTLEMENT.name(), String.valueOf(invoicesV1.getBasePrice()),
+                    invoicesV1.getInvoiceNumber()));
         }
         else {
             invoiceItems = invoicesV1
@@ -187,10 +196,15 @@ public class InvoiceService {
                         return new InvoiceItems(item, amount, invoicesV1.getInvoiceNumber());
                     })
                     .toList();
+
+            listDeductions = invoicesV1.getDeductions();
+
+            totalDeductionAmount = invoicesV1.getDeductionAmount();
         }
 
         String invoiceType = null;
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             invoiceType = "Payment Bill";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
@@ -203,13 +217,20 @@ public class InvoiceService {
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             invoiceType = "Settlement";
-
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || 
                 invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
             invoiceType = "Retainer";
         }
-
+        else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Other";
+        }
+        else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Additional Advance";
+        }
+        else {
+            invoiceType = Utils.capitalize(invoicesV1.getInvoiceType());
+        }
 
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
@@ -218,7 +239,8 @@ public class InvoiceService {
             cbh = customerBedHistoryService.getBookedBed(invoicesV1.getCustomerId());
         }
         else {
-            cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+            cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(),
+                    invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
         }
         BedInfo bedInfo = null;
         if (cbh != null) {
@@ -242,9 +264,11 @@ public class InvoiceService {
                 String.valueOf(Math.round(totalDeductionAmount)),
                 String.valueOf(Math.round(paidAmount)),
                 String.valueOf(Math.round(balanceAmount)),
+                String.valueOf(Math.round(invoicesV1.getBasePrice())),
                 String.valueOf(Math.round(invoicesV1.getTotalAmount())),
                 String.valueOf(Math.round(discount)),
                 invoiceType,
+                Utils.capitalize(invoicesV1.getPaymentStatus()),
                 invoiceItems,
                 listDeductions,
                 hostelInfo,
