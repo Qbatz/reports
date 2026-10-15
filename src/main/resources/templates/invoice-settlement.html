@@ -562,7 +562,27 @@
             </td>
         </tr>
 
+        <!--deduction-->
+        <tr>
+            <td style="padding-bottom:10px;">
 
+                <div class="item-title" style="padding-bottom:10px;" >
+                    Deductions
+                </div>
+
+                <div class="item-description">
+                    <div th:each="deductions : ${invoice.deductionsInfo.listDeductions}">
+                        <span th:text="${deductions.item}"></span> -
+                        ₹<span th:text="${deductions.pendingAmount}"></span><br/>
+                    </div>
+                </div>
+
+            </td>
+
+            <td class="amount" th:text="${invoice.deductionsInfo.pendingAmount}" >
+                ₹ 500.00
+            </td>
+        </tr>
 
     </table>
 
