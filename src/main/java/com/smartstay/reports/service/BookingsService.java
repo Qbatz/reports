@@ -14,6 +14,7 @@ public class BookingsService {
 
     @Autowired
     private BookingsRepository bookingsRepository;
+
     public List<BookingsV1> findBookingsByHostelIdAndStartDateAndEndDate(String hostelId, Date sDate, Date eDate) {
         List<BookingsV1> listBookings = bookingsRepository.findAllBookingsWithFilters(hostelId, sDate, eDate);
         if (listBookings == null) {
@@ -26,7 +27,15 @@ public class BookingsService {
         return bookingsRepository.findByCustomerIdAndHostelId(customerId, hostelId);
     }
 
-    public List<BookingsV1> findAllBookingsWithFilters(String hostelId, Date startDate, Date endDate, List<String> customerIds, List<String> status, List<Integer> roomIds, List<Integer> floorIds) {
-        return bookingsRepository.findAllBookingsWithFilters(hostelId, startDate, endDate, (customerIds != null && !customerIds.isEmpty()) ? customerIds : null, (status != null && !status.isEmpty()) ? status : null, (roomIds != null && !roomIds.isEmpty()) ? roomIds : null, (floorIds != null && !floorIds.isEmpty()) ? floorIds : null);
+    public List<BookingsV1> findAllBookingsWithFilters(String hostelId, Date startDate, Date endDate,
+                                                       List<String> customerIds, List<String> status,
+                                                       List<Integer> roomIds, List<Integer> floorIds) {
+
+        return bookingsRepository
+                .findAllBookingsWithFilters(hostelId, startDate, endDate,
+                        (customerIds != null && !customerIds.isEmpty()) ? customerIds : new ArrayList<>(),
+                        (status != null && !status.isEmpty()) ? status : null,
+                        (roomIds != null && !roomIds.isEmpty()) ? roomIds : null,
+                        (floorIds != null && !floorIds.isEmpty()) ? floorIds : null);
     }
 }
