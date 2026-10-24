@@ -2,7 +2,6 @@ package com.smartstay.reports.wrappers;
 
 import com.smartstay.reports.dao.*;
 import com.smartstay.reports.responses.expense.ExpensesList;
-import com.smartstay.reports.responses.expense.ExpensesResponse;
 import com.smartstay.reports.utils.BankingUtils;
 import com.smartstay.reports.utils.NameUtils;
 import com.smartstay.reports.utils.Utils;
@@ -14,18 +13,22 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
 
     List<ExpenseCategory> listCategories = null;
     List<ExpenseSubCategory> listSubCategories = null;
-    List<BankingV1> listBanks = null;
+    List<BankingV2> listV2Banks;
     List<VendorV1> listVendors = null;
 
-    public ExpensesMapper(List<ExpenseCategory> listCategories, List<ExpenseSubCategory> listSubCategories, List<BankingV1> listBanks, List<VendorV1> vendors) {
+    public ExpensesMapper(List<ExpenseCategory> listCategories,
+                          List<ExpenseSubCategory> listSubCategories,
+                          List<BankingV2> listV2Banks,
+                          List<VendorV1> vendors) {
         this.listCategories = listCategories;
         this.listSubCategories = listSubCategories;
-        this.listBanks = listBanks;
+        this.listV2Banks = listV2Banks;
         this.listVendors = vendors;
     }
 
     @Override
     public ExpensesList apply(ExpensesV1 expensesV1) {
+
         String categoryName = "NA";
         String subCategoryName = null;
         String description = "NA";
@@ -47,24 +50,27 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
             amount = String.valueOf(expensesV1.getTransactionAmount());
             totalAmount = expensesV1.getTransactionAmount();
         }
+
         if (expensesV1.getUnitCount() != null) {
             unitCount = String.valueOf(expensesV1.getUnitCount());
         }
+
         if (expensesV1.getBalanceAmount() != null) {
             bAmount = expensesV1.getBalanceAmount();
             balanceAmount = String.valueOf(Utils.roundOffWithTwoDigit(expensesV1.getBalanceAmount()));
         }
+
         paidAmount = String.valueOf((totalAmount - bAmount));
 
-        if (listBanks != null) {
-            BankingV1 bankingV1 = listBanks
+        if (listV2Banks != null) {
+            BankingV2 bankingV2 = listV2Banks
                     .stream()
                     .filter(i -> i.getBankId().equalsIgnoreCase(expensesV1.getBankId()))
                     .findFirst()
                     .orElse(null);
 
-            if (bankingV1 != null) {
-                debitedFrom = BankingUtils.getPaymentModeWithHolder(bankingV1);
+            if (bankingV2 != null) {
+                debitedFrom = BankingUtils.getPaymentModeWithHolder(bankingV2);
             }
         }
 
@@ -106,14 +112,12 @@ public class ExpensesMapper implements Function<ExpensesV1, ExpensesList> {
             }
         }
 
-
-
         return new ExpensesList(Utils.dateToString(expensesV1.getTransactionDate()),
                 categoryName,
                 subCategoryName,
                 description,
                 expensesV1.getTitle(),
-                expensesV1.getPaymentStatus().name(),
+                expensesV1.getPaymentStatus(),
                 amount,
                 String.valueOf(paidAmount),
                 balanceAmount,
