@@ -62,7 +62,7 @@ public class InvoiceService {
     @Autowired
     private SettlementItemService settlementItemService;
     @Autowired
-    private BankingService bankingService;
+    private BankingV2Service bankingV2Service;
     @Autowired
     private InvoiceRedemptionService invoiceRedemptionService;
 
@@ -251,7 +251,7 @@ public class InvoiceService {
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
         if (templateInfo != null) {
             if (templateInfo.bankId() != null) {
-                accountDetails = bankingService.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
+                accountDetails = bankingV2Service.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
             }
         }
 
@@ -1168,7 +1168,7 @@ public class InvoiceService {
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
         if (templateInfo != null) {
             if (templateInfo.bankId() != null) {
-                accountDetails = bankingService.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
+                accountDetails = bankingV2Service.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
             }
         }
 

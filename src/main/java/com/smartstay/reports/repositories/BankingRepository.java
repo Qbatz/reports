@@ -10,7 +10,13 @@ import java.util.List;
 
 @Repository
 public interface BankingRepository extends JpaRepository<BankingV1, String> {
-    @Query("SELECT b.bankId FROM bankingv1 b WHERE b.hostelId = :hostelId AND b.accountType IN :accountTypes AND b.isDeleted = false")
+
+    @Query("""
+            SELECT b.bankId FROM bankingv1 b
+            WHERE b.hostelId = :hostelId
+                AND b.accountType IN :accountTypes
+                AND b.isDeleted = false
+            """)
     List<String> findBankIdsByAccountTypes(@Param("hostelId") String hostelId,
                                            @Param("accountTypes") List<String> accountTypes);
 }

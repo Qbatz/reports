@@ -19,10 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ExpenseService {
@@ -38,7 +35,7 @@ public class ExpenseService {
     @Autowired
     private PDFServices pdfServices;
     @Autowired
-    private BankingService bankingService;
+    private BankingV2Service bankingV2Service;
     @Autowired
     private VendorService vendorService;
 
@@ -216,12 +213,13 @@ public class ExpenseService {
             listSubcatgories = new ArrayList<>();
         }
 
-        List<BankingV1> banks = bankingService.findByBankIds(bankIds);
+        List<BankingV2> v2Banks = bankingV2Service.getByBankIds(new HashSet<>(bankIds));
 
         List<VendorV1> finalListVendors = listVendors;
         List<ExpensesList> list = listExpenses
                 .stream()
-                .map(i -> new ExpensesMapper(listCategories, listSubcatgories, banks, finalListVendors)
+                .map(i -> new ExpensesMapper(listCategories, listSubcatgories,
+                        v2Banks, finalListVendors)
                         .apply(i))
                 .toList();
 
@@ -230,7 +228,6 @@ public class ExpenseService {
                 expenseHeader,
                 list);
     }
-
 
     public List<ExpenseCategory> getExpenseCategories(List<Long> ids) {
         return expenseCategoryRepository.findAllById(ids);
