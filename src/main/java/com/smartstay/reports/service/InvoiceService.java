@@ -62,7 +62,7 @@ public class InvoiceService {
     @Autowired
     private SettlementItemService settlementItemService;
     @Autowired
-    private BankingService bankingService;
+    private BankingV2Service bankingV2Service;
     @Autowired
     private InvoiceRedemptionService invoiceRedemptionService;
 
@@ -251,7 +251,7 @@ public class InvoiceService {
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
         if (templateInfo != null) {
             if (templateInfo.bankId() != null) {
-                accountDetails = bankingService.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
+                accountDetails = bankingV2Service.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
             }
         }
 
@@ -324,9 +324,10 @@ public class InvoiceService {
                         .getUnpaidInvoices()
                         .stream()
                         .map(i -> {
-                            double totalAmount = i.getInvoiceAmount();
-                            double paidAmount = i.getInvoiceAmount() - i.getPendingAmount();
-                            return new UnpaidInvoiceItem(i.getInvoiceNo(), i.getInvoiceAmount(), paidAmount, i.getInvoiceAmount());
+                            double totalAmount = i.getInvoiceAmount() != null ? i.getInvoiceAmount() : 0;
+                            double pendingAmount = i.getPendingAmount() != null ? i.getPendingAmount() : 0;
+                            double paidAmount = totalAmount - pendingAmount;
+                            return new UnpaidInvoiceItem(i.getInvoiceNo(), totalAmount, paidAmount, pendingAmount);
                         })
                         .toList();
                 unpaidInvoiceInfo = new UnpaidInvoiceInfo(noOfInvoiceInfo,
@@ -338,6 +339,7 @@ public class InvoiceService {
         DeductionsInfo deductionsInfo = null;
         if (invoicesV1.getDeductions() != null) {
             if (!invoicesV1.getDeductions().isEmpty()) {
+
                 double totalDeductionAmount = invoicesV1.getDeductions()
                         .stream()
                         .mapToDouble(i -> {
@@ -358,26 +360,27 @@ public class InvoiceService {
                             return 0.0;
                         })
                         .sum();
+
                 double pendingAmount = totalDeductionAmount - paidAmount;
+
                 deductionAmount = pendingAmount;
+
                 List<DeductionsItem> listDeductionItems = invoicesV1
                         .getDeductions()
                         .stream()
                         .map(i -> {
-                            double pAmount = 0.0;
-                            if (i.getPaidAmount() != null) {
-                                pAmount = i.getAmount() - i.getPaidAmount();
-                            }
-                            else {
-                                pAmount = i.getAmount();
-                            }
-                            return new DeductionsItem(i.getType(), i.getPaidAmount(), i.getAmount(), pAmount);
+                            double pendAmount = 0.0;
+                            double amount = i.getAmount() != null ? i.getAmount() : 0;
+                            double payAmount = i.getPaidAmount() != null ? i.getPaidAmount() : 0;
+
+                            pendAmount = amount - payAmount;
+
+                            return new DeductionsItem(i.getType(), payAmount, amount, pendAmount);
                         })
                         .toList();
 
                 deductionsInfo = new DeductionsInfo(totalDeductionAmount, paidAmount,
-                        pendingAmount,
-                        listDeductionItems);
+                        pendingAmount, listDeductionItems);
             }
         }
 
@@ -419,7 +422,8 @@ public class InvoiceService {
         if (settlementItems.getCurrentMonthPayableAmount() != null) {
             if (settlementItems.getIsFullRentCollected() != null) {
                 if (settlementItems.getIsFullRentCollected()) {
-                    currentPayablemount = settlementItems.getFullRent();
+                    currentPayablemount = settlementItems.getFullRent() != null
+                            ? settlementItems.getFullRent() : 0;
                 }
                 else {
                     currentPayablemount = settlementItems.getCurrentMonthPayableAmount();
@@ -477,13 +481,16 @@ public class InvoiceService {
 
         if (settlementItems.getEbItems() != null) {
             if (!settlementItems.getEbItems().isEmpty()) {
+
                 List<EBItems> ebItemsList = settlementItems
                         .getEbItems()
                         .stream()
                         .map(i -> {
-                            return new EBItems(i.getReadingId(), i.getCustomerEBId(), i.getFromDate(), i.getToDate(), i.getTotalAmount(), i.getConsumption());
+                            return new EBItems(i.getReadingId(), i.getCustomerEBId(), i.getFromDate(), i.getToDate(),
+                                    i.getTotalAmount(), i.getConsumption());
                         })
                         .toList();
+
                 double ebTotalAmount = settlementItems
                         .getEbItems()
                         .stream()
@@ -494,6 +501,7 @@ public class InvoiceService {
                             return i.getTotalAmount();
                         })
                         .sum();
+
                 electricityAmount = ebTotalAmount;
 
                 currentMonthEbInfo = new CurrentMonthEbInfo(ebTotalAmount, ebItemsList);
@@ -501,8 +509,11 @@ public class InvoiceService {
         }
 
         if (settlementItems.getWalltetItems() != null) {
+
             int noOfWalletItems = settlementItems.getWalltetItems().size();
+
             List<WalltetItems> listWalletItems = settlementItems.getWalltetItems();
+
             double walletAmount = listWalletItems
                     .stream()
                     .mapToDouble(i -> {
@@ -512,14 +523,19 @@ public class InvoiceService {
                         return 0.0;
                     })
                     .sum();
+
             if (walletAmount <= 0) {
                 refundable = refundable + walletAmount;
             }
+
             List<WalletItems> listwalletItems = listWalletItems
                     .stream()
-                    .map(i -> new WalletItems(i.getType(), i.getType(), Utils.roundOffWithTwoDigit(i.getAmount())))
+                    .map(i -> new WalletItems(i.getType(), i.getType(),
+                            Utils.roundOffWithTwoDigit(i.getAmount() != null ? i.getAmount() : 0)))
                     .toList();
-            walletInfo = new WalletInfo(noOfWalletItems, Utils.roundOffWithTwoDigit(walletAmount), listwalletItems);
+
+            walletInfo = new WalletInfo(noOfWalletItems, Utils.roundOffWithTwoDigit(walletAmount),
+                    listwalletItems);
         }
 
         currentRentInfo = new CurrentRentInfo(currentPaidAmount,
@@ -532,7 +548,9 @@ public class InvoiceService {
 
         com.smartstay.reports.dto.settlement.RetainerInfo retainerInfo = null;
         if (settlementItems.getRetainerItems() != null) {
+
             List<RetainerItems> listRetainerItems = settlementItems.getRetainerItems();
+
             double totalRetainerApplied = listRetainerItems
                     .stream()
                     .mapToDouble(i -> {
@@ -542,6 +560,7 @@ public class InvoiceService {
                         return 0.0;
                     })
                     .sum();
+
             refundable = refundable + totalRetainerApplied;
 
             double totalRetainerAmount = listRetainerItems
@@ -558,17 +577,24 @@ public class InvoiceService {
                     .stream()
                     .map(i -> new RetainerItemsList(i.getInvoiceNo(),
                             i.getInvoiceDate(),
-                            String.valueOf(Utils.roundOffWithTwoDigit(i.getAmount()))))
+                            String.valueOf(Utils.roundOffWithTwoDigit(
+                                    i.getAmount() != null ?  i.getAmount() : 0
+                            ))))
                     .toList();
-            retainerInfo = new com.smartstay.reports.dto.settlement.RetainerInfo(String.valueOf(Utils.roundOffWithTwoDigit(totalRetainerApplied)),
+
+            retainerInfo = new com.smartstay.reports.dto.settlement.RetainerInfo(
+                    String.valueOf(Utils.roundOffWithTwoDigit(totalRetainerApplied)),
                     String.valueOf(Utils.roundOffWithTwoDigit(totalRetainerAmount)),
                     items);
         }
 
         AdditionalAdvance additionalAdvance = null;
         if (settlementItems.getAdditionalAdvanceItems() != null) {
-            List<com.smartstay.reports.dto.settlement.AdditionalAdvance> listAdditionalAdvance = settlementItems.getAdditionalAdvanceItems();
-            Double totalPaidAmount = listAdditionalAdvance
+
+            List<com.smartstay.reports.dto.settlement.AdditionalAdvance> listAdditionalAdvance =
+                    settlementItems.getAdditionalAdvanceItems();
+
+            double totalPaidAmount = listAdditionalAdvance
                     .stream()
                     .mapToDouble(i -> {
                         if (i.getPaidAmount() != null) {
@@ -577,7 +603,8 @@ public class InvoiceService {
                         return 0.0;
                     })
                     .sum();
-            Double additionalRefundable = listAdditionalAdvance
+
+            double additionalRefundable = listAdditionalAdvance
                     .stream()
                     .mapToDouble(i -> {
                         if (i.getInvoiceBalance() != null) {
@@ -591,8 +618,10 @@ public class InvoiceService {
 
             List<AdditionalAdvanceItems> listAdditionalAdvanceItesm = listAdditionalAdvance
                     .stream()
-                    .map(i -> new AdditionalAdvanceItems(i.getInvoiceId(), i.getInvoiceNumber(), i.getInvoiceBalance()))
+                    .map(i -> new AdditionalAdvanceItems(i.getInvoiceId(),
+                            i.getInvoiceNumber(), i.getInvoiceBalance()))
                     .toList();
+
             additionalAdvance = new AdditionalAdvance(listAdditionalAdvance.size(),
                     Utils.roundOffWithTwoDigit(totalPaidAmount),
                     Utils.roundOffWithTwoDigit(additionalRefundable),
@@ -615,9 +644,14 @@ public class InvoiceService {
         }
 
         nonRefundable = unpaidInvoiceAmount + electricityAmount;
-        discountAmount = invoiceDiscountService.getInoiceDiscount(hostelV1.getHostelId(), invoicesV1.getInvoiceId());
-        subTotal = subTotal + Utils.roundOfDouble(invoicesV1.getTotalAmount()) + deductionAmount;
-        finalAmount = Utils.roundOfDouble(invoicesV1.getTotalAmount()) + deductionAmount;
+
+        discountAmount = invoiceDiscountService
+                .getInoiceDiscount(hostelV1 != null ? hostelV1.getHostelId() : "", invoicesV1.getInvoiceId());
+
+        subTotal = subTotal + Utils.roundOfDouble(invoicesV1.getTotalAmount() != null
+                ? invoicesV1.getTotalAmount() : 0) + deductionAmount;
+        finalAmount = Utils.roundOfDouble(invoicesV1.getTotalAmount() != null
+                ? invoicesV1.getTotalAmount() : 0) + deductionAmount;
         finalAmount = finalAmount + unpaidInvoiceAmount + electricityAmount ;
 
         FinalSettlementInvoiceInfo invoiceInfo = null;
@@ -633,7 +667,8 @@ public class InvoiceService {
                     unpaidInvoiceAmount,
                     electricityAmount,
                     discountAmount,
-                    Utils.roundOfDouble(invoicesV1.getTotalAmount()),
+                    Utils.roundOfDouble(invoicesV1.getTotalAmount() != null
+                            ? invoicesV1.getTotalAmount() : 0),
                     Utils.roundOffWithTwoDigit(refundable),
                     Utils.roundOffWithTwoDigit(nonRefundable),
                     true,
@@ -642,7 +677,8 @@ public class InvoiceService {
 
         StayInfo stayInfo = null;
         CustomersBedHistory bedHistory = customerBedHistoryService
-                .getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+                .getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(),
+                        invoicesV1.getInvoiceEndDate());
 
         if (bedHistory != null) {
             BedDetails bedDetails = bedsService.getBedFullDetails(bedHistory.getBedId());
@@ -653,7 +689,9 @@ public class InvoiceService {
             }
         }
 
-        TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
+        TemplateInfo templateInfo = templateService
+                .getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
+
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
 
         FinalSettlementInfo finalSettlementResponse = new FinalSettlementInfo(headerInfo,
@@ -741,6 +779,7 @@ public class InvoiceService {
             invoiceTypes.add(InvoiceType.REASSIGN_RENT.name());
             invoiceTypes.add(InvoiceType.BOOKING.name());
             invoiceTypes.add(InvoiceType.OTHER.name());
+            invoiceTypes.add(InvoiceType.EB.name());
             invoiceTypes.add(InvoiceType.ADDITIONAL_ADVANCE.name());
         }
 
@@ -899,7 +938,9 @@ public class InvoiceService {
     }
 
     public AdvanceItems getRedeemedListFromAdvance(String hostelId, String customerId) {
+
         InvoicesV1 advanceInvoice = invoicesV1Repository.findAdvanceInvoiceByCustomerId(customerId);
+
         if (advanceInvoice == null) {
             return new AdvanceItems("Refundable Advance",
                     0.0,
@@ -908,6 +949,7 @@ public class InvoiceService {
                     "NA",
                     null);
         }
+
         if (advanceInvoice.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PENDING.name())) {
             return new AdvanceItems("Refundable Advance",
                     0.0,
@@ -922,11 +964,12 @@ public class InvoiceService {
         if (advanceInvoice.getPaidAmount() != null) {
             paidAmount = advanceInvoice.getPaidAmount();
         }
-        if (availableAmount != null) {
+        if (advanceInvoice.getBalanceAmount() != null) {
             availableAmount = advanceInvoice.getBalanceAmount();
         }
 
-        List<RedeemedInfo> listRedeemedInfo = invoiceRedemptionService.findRedeemedItemsFromAdvance(hostelId, advanceInvoice.getInvoiceId());
+        List<RedeemedInfo> listRedeemedInfo = invoiceRedemptionService
+                .findRedeemedItemsFromAdvance(hostelId, advanceInvoice.getInvoiceId());
 
         return new AdvanceItems("Refundable Advance",
                 availableAmount,
@@ -937,7 +980,9 @@ public class InvoiceService {
     }
 
     public AdvanceItems getRedeemedListFromBookings(String hostelId, String customerId) {
+
         InvoicesV1 advanceInvoice = invoicesV1Repository.findBookingInvoice(hostelId, customerId);
+
         if (advanceInvoice == null) {
             return new AdvanceItems("Refundable Bookings",
                     0.0,
@@ -946,6 +991,7 @@ public class InvoiceService {
                     "NA",
                     null);
         }
+
         if (advanceInvoice.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PENDING.name())) {
             return new AdvanceItems("Refundable Bookings",
                     0.0,
@@ -960,11 +1006,12 @@ public class InvoiceService {
         if (advanceInvoice.getPaidAmount() != null) {
             paidAmount = advanceInvoice.getPaidAmount();
         }
-        if (availableAmount != null) {
+        if (advanceInvoice.getBalanceAmount() != null) {
             availableAmount = advanceInvoice.getBalanceAmount();
         }
 
-        List<RedeemedInfo> listRedeemedInfo = invoiceRedemptionService.findRedeemedItemsFromAdvance(hostelId, advanceInvoice.getInvoiceId());
+        List<RedeemedInfo> listRedeemedInfo = invoiceRedemptionService
+                .findRedeemedItemsFromAdvance(hostelId, advanceInvoice.getInvoiceId());
 
         return new AdvanceItems("Refundable Bookings",
                 availableAmount,
@@ -1121,7 +1168,7 @@ public class InvoiceService {
         TemplateInfo templateInfo = templateService.getTemplateDetails(invoicesV1.getHostelId(), invoicesV1.getInvoiceType());
         if (templateInfo != null) {
             if (templateInfo.bankId() != null) {
-                accountDetails = bankingService.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
+                accountDetails = bankingV2Service.getBankAccountDetails(templateInfo.bankId(), templateInfo.qrCode());
             }
         }
 

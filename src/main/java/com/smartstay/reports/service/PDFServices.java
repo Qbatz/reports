@@ -92,6 +92,7 @@ public class PDFServices {
     }
 
     public String generateExpensesPdf(String templateName, Context context) {
+
         String html = templateEngine.process(templateName, context);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

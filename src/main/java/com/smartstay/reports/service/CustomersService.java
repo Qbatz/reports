@@ -16,11 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class CustomersService {
+
     @Autowired
     private CustomersRepository customersRepository;
     @Autowired
@@ -36,24 +38,35 @@ public class CustomersService {
     @Autowired
     private TransactionV1Service transactionV1Service;
 
-    public ResponseEntity<?> getCustomers(String hostelId, String search, List<String> status, List<Integer> room, List<Integer> floor, List<String> sharingType, String startDate, String endDate) {
+    public ResponseEntity<?> getCustomers(String hostelId, String search, List<String> status,
+                                          List<Integer> room, List<Integer> floor, List<String> sharingType,
+                                          String startDate, String endDate) {
 
-        CustomersDetails details = getCustomerDetails(hostelId, search, status, room, floor, sharingType, startDate, endDate);
+        CustomersDetails details = getCustomerDetails(hostelId, search, status, room, floor,
+                sharingType, startDate, endDate);
+
         Context context = new Context();
         context.setVariable("tenants", details);
 
         String receiptsUrl = pdfServices.generateTenantPdf("tenant", context);
+
         return new ResponseEntity<>(receiptsUrl, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getCustomersDetails(String hostelId, String search, List<String> status, List<Integer> room, List<Integer> floor, List<String> sharingType, String startDate, String endDate) {
-        CustomersDetails details = getCustomerDetails(hostelId, search, status, room, floor, sharingType, startDate, endDate);
-        return new ResponseEntity<>(details, HttpStatus.OK);
+    public ResponseEntity<?> getCustomersDetails(String hostelId, String search, List<String> status,
+                                                 List<Integer> room, List<Integer> floor, List<String> sharingType,
+                                                 String startDate, String endDate) {
 
+        CustomersDetails details = getCustomerDetails(hostelId, search, status, room, floor,
+                sharingType, startDate, endDate);
+
+        return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
+    public CustomersDetails getCustomerDetails(String hostelId, String search, List<String> status,
+                                               List<Integer> rooms, List<Integer> floor, List<String> sharingType,
+                                               String startDate, String endDate) {
 
-    public CustomersDetails getCustomerDetails(String hostelId,String search, List<String> status, List<Integer> rooms, List<Integer> floor, List<String> sharingType, String startDate, String endDate) {
         Date sDate = Utils.stringToDate(startDate.replace("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         Date eDate = Utils.stringToDate(endDate.replace("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
 
@@ -70,9 +83,10 @@ public class CustomersService {
             }
         }
 
-        List<String> customerIds = null;
+        List<String> customerIds = new ArrayList<>();
         if (search != null && !search.isEmpty()) {
-            List<Customers> lCustomers = customersRepository.findByHostelIdAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(hostelId, search, search);
+            List<Customers> lCustomers = customersRepository
+                    .findByHostelIdAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(hostelId, search, search);
             if (lCustomers != null) {
                 customerIds = lCustomers
                         .stream()
@@ -82,17 +96,19 @@ public class CustomersService {
             }
         }
 
-        List<BookingsV1> allBookings = bookingsService.findAllBookingsWithFilters(hostelId, sDate, eDate,
-                customerIds, status, rooms, floor);
+        List<BookingsV1> allBookings = bookingsService
+                .findAllBookingsWithFilters(hostelId, sDate, eDate, customerIds, status, rooms, floor);
 //        List<BookingsV1> listBookings = bookingsService.findBookingsByHostelIdAndStartDateAndEndDate(hostelId, sDate, eDate);
 
-        List<String> cIds = null;
-        if (allBookings != null) {
-            cIds = allBookings
-                    .stream()
-                    .map(BookingsV1::getCustomerId)
-                    .toList();
+        if (allBookings == null){
+            allBookings = new ArrayList<>();
         }
+
+        List<String> cIds = allBookings
+                .stream()
+                .map(BookingsV1::getCustomerId)
+                .toList();
+
         List<Customers> listCustomers = customersRepository.findAllById(cIds);
         List<TransactionV1> listTransactions = transactionV1Service.findTransactions(hostelId, cIds);
 
@@ -102,10 +118,14 @@ public class CustomersService {
                 .toList();
 
         List<BedInformations> listBedInformations = bedsService.getBedInformations(bedIds);
+
+        List<BookingsV1> finalAllBookings = allBookings;
         List<com.smartstay.reports.dto.customer.Customers> listCustomerInfo = listCustomers
                 .stream()
-                .map(i -> new CustomersMapper(allBookings, listBedInformations, listTransactions).apply(i))
+                .map(i -> new CustomersMapper(finalAllBookings, listBedInformations, listTransactions)
+                        .apply(i))
                 .toList();
+
         HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
 
         String totalTenants = String.valueOf(listCustomers.size());
@@ -139,6 +159,7 @@ public class CustomersService {
                 .stream()
                 .filter(i -> i.getCurrentStatus().equalsIgnoreCase(BookingStatus.BOOKED.name()))
                 .count();
+
         HeaderInfo headerInfo = new HeaderInfo(totalTenants,
                 String.valueOf(activeCounts),
                 String.valueOf(noticePeriodCount),
@@ -147,11 +168,11 @@ public class CustomersService {
                 String.valueOf(bookingCount),
                 Utils.dateToString(sDate),
                 Utils.dateToString(eDate));
+
         Date d = new Date();
+
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(d), Utils.dateToTime(d));
 
-        CustomersDetails details = new CustomersDetails(hostelInformation, headerInfo, footerInfo, listCustomerInfo);
-        return details;
+        return new CustomersDetails(hostelInformation, headerInfo, footerInfo, listCustomerInfo);
     }
-
 }

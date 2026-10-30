@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.function.Function;
 
 public class CurrentRentBreakUp implements Function<com.smartstay.reports.dto.settlement.CurrentRentBreakUp, RentBreakUp> {
+
     @Override
     public RentBreakUp apply(com.smartstay.reports.dto.settlement.CurrentRentBreakUp currentRentBreakUp) {
+
         Date startDate = null;
         Date endDate = null;
         long noOfDays = 0;
@@ -17,6 +19,7 @@ public class CurrentRentBreakUp implements Function<com.smartstay.reports.dto.se
         String floorName = null;
         double rentPerDay = 0.0;
         double rent = 0.0;
+
         if (currentRentBreakUp.getFromDate() != null) {
             startDate = currentRentBreakUp.getFromDate();
         }
@@ -42,7 +45,6 @@ public class CurrentRentBreakUp implements Function<com.smartstay.reports.dto.se
             roomName = currentRentBreakUp.getRoomName();
         }
 
-
         return new RentBreakUp(Utils.dateToString(startDate),
                 Utils.dateToString(endDate),
                 startDate,
@@ -55,5 +57,4 @@ public class CurrentRentBreakUp implements Function<com.smartstay.reports.dto.se
                 roomName,
                 floorName);
     }
-
 }
