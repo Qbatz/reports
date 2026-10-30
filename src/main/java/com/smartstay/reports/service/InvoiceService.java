@@ -199,7 +199,7 @@ public class InvoiceService {
 
             listDeductions = invoicesV1.getDeductions();
 
-            totalDeductionAmount = invoicesV1.getDeductionAmount();
+            totalDeductionAmount = invoicesV1.getDeductionAmount() != null ? invoicesV1.getDeductionAmount() : 0;
         }
 
         String invoiceType = null;
