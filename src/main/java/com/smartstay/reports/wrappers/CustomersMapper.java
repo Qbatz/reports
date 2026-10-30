@@ -2,14 +2,11 @@ package com.smartstay.reports.wrappers;
 
 import com.smartstay.reports.dao.BookingsV1;
 import com.smartstay.reports.dao.Customers;
-import com.smartstay.reports.dao.Rooms;
 import com.smartstay.reports.dao.TransactionV1;
 import com.smartstay.reports.dto.beds.BedInformations;
 import com.smartstay.reports.dto.customer.CustomerInfo;
 import com.smartstay.reports.dto.customer.CustomerStayInfo;
-import com.smartstay.reports.dto.customer.StayInfo;
 import com.smartstay.reports.ennum.BookingStatus;
-import com.smartstay.reports.ennum.CustomerStatus;
 import com.smartstay.reports.utils.NameUtils;
 import com.smartstay.reports.utils.Utils;
 
@@ -23,7 +20,9 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
     List<BedInformations> listBedInformations = null;
     List<TransactionV1> listTransactions = null;
 
-    public CustomersMapper(List<BookingsV1> bookings, List<BedInformations> listBedInformations, List<TransactionV1> listTransactions) {
+    public CustomersMapper(List<BookingsV1> bookings,
+                           List<BedInformations> listBedInformations,
+                           List<TransactionV1> listTransactions) {
         this.listBooking = bookings;
         this.listBedInformations = listBedInformations;
         this.listTransactions = listTransactions;
@@ -134,7 +133,6 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                         }
                     }
                 }
-
              }
         }
 
@@ -161,8 +159,6 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
             }
         }
 
-
-
         CustomerInfo customerInfo = new CustomerInfo(customers.getFirstName(),
                 customers.getLastName(),
                 fullName,
@@ -175,9 +171,9 @@ public class CustomersMapper implements Function<Customers, com.smartstay.report
                 checkInDate,
                 checkoutDate,
                 stayDuration);
+
         CustomerStayInfo stayInfo = new CustomerStayInfo(bedName,
-                floorName,
-                roomName, sharingType);
+                floorName, roomName, sharingType);
 
         return new com.smartstay.reports.dto.customer.Customers(customerInfo, stayInfo);
     }

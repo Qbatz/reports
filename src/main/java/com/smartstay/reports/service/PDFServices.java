@@ -13,15 +13,18 @@ import java.io.File;
 
 @Service
 public class PDFServices {
+
     private final TemplateEngine templateEngine;
 
     @Autowired
     private UploadFileToS3 uploadFileToS3;
+
     public PDFServices(TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
     public String generatePdf(String invoiceId, String templateName, Context context) {
+
         String html = templateEngine.process(templateName, context);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -89,6 +92,7 @@ public class PDFServices {
     }
 
     public String generateExpensesPdf(String templateName, Context context) {
+
         String html = templateEngine.process(templateName, context);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

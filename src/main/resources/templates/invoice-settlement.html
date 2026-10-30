@@ -28,7 +28,7 @@
         .heading{
             text-align:center;
             font-size:16px;
-            font-weight:500;
+            font-weight:400;
             margin:15px 0;
         }
 
@@ -41,7 +41,7 @@
             background:#F9F9F9;
             border-top:1px solid #E5E7EB;
             border-bottom:1px solid #E5E7EB;
-            font-weight:500;
+            font-weight:400;
             text-transform:uppercase;
             padding:10px;
             font-size: 10px;
@@ -54,14 +54,14 @@
 
         .value{
             color:#171717;
-            font-weight:600;
+            font-weight:400;
             font-size:11px;
 
         }
 
         .item-title{
             font-size:11px;
-            font-weight:500;
+            font-weight:400;
             color:#1A1C21;
         }
 
@@ -74,7 +74,7 @@
         .amount{
             text-align:right;
             font-size:10px;
-            font-weight:500;
+            font-weight:400;
         }
 
         .summary-table td{
@@ -84,7 +84,7 @@
         .total-row{
             border-top:1px solid #E5E7EB;
             font-size:15px;
-            font-weight:500;
+            font-weight:400;
         }
 
         .signature{
@@ -121,8 +121,10 @@
                         alt="Logo"
                         style="max-width:134px;" />
 
-                <div style="margin-top:10px; font-size: 10px;"
-                     th:text="${invoice.configInfo.emailId}"> test@gmail.com
+                <div  th:if="${invoice.configInfo.emailId != null
+        and invoice.configInfo.emailId != ''
+        and invoice.configInfo.emailId != 'null'}" style="margin-top:10px; font-size: 10px;"
+                      th:text="${invoice.configInfo.emailId}"> test@gmail.com
                 </div>
 
                 <div
@@ -135,22 +137,24 @@
 
             <td width="55%" valign="top" align="right">
 
-                <div style="font-size:14px;font-weight:500;"
+                <div style="font-size:14px;font-weight:400;"
 
                 >
                 </div>
 
-                <div style="margin-top:5px; font-size:10px;"
-                     th:text="${invoice.headerInfo.houseNo} + ' ' +
-              ${invoice.headerInfo.street} + ', ' +
-              ${invoice.headerInfo.city} + ', ' +
-              ${invoice.headerInfo.state} + ' - ' +
-              ${invoice.headerInfo.pincode}">
+                <div style="margin-top: 5px; font-size: 10px;"
+                     th:text="${(!#strings.isEmpty(invoice.headerInfo.houseNo) ? invoice.headerInfo.houseNo + ' ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.street) ? invoice.headerInfo.street + ', ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.city) ? invoice.headerInfo.city : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.city) and !#strings.isEmpty(invoice.headerInfo.state) ? ', ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.state) ? invoice.headerInfo.state : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.pincode) and (!#strings.isEmpty(invoice.headerInfo.city) or !#strings.isEmpty(invoice.headerInfo.state)) ? ' - ' : '') +
+                               (!#strings.isEmpty(invoice.headerInfo.pincode) ? invoice.headerInfo.pincode : '')}">
                 </div>
 
-                <div style="margin-top:5px; font-size: 10px;" th:text="${invoice.headerInfo.gstNumber}">
-                    GST IN : XXXXXXXXXX
-                </div>
+                <!--                <div style="margin-top:5px; font-size: 10px;" th:text="${invoice.headerInfo.gstNumber}">-->
+                <!--                    GST IN : XXXXXXXXXX-->
+                <!--                </div>-->
 
             </td>
 
@@ -171,7 +175,7 @@
 
             <td width="50%" valign="top">
 
-                <div style="font-weight:500;margin-bottom:10px; font-size: 10px;">
+                <div style="font-weight:400;margin-bottom:10px; font-size: 10px;">
                     Billed To:
                 </div>
 
@@ -272,7 +276,7 @@
                     <th:block th:each="item : ${invoice.unpaidInvoiceInfo.unpaidInvoiceItems}">
                         <span th:text="${item.invoiceNumber}">INV141</span>
                         -
-                        ₹ <span th:text="${item.pendingAmount}">500</span>
+                        ₹ <span th:text="${item.pendingAmount}"></span>
                         <br/>
                     </th:block>
                 </div>
@@ -347,6 +351,56 @@
                 ₹ <span th:text="${invoice.advanceItems.availableAdvanceBalance}">0</span>
             </td>
         </tr>
+
+
+
+        <tr >
+            <td style="padding-bottom:10px;">
+
+                <div class="item-title" style="padding-bottom:10px;"
+                >
+                    Additional Advance
+                </div>
+
+                <div class="item-description">
+
+                    Total Paid ₹
+                    <span th:text="${invoice.additionalAdvance != null ? invoice.additionalAdvance.invoiceAmount : 0}">
+        0
+    </span>
+                    <br/>
+
+                    <th:block th:if="${invoice.additionalAdvance != null
+                     and invoice.additionalAdvance.additionalAdvanceItems != null
+                     and !invoice.additionalAdvance.additionalAdvanceItems.isEmpty()}">
+
+                        <th:block th:each="item : ${invoice.additionalAdvance.additionalAdvanceItems}">
+                            <span th:text="${item.invoiceNumber}">INV-001</span>
+                            -
+                            ₹<span th:text="${item.amount}">250</span>
+                            <br/>
+                        </th:block>
+
+                    </th:block>
+
+                </div>
+
+            </td>
+
+            <td class="amount">
+                ₹ <span th:text="${invoice.additionalAdvance != null ? invoice.additionalAdvance.balanceAmount : 0}">0</span>
+            </td>
+        </tr>
+
+
+
+
+
+
+
+
+
+
 
         <!--booking -->
         <tr >
@@ -470,20 +524,19 @@
                 </div>
 
                 <div class="item-description">
-
-
                     <div th:each="rent : ${invoice.walletInfo.walletItems}">
-
                         <span th:text="${rent.name}"></span> -
                         ₹<span th:text="${rent.amount}"></span><br/>
-
-
                     </div>
                 </div>
 
             </td>
 
-            <td class="amount" th:text="${invoice.walletInfo.totalWalletAmount}" >
+            <td class="amount"
+                th:text="${invoice.walletInfo != null
+                and invoice.walletInfo.totalWalletAmount != null
+                ? '₹ ' + invoice.walletInfo.totalWalletAmount
+                : '₹ 0.00'}" >
                 ₹ 300.00
             </td>
         </tr>
@@ -498,23 +551,47 @@
 
                 <div class="item-description" >
 
-
                 </div>
 
             </td>
 
-            <td class="amount" >
-
+            <td class="amount"
+                th:text="${invoice.invoiceInfo != null
+                and invoice.invoiceInfo.discountAmount != null
+                ? '₹ ' + invoice.invoiceInfo.discountAmount
+                : '₹ 0.00'}">
+                ₹ 0.00
             </td>
         </tr>
 
+        <!-- Deductions -->
+        <tr>
+            <td style="padding-bottom:10px;">
+                <div class="item-title" style="padding-bottom:10px;">
+                    Deductions
+                </div>
 
+                <div class="item-description"
+                     th:if="${invoice.deductionsInfo != null
+                     and invoice.deductionsInfo.listDeductions != null}">
+
+                    <div th:each="deductions : ${invoice.deductionsInfo.listDeductions}">
+                        <span th:text="${deductions.item}"></span> -
+                        ₹<span th:text="${deductions.pendingAmount}"></span><br/>
+                    </div>
+                </div>
+            </td>
+
+            <td class="amount"
+                th:text="${invoice.deductionsInfo != null
+                and invoice.deductionsInfo.pendingAmount != null
+                ? '₹ ' + invoice.deductionsInfo.pendingAmount
+                : '₹ 0.00'}">
+                ₹ 500.00
+            </td>
+        </tr>
 
     </table>
-
-
-
-
 
     <table width="40%" align="right" class="summary-table" style="margin-bottom:150px;">
 
@@ -542,6 +619,7 @@
             <td style="font-size: 10px;">Payable Rent</td>
             <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.payableRent}">₹ 0.0</td>
         </tr>
+
         <tr>
             <td style="font-size: 10px;">Wallet</td>
             <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.walletInfo.totalWalletAmount}" >₹ 0.0</td>
@@ -564,23 +642,15 @@
 
     </table >
 
-
-
-
-
     <!--account details-->
-
     <table width="100%" style="margin-top:350px;">
 
         <tr>
-
             <td width="60%" valign="top">
 
                 <h4 style="font-size: 10px;">ACCOUNT DETAILS</h4>
 
                 <br/>
-
-
 
                 <div style="padding-bottom:5px;font-size: 10px;">
                     Account No :
@@ -625,8 +695,6 @@
 
     </table >
 
-
-
     <table width="100%" style="margin-bottom:10px;">
 
         <tr>
@@ -652,13 +720,12 @@
                         <span
                                 th:text="${invoice.invoiceInfo.status}"
                                 th:style="${
-                invoice.invoiceInfo.status == 'PENDING' ? 'color:#F59E0B;' :
-                invoice.invoiceInfo.status == 'PAID' ? 'color:#038C3D;' :
-                invoice.invoiceInfo.status == 'OVERDUE' ? 'color:#DC2626;' :
-                'color:#6B7280;'
-            }">
-            Paid
-        </span>
+                                invoice.invoiceInfo.status == 'PENDING' ? 'color:#F59E0B;' :
+                                invoice.invoiceInfo.status == 'PAID' ? 'color:#038C3D;' :
+                                invoice.invoiceInfo.status == 'OVERDUE' ? 'color:#DC2626;' :
+                                'color:#6B7280;'
+                            }">Paid
+                        </span>
                     </div>
                 </div>
                 <div style="padding-bottom:5px;font-size: 10px;">Thanks for the business.</div>

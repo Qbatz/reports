@@ -1,7 +1,6 @@
 package com.smartstay.reports.wrappers;
 
 import com.smartstay.reports.dao.*;
-import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.ennum.TransactionType;
 import com.smartstay.reports.responses.receipts.ReceiptList;
 import com.smartstay.reports.utils.NameUtils;
@@ -14,18 +13,22 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
 
     List<Customers> listCustomers = null;
     List<Users> listCreatedBy = null;
-    List<BankingV1> listBanks = null;
+    List<BankingV2> listV2Banks;
     List<InvoicesV1> listInvoices = null;
 
-    public ReceiptReportMapper(List<Customers> listCustomers, List<Users> listCreatedBy, List<BankingV1> listBanks, List<InvoicesV1> listInvoices) {
+    public ReceiptReportMapper(List<Customers> listCustomers,
+                               List<Users> listCreatedBy,
+                               List<BankingV2> listV2Banks,
+                               List<InvoicesV1> listInvoices) {
         this.listCustomers = listCustomers;
         this.listCreatedBy = listCreatedBy;
-        this.listBanks = listBanks;
+        this.listV2Banks = listV2Banks;
         this.listInvoices = listInvoices;
     }
 
     @Override
     public ReceiptList apply(TransactionV1 transactionV1) {
+
         String receiptNo = transactionV1.getTransactionReferenceId();
         String paidDate = Utils.dateToString(transactionV1.getPaymentDate());
         String tenantName = null;
@@ -36,14 +39,16 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
         String collectedBy = null;
         String paymentType = "Credit";
 
-        if (transactionV1.getType() != null && transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
+        if (transactionV1.getType() != null &&
+                transactionV1.getType().equalsIgnoreCase(TransactionType.REFUND.name())) {
             paymentType = "Debit";
         }
 
         if (listCustomers != null) {
             Customers customers = listCustomers
                     .stream()
-                    .filter(i -> i.getCustomerId().equalsIgnoreCase(transactionV1.getCustomerId()))
+                    .filter(i -> i.getCustomerId().
+                            equalsIgnoreCase(transactionV1.getCustomerId()))
                     .findFirst()
                     .orElse(null);
 
@@ -52,20 +57,22 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
             }
         }
 
-        if (listBanks != null) {
-            BankingV1 bankingV1 = listBanks.stream()
-                    .filter(i -> i.getBankId().equalsIgnoreCase(transactionV1.getBankId()))
+        if (listV2Banks != null) {
+            BankingV2 bankingV2 = listV2Banks.stream()
+                    .filter(i -> i.getBankId()
+                            .equalsIgnoreCase(transactionV1.getBankId()))
                     .findFirst()
                     .orElse(null);
-            if (bankingV1 != null) {
-                paymentMode = bankingV1.getAccountType();
+            if (bankingV2 != null) {
+                paymentMode = bankingV2.getAccountType();
             }
         }
 
         if (listCreatedBy != null) {
             Users users = listCreatedBy
                     .stream()
-                    .filter(i -> i.getUserId().equalsIgnoreCase(transactionV1.getCreatedBy()))
+                    .filter(i -> i.getUserId()
+                            .equalsIgnoreCase(transactionV1.getCreatedBy()))
                     .findFirst()
                     .orElse(null);
             if (users != null) {
@@ -76,7 +83,8 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
         if (listInvoices != null) {
             InvoicesV1 invoicesV1 = listInvoices
                     .stream()
-                    .filter(i -> i.getInvoiceId().equalsIgnoreCase(transactionV1.getInvoiceId()))
+                    .filter(i -> i.getInvoiceId()
+                            .equalsIgnoreCase(transactionV1.getInvoiceId()))
                     .findFirst()
                     .orElse(null);
             if (invoicesV1 != null) {
@@ -84,7 +92,6 @@ public class ReceiptReportMapper implements Function<TransactionV1, ReceiptList>
                 invoiceType = Utils.capitalize(invoicesV1.getInvoiceType());
             }
         }
-
 
         return new ReceiptList(receiptNo,
                 paidDate,

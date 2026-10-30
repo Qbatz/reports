@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +21,14 @@ public class ReceiptsController {
     private TransactionV1Service transctionService;
 
     @GetMapping("/{hostelId}/{transactionId}")
-    public ResponseEntity<?> getReceiptDownload(@PathVariable("hostelId") String hostelId, @PathVariable("transactionId") String transactionId) {
+    public ResponseEntity<?> getReceiptDownload(@PathVariable("hostelId") String hostelId,
+                                                @PathVariable("transactionId") String transactionId) {
         return transctionService.getReceiptPDF(hostelId, transactionId);
     }
 
     @GetMapping("/details/{hostelId}/{transactionId}")
-    public ResponseEntity<?> getReceiptdetails(@PathVariable("hostelId") String hostelId, @PathVariable("transactionId") String transactionId) {
+    public ResponseEntity<?> getReceiptdetails(@PathVariable("hostelId") String hostelId,
+                                               @PathVariable("transactionId") String transactionId) {
         return transctionService.getReceiptDetails(hostelId, transactionId);
     }
 

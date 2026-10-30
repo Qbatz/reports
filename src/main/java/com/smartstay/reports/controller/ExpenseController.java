@@ -29,8 +29,10 @@ public class ExpenseController {
                                                @RequestParam(value = "paymentStatus", required = false) List<String> paymentStatus,
                                                @RequestParam(value = "paidTo", required = false) List<Integer> paidTo,
                                                @RequestParam(value = "createdBy", required = false) List<String> createdBy) {
-        return expenseService.getExpenseDetails(hostelId, startDate, endDate, categoryId, subCategoryId, paymentMode, paymentStatus, paidTo, createdBy);
+        return expenseService.getExpenseDetails(hostelId, startDate, endDate, categoryId, subCategoryId,
+                paymentMode, paymentStatus, paidTo, createdBy);
     }
+
     @GetMapping("/{hostelId}")
     public ResponseEntity<?> getExpense(@PathVariable("hostelId") String hostelId,
                                         @RequestParam(value = "startDate", required = false) String startDate,
@@ -41,6 +43,7 @@ public class ExpenseController {
                                         @RequestParam(value = "paymentStatus", required = false) List<String> paymentStatus,
                                         @RequestParam(value = "paidTo", required = false) List<Integer> paidTo,
                                         @RequestParam(value = "createdBy", required = false) List<String> createdBy) {
-        return expenseService.getExpense(hostelId, startDate, endDate, categoryId, subCategoryId, paymentMode, paymentStatus, paidTo, createdBy);
+        return expenseService.getExpense(hostelId, startDate, endDate, categoryId, subCategoryId,
+                paymentMode, paymentStatus, paidTo, createdBy);
     }
 }

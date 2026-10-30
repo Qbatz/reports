@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -21,12 +20,14 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @GetMapping("/{hostelId}/{invoiceId}")
-    public ResponseEntity<?> getInvoiceReports(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
+    public ResponseEntity<?> getInvoiceReports(@PathVariable("invoiceId") String invoiceId,
+                                               @PathVariable("hostelId") String hostelId) {
         return invoiceService.getInvoiceReport(hostelId, invoiceId);
     }
 
     @GetMapping("/details/{hostelId}/{invoiceId}")
-    public ResponseEntity<?> getInvoiceReportsDetails(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
+    public ResponseEntity<?> getInvoiceReportsDetails(@PathVariable("invoiceId") String invoiceId,
+                                                      @PathVariable("hostelId") String hostelId) {
         return invoiceService.getInvoiceDetails(hostelId, invoiceId);
     }
 

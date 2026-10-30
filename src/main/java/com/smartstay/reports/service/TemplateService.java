@@ -11,22 +11,29 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TemplateService {
+
     @Autowired
     private BillTemplateRepository billTemplateRepository;
 
     public TemplateInfo getTemplateDetails(String hostelId, String invoiceType) {
+
         BillTemplates billTemplates = billTemplateRepository.getByHostelId(hostelId);
+
         String bankId = null;
         if (billTemplates != null) {
+
             BillTemplateType billTemplateType = null;
-            if (invoiceType.equalsIgnoreCase(InvoiceType.RENT.name()) || invoiceType.equalsIgnoreCase(InvoiceType.SETTLEMENT.name()) ||  invoiceType.equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+
+            if (invoiceType.equalsIgnoreCase(InvoiceType.RENT.name()) || invoiceType.equalsIgnoreCase(InvoiceType.SETTLEMENT.name())
+                    ||  invoiceType.equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
                 billTemplateType = billTemplates
                         .getTemplateTypes()
                         .stream()
                         .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
                         .findFirst()
                         .orElse(null);
-            } else if (invoiceType.equalsIgnoreCase(InvoiceType.BOOKING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADVANCE.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADDITIONAL_ADVANCE.name())) {
+            } else if (invoiceType.equalsIgnoreCase(InvoiceType.BOOKING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.ADVANCE.name())
+                    || invoiceType.equalsIgnoreCase(InvoiceType.ADDITIONAL_ADVANCE.name())) {
                 billTemplateType = billTemplates
                         .getTemplateTypes()
                         .stream()
@@ -34,7 +41,8 @@ public class TemplateService {
                         .findFirst()
                         .orElse(null);
             }
-            else if (invoiceType.equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || invoiceType.equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+            else if (invoiceType.equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) ||
+                    invoiceType.equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
                 billTemplateType = billTemplates
                         .getTemplateTypes()
                         .stream()
@@ -50,9 +58,11 @@ public class TemplateService {
                         .findFirst()
                         .orElse(null);
             }
+
             if (billTemplateType == null) {
                 return null;
             }
+
             String hexColor = null;
             String colorCode = billTemplateType.getInvoiceTemplateColor();
             String colorValue = null;
@@ -76,8 +86,8 @@ public class TemplateService {
                 hexColor = String.format("#%02X%02X%02X", r, g, b);
             }
 
-
             String hostelLogo = null;
+            String hostelCountryCode = "+91";
             String hostelPhone = null;
             String hostelEmailId = null;
             String termsAndCondition = null;
@@ -95,6 +105,10 @@ public class TemplateService {
             if (hostelLogo == null) {
 //                hostelLogo = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
                 hostelLogo = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
+            }
+
+            if (billTemplates.getCountryCode() != null) {
+                hostelCountryCode = "+" + billTemplates.getCountryCode();
             }
 
             if (billTemplates.isMobileCustomized()) {
@@ -126,6 +140,7 @@ public class TemplateService {
             return new TemplateInfo(hexColor,
                     hostelLogo,
                     qrCode,
+                    hostelCountryCode,
                     hostelPhone,
                     hostelEmailId,
                     signatureUrl,
@@ -173,8 +188,8 @@ public class TemplateService {
                 hexColor = String.format("#%02X%02X%02X", r, g, b);
             }
 
-
             String hostelLogo = null;
+            String hostelCountryCode = "+91";
             String hostelPhone = null;
             String hostelEmailId = null;
             String termsAndCondition = null;
@@ -190,6 +205,10 @@ public class TemplateService {
 
             if (hostelLogo == null) {
                 hostelLogo = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/smartstay.png";
+            }
+
+            if (billTemplates.getCountryCode() != null) {
+                hostelCountryCode = "+" + billTemplates.getCountryCode();
             }
 
             if (billTemplates.isMobileCustomized()) {
@@ -219,6 +238,7 @@ public class TemplateService {
             return new TemplateInfo(hexColor,
                     hostelLogo,
                     qrCode,
+                    hostelCountryCode,
                     hostelPhone,
                     hostelEmailId,
                     signatureUrl,

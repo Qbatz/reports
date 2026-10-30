@@ -12,6 +12,7 @@ import java.util.List;
 
 @Service
 public class BankingService {
+
     @Autowired
     private BankingRepository bankingRepository;
 
@@ -49,7 +50,8 @@ public class BankingService {
         AccountDetails accountDetails = new AccountDetails(null, null, null, null, qrCode);
         BankingV1 bankingV1 = bankingRepository.findById(bankId).orElse(null);
         if (bankingV1 != null) {
-            accountDetails = new AccountDetails(bankingV1.getAccountNumber(), bankingV1.getIfscCode(), bankingV1.getBankName(), bankingV1.getUpiId(), qrCode);
+            accountDetails = new AccountDetails(bankingV1.getAccountNumber(), bankingV1.getIfscCode(),
+                    bankingV1.getBankName(), bankingV1.getUpiId(), qrCode);
         }
         return accountDetails;
     }
