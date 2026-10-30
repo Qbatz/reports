@@ -3,7 +3,6 @@ package com.smartstay.reports.service;
 import com.smartstay.reports.dao.*;
 import com.smartstay.reports.dto.customer.FooterInfo;
 import com.smartstay.reports.dto.customer.HostelInformation;
-import com.smartstay.reports.ennum.InvoiceItems;
 import com.smartstay.reports.ennum.InvoiceType;
 import com.smartstay.reports.ennum.TransactionType;
 import com.smartstay.reports.repositories.TransactionRepository;
@@ -38,7 +37,7 @@ public class TransactionV1Service {
     @Autowired
     private CustomerServices customerServices;
     @Autowired
-    private BankingService bankingService;
+    private BankingV2Service bankingV2Service;
     @Autowired
     private PDFServices pdfServices;
     @Autowired
@@ -147,7 +146,7 @@ public class TransactionV1Service {
         }
 
         String paidAmountInWords = AmountToWordsUtils.convert(transactionV1.getPaidAmount()) + " Rupees Only";
-        String paymentMode = bankingService.getPaymentMode(transactionV1.getBankId());
+        String paymentMode = bankingV2Service.getPaymentMode(transactionV1.getBankId());
         ReceiptInfo receiptInfo = new ReceiptInfo(transactionV1.getTransactionReferenceId(),
                 Utils.dateToString(transactionV1.getPaymentDate()),
                 Utils.dateToTime(transactionV1.getPaymentDate()),
@@ -212,7 +211,10 @@ public class TransactionV1Service {
         return listTransactions;
     }
 
-    public ResponseEntity<?> getReceiptReports(String hostelId, String startDate, String endDate, List<String> invoiceTypes, List<String> collectedBy, List<String> paymentModes) {
+    public ResponseEntity<?> getReceiptReports(String hostelId, String startDate, String endDate,
+                                               List<String> invoiceTypes, List<String> collectedBy,
+                                               List<String> paymentModes) {
+
         ReceiptsReports receiptsReports = getReceiptReportDetails(hostelId, startDate, endDate, invoiceTypes, collectedBy, paymentModes);
 
         if (receiptsReports.listReceipts().isEmpty()) {
@@ -231,7 +233,10 @@ public class TransactionV1Service {
         return new ResponseEntity<>(receiptsReports, HttpStatus.OK);
     }
 
-    public ReceiptsReports getReceiptReportDetails(String hostelId, String startDate, String endDate, List<String> invoiceType, List<String> collectedBy, List<String> paymentMode) {
+    public ReceiptsReports getReceiptReportDetails(String hostelId, String startDate, String endDate,
+                                                   List<String> invoiceType, List<String> collectedBy,
+                                                   List<String> paymentMode) {
+
         HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(new Date()), Utils.dateToTime(new Date()));
         ReceiptHeader receiptHeader = null;
@@ -241,9 +246,11 @@ public class TransactionV1Service {
 
         List<String> bankIds = null;
         if (paymentMode != null && !paymentMode.isEmpty()) {
-            List<String> normalizedModes = paymentMode.stream().map(String::toUpperCase).collect(Collectors.toList());
+            List<String> normalizedModes = paymentMode.stream()
+                    .map(String::toUpperCase)
+                    .collect(Collectors.toList());
 
-            bankIds = bankingService.findBankIdsByAccountTypes(hostelId, normalizedModes);
+            bankIds = bankingV2Service.getBankIdsByAccountTypes(hostelId, normalizedModes);
             if (bankIds.isEmpty()) {
                 return new ReceiptsReports(hostelInformation,
                         receiptHeader,
@@ -328,14 +335,14 @@ public class TransactionV1Service {
                     .distinct().toList();
 
             List<Customers> listCustomers = customerServices.findByCustomerIds(customerIds);
-            List<BankingV1> listBanks = bankingService.findByBankIds(tBankIds);
+            List<BankingV2> listV2Banks = bankingV2Service.getByBankIds(new HashSet<>(tBankIds));
             List<Users> listUsers = userService.findByUserIds(tUserIds);
 
             List<ReceiptList> listReceipts = listTransactions
                     .stream()
-                    .map(i -> new ReceiptReportMapper(listCustomers, listUsers, listBanks, listInvoices).apply(i))
+                    .map(i -> new ReceiptReportMapper(listCustomers, listUsers,
+                            listV2Banks, listInvoices).apply(i))
                     .toList();
-
 
             receiptsReports = new ReceiptsReports(hostelInformation,
                     receiptHeader,

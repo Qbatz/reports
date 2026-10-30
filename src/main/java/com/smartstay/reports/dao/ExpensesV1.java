@@ -1,7 +1,6 @@
 package com.smartstay.reports.dao;
 
 import com.smartstay.reports.converters.StringListConverter;
-import com.smartstay.reports.ennum.ExpensePaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,8 +23,9 @@ public class ExpensesV1 {
     private String parentId;
     private String hostelId;
     private String bankId;
+    private String paymentMethodId;
 
-    //    this is for single product amount
+    //this is for single product amount
     private Double unitPrice;
     private Integer unitCount;
     // Final payable amount (after discount); used by all existing financial calculations.
@@ -58,21 +58,26 @@ public class ExpensesV1 {
     private String title;
     private Boolean isVendorExpense;
 
-    @Enumerated(EnumType.STRING)
-    private ExpensePaymentStatus paymentStatus;
+    //from expense payment status ENUM
+    private String paymentStatus;
 
     private Double paidAmount;
     private Double balanceAmount;
     private String paymentMethod;
     private String note;
     private Integer creditPeriod;
+    private Boolean isMigrated;
 
     // Payment/transaction reference for the expense.
     private String transactionId;
+    //Id from bank transaction v1
+    private String bankTransactionId;
     // Tax amount applicable to the expense.
     private Double tax;
     // Discount amount applied to the expense.
     private Double discount;
+    // Effective discount percentage (derived from the discount amount / total, or supplied directly).
+    private Double discountPercentage;
     // S3 URLs of the images uploaded with the expense.
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "TEXT")
