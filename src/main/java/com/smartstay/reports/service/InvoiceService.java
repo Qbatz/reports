@@ -375,7 +375,7 @@ public class InvoiceService {
 
                             pendAmount = amount - payAmount;
 
-                            return new DeductionsItem(i.getType(), payAmount, amount, pendAmount);
+                            return new DeductionsItem(Utils.capitalize(i.getType()), payAmount, amount, pendAmount);
                         })
                         .toList();
 
@@ -434,18 +434,22 @@ public class InvoiceService {
             }
         }
 
+        nonRefundable = nonRefundable + currentPayablemount;
+
         if (settlementItems.getCurrentMonthPaidAmount() != null) {
             currentPaidAmount = settlementItems.getCurrentMonthPaidAmount();
             currentPayablemount = currentPayablemount - currentPaidAmount;
 //            subTotal = subTotal - currentPaidAmount;
         }
 
-        if (currentPayablemount > 0) {
-            payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
-        }
-        else {
-            refundable = refundable + (currentPayablemount * -1);
-        }
+//        if (currentPayablemount > 0) {
+//            payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
+//        }
+//        else {
+//            refundable = refundable + (currentPayablemount * -1);
+//        }
+
+        refundable = refundable + currentPaidAmount;
 
         if (listRentBreakUp != null) {
             if (!listRentBreakUp.isEmpty()) {
@@ -643,7 +647,7 @@ public class InvoiceService {
                     hostelV1.getEmailId());
         }
 
-        nonRefundable = unpaidInvoiceAmount + electricityAmount;
+        nonRefundable = nonRefundable + unpaidInvoiceAmount + electricityAmount;
 
         discountAmount = invoiceDiscountService
                 .getInoiceDiscount(hostelV1 != null ? hostelV1.getHostelId() : "", invoicesV1.getInvoiceId());
