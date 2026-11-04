@@ -1,6 +1,7 @@
 package com.smartstay.reports.dto.invoice;
 
 public record FinalSettlementHeaderInfo(String invoiceNo,
+                                        String hostelName,
                                         String houseNo,
                                         String street,
                                         String city,
