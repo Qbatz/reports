@@ -635,6 +635,7 @@ public class InvoiceService {
         FinalSettlementHeaderInfo headerInfo = null;
         if (hostelV1 != null) {
             headerInfo = new FinalSettlementHeaderInfo(invoicesV1.getInvoiceNumber(),
+                    hostelV1.getHostelName(),
                     hostelV1.getHouseNo(),
                     hostelV1.getStreet(),
                     hostelV1.getCity(),
