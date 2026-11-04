@@ -252,10 +252,6 @@
 
     </table>
 
-
-
-
-
     <table width="100%" cellpadding="10" cellspacing="0" style="margin-bottom:40px;">
 
         <tr class="section-header">
@@ -274,9 +270,9 @@
 
                 <div class="item-description">
                     <th:block th:each="item : ${invoice.unpaidInvoiceInfo.unpaidInvoiceItems}">
-                        <span th:text="${item.invoiceNumber}">INV141</span>
+                        <span th:text="${item.invoiceNumber}">INV-001</span>
                         -
-                        ₹ <span th:text="${item.pendingAmount}"></span>
+                        ₹ <span th:text="${item.pendingAmount}">0.00</span>
                         <br/>
                     </th:block>
                 </div>
@@ -284,7 +280,7 @@
             </td>
 
             <td class="amount">
-                ₹ <span th:text="${invoice.unpaidInvoiceInfo.unpaidInvoiceTotalAmount}">2600</span>
+                ₹ <span th:text="${invoice.unpaidInvoiceInfo.unpaidInvoiceTotalAmount}">0.00</span>
             </td>
         </tr>
 
@@ -306,8 +302,8 @@
                         <!--                        - -->
                         <!--                        <span th:text="${#dates.format(eb.toDate,'dd/MM/yyyy')}"></span>-->
                         <!--                        - -->
-                        ₹<span th:text="${eb.totalAmount}"></span>
-                        (<span th:text="${eb.consumption}"></span> Units)
+                        ₹<span th:text="${eb.totalAmount}">0.00</span>
+                        (<span th:text="${eb.consumption}">0</span> Units)
                     </div>
                 </div>
 
@@ -317,9 +313,6 @@
                 ₹ <span th:text="${invoice.currentMonthEbInfo.currentMonthEbAmount}">0.00</span>
             </td>
         </tr>
-
-
-
 
         <!--          Refundable Advance-->
         <tr >
@@ -333,13 +326,13 @@
                 <div class="item-description">
 
                     Total Paid ₹
-                    <span th:text="${invoice.advanceItems.paidAmount}">0</span>
+                    <span th:text="${invoice.advanceItems.paidAmount}">0.00</span>
                     <br/>
 
                     <th:block th:each="item : ${invoice.advanceItems.redeemedList}">
                         <span th:text="${item.invoiceNumber}">INV-001</span>
                         -
-                        ₹<span th:text="${item.redeemedAmount}">250</span>
+                        ₹<span th:text="${item.redeemedAmount}">0.00</span>
                         <br/>
                     </th:block>
 
@@ -348,11 +341,9 @@
             </td>
 
             <td class="amount">
-                ₹ <span th:text="${invoice.advanceItems.availableAdvanceBalance}">0</span>
+                ₹ <span th:text="${invoice.advanceItems.availableAdvanceBalance}">0.00</span>
             </td>
         </tr>
-
-
 
         <tr >
             <td style="padding-bottom:10px;">
@@ -366,7 +357,7 @@
 
                     Total Paid ₹
                     <span th:text="${invoice.additionalAdvance != null ? invoice.additionalAdvance.invoiceAmount : 0}">
-        0
+        0.00
     </span>
                     <br/>
 
@@ -377,7 +368,7 @@
                         <th:block th:each="item : ${invoice.additionalAdvance.additionalAdvanceItems}">
                             <span th:text="${item.invoiceNumber}">INV-001</span>
                             -
-                            ₹<span th:text="${item.amount}">250</span>
+                            ₹<span th:text="${item.amount}">0.00</span>
                             <br/>
                         </th:block>
 
@@ -388,19 +379,9 @@
             </td>
 
             <td class="amount">
-                ₹ <span th:text="${invoice.additionalAdvance != null ? invoice.additionalAdvance.balanceAmount : 0}">0</span>
+                ₹ <span th:text="${invoice.additionalAdvance != null ? invoice.additionalAdvance.balanceAmount : 0}">0.00</span>
             </td>
         </tr>
-
-
-
-
-
-
-
-
-
-
 
         <!--booking -->
         <tr >
@@ -414,13 +395,13 @@
                 <div class="item-description">
 
                     Total Paid ₹
-                    <span th:text="${invoice.bookingItems.paidAmount}">0</span>
+                    <span th:text="${invoice.bookingItems.paidAmount}">0.00</span>
                     <br/>
 
                     <th:block th:each="item : ${invoice.bookingItems.redeemedList}">
                         <span th:text="${item.invoiceNumber}">INV-001</span>
                         -
-                        ₹<span th:text="${item.redeemedAmount}">0</span>
+                        ₹<span th:text="${item.redeemedAmount}">0.00</span>
                         <br/>
                     </th:block>
 
@@ -429,7 +410,7 @@
             </td>
 
             <td class="amount">
-                ₹ <span th:text="${invoice.bookingItems.availableAdvanceBalance}">0</span>
+                ₹ <span th:text="${invoice.bookingItems.availableAdvanceBalance}">0.00</span>
             </td>
         </tr>
 
@@ -444,13 +425,13 @@
                 <div class="item-description">
 
                     Total Paid ₹
-                    <span th:text="${invoice.retainerInfo != null and invoice.retainerInfo.totalInvoiceAmount != null ? invoice.retainerInfo.totalInvoiceAmount : 0}">0</span>
+                    <span th:text="${invoice.retainerInfo != null and invoice.retainerInfo.totalInvoiceAmount != null ? invoice.retainerInfo.totalInvoiceAmount : 0}">0.00</span>
                     <br/>
 
                     <th:block th:each="item : ${invoice.retainerInfo != null and invoice.retainerInfo.retainerItemsList != null ? invoice.retainerInfo.retainerItemsList : {}}">
                         <span th:text="${item.invoiceNumber}">INV-001</span>
                         -
-                        ₹<span th:text="${item.amount}">0</span>
+                        ₹<span th:text="${item.amount}">0.00</span>
                         <br/>
                     </th:block>
 
@@ -459,10 +440,9 @@
             </td>
 
             <td class="amount">
-                ₹ <span th:text="${invoice.retainerInfo != null and invoice.retainerInfo.totalInvoiceAmount != null ? invoice.retainerInfo.appliedAmount: 0}">0</span>
+                ₹ <span th:text="${invoice.retainerInfo != null and invoice.retainerInfo.totalInvoiceAmount != null ? invoice.retainerInfo.appliedAmount: 0}">0.00</span>
             </td>
         </tr>
-
 
         <!--rent details -->
         <tr th:if="${invoice.currentMonthRentInfo != null}">
@@ -477,29 +457,27 @@
 
                 <div class="item-description">
                     Last Rent Paid -
-                    ₹<span th:text="${invoice.currentMonthRentInfo.currentMonthPaidAmount}">0</span><br/>
+                    ₹<span th:text="${invoice.currentMonthRentInfo.currentMonthPaidAmount}">0.00</span><br/>
 
                     <div th:each="rent : ${invoice.currentMonthRentInfo.listBreakup}">
                         Current Stay Days (Rent) -
-                        <span th:text="${rent.noOfDays}"></span> Days -
-                        ₹<span th:text="${rent.totalRent}"></span>
+                        <span th:text="${rent.noOfDays}">0</span> Days -
+                        ₹<span th:text="${rent.totalRent}">0.00</span>
 
                         <span th:text="${rent.floorName}"></span> -
                         <span th:text="${rent.roomName}"></span> -
                         <span th:text="${rent.bedName}"></span> -
                         (<span th:text="${rent.noOfDays}"></span> days ×
-                        ₹<span th:text="${rent.rentPerDay}"></span>)
+                        ₹<span th:text="${rent.rentPerDay}">0.00</span>)
 
                     </div>
 
                     <th:block th:if="${invoice.currentMonthRentInfo.currentMonthOtherItemAmount > 0}">
 
-
-
                         <th:block th:each="item : ${invoice.currentMonthRentInfo.listCurrentMonthOtherItems}">
                             <span th:text="${item.item}"></span>
                             -
-                            ₹<span th:text="${item.amount}"></span>
+                            ₹<span th:text="${item.amount}">0.00</span>
                             <br/>
                         </th:block>
 
@@ -510,10 +488,9 @@
             </td>
 
             <td class="amount">
-                ₹ <span th:text="${invoice.currentMonthRentInfo.currentMonthPayableAmount}">0</span>
+                ₹ <span th:text="${invoice.currentMonthRentInfo.currentMonthPayableAmount}">0.00</span>
             </td>
         </tr>
-
 
         <!--wallet info-->
         <tr>
@@ -526,7 +503,7 @@
                 <div class="item-description">
                     <div th:each="rent : ${invoice.walletInfo.walletItems}">
                         <span th:text="${rent.name}"></span> -
-                        ₹<span th:text="${rent.amount}"></span><br/>
+                        ₹<span th:text="${rent.amount}">0.00</span><br/>
                     </div>
                 </div>
 
@@ -537,7 +514,7 @@
                 and invoice.walletInfo.totalWalletAmount != null
                 ? '₹ ' + invoice.walletInfo.totalWalletAmount
                 : '₹ 0.00'}" >
-                ₹ 300.00
+                ₹ 0.00
             </td>
         </tr>
 
@@ -571,13 +548,23 @@
                     Deductions
                 </div>
 
+                <div class="item-description">
+                    <div>
+                        Total Paid -
+                        ₹<span th:text="${invoice.deductionsInfo != null
+                        and invoice.deductionsInfo.paidAmount != null
+                        ? invoice.deductionsInfo.paidAmount
+                        : '0.00'}">0.00</span><br/>
+                    </div>
+                </div>
+
                 <div class="item-description"
                      th:if="${invoice.deductionsInfo != null
                      and invoice.deductionsInfo.listDeductions != null}">
 
                     <div th:each="deductions : ${invoice.deductionsInfo.listDeductions}">
                         <span th:text="${deductions.item}"></span> -
-                        ₹<span th:text="${deductions.pendingAmount}"></span><br/>
+                        ₹<span th:text="${deductions.pendingAmount}">0.00</span><br/>
                     </div>
                 </div>
             </td>
@@ -587,7 +574,7 @@
                 and invoice.deductionsInfo.pendingAmount != null
                 ? '₹ ' + invoice.deductionsInfo.pendingAmount
                 : '₹ 0.00'}">
-                ₹ 500.00
+                ₹ 0.00
             </td>
         </tr>
 
@@ -599,45 +586,63 @@
             <td style="font-size: 10px;">Total Refundable</td>
             <td   align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.refundableAmount}">₹ 0.00</td>
         </tr>
+        <tr>
+            <td style="font-size: 10px;">Total Recoverable</td>
+            <td   align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.nonRefundable}">₹ 0.00</td>
+        </tr>
 
         <tr>
             <td style="font-size: 10px;" >Tax GST (0%)</td>
-            <td align="right" style="font-size: 10px;" >₹ 00.00</td>
+            <td align="right" style="font-size: 10px;" >₹ 0.00</td>
         </tr>
-
         <tr>
             <td style="font-size: 10px;">Deductions Non Refundable</td>
-            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.deductionAmount}" >₹ 0.0</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.deductionAmount}" >₹ 0.00</td>
         </tr>
-
         <tr>
-            <td style="font-size: 10px;">Unpaid Invoices</td>
-            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.unpaidInvoiceAmount}">₹ 0.0</td>
+            <td style="font-size: 10px;">Discount Applied</td>
+            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.discountAmount}" >₹ 0.00</td>
         </tr>
 
-        <tr>
-            <td style="font-size: 10px;">Payable Rent</td>
-            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.payableRent}">₹ 0.0</td>
+        <!--        <tr>-->
+        <!--            <td style="font-size: 10px;">Unpaid Invoices</td>-->
+        <!--            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.unpaidInvoiceAmount}">₹ 0.00</td>-->
+        <!--        </tr>-->
+        <!--        <tr>-->
+        <!--            <td style="font-size: 10px;">Payable Rent</td>-->
+        <!--            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.payableRent}">₹ 0.00</td>-->
+        <!--        </tr>-->
+        <!--        <tr>-->
+        <!--            <td style="font-size: 10px;">Wallet</td>-->
+        <!--            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.walletInfo.totalWalletAmount}" >₹ 0.00</td>-->
+        <!--        </tr>-->
+        <!--        <tr>-->
+        <!--            <td style="font-size: 10px;">Electricity Bill</td>-->
+        <!--            <td align="right" style="font-size: 10px;"  th:text="'₹'+${invoice.invoiceInfo.electricityAmount}" >₹ 0.00</td>-->
+        <!--        </tr>-->
+
+        <tr class="total-row"
+            th:if="${invoice.invoiceInfo != null and invoice.invoiceInfo.finalAmount < 0}">
+            <td style="font-size: 10px;">
+                Total Refund Amount <br/> Admin &#8594; Tenant
+            </td>
+            <td align="right"
+                style="font-size: 10px;"
+                th:text="'₹' + ${invoice.invoiceInfo.finalAmount}">
+                ₹ 0.00
+            </td>
         </tr>
 
-        <tr>
-            <td style="font-size: 10px;">Wallet</td>
-            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.walletInfo.totalWalletAmount}" >₹ 0.0</td>
-        </tr>
-
-        <tr>
-            <td style="font-size: 10px;">Discount</td>
-            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.discountAmount}" >₹ 0.0</td>
-        </tr>
-
-        <tr>
-            <td style="font-size: 10px;">Electricity Bill</td>
-            <td align="right" style="font-size: 10px;"  th:text="'₹'+${invoice.invoiceInfo.electricityAmount}" >₹ 0.0</td>
-        </tr>
-
-        <tr class="total-row">
-            <td style="font-size: 10px;">Total</td>
-            <td align="right" style="font-size: 10px;" th:text="'₹'+${invoice.invoiceInfo.finalAmount}" >₹ 1078.33</td>
+        <tr class="total-row"
+            th:if="${invoice.invoiceInfo != null and invoice.invoiceInfo.finalAmount >= 0}">
+            <td style="font-size: 10px;">
+                Total Outstanding Payable <br/> Tenant &#8594; Admin
+            </td>
+            <td align="right"
+                style="font-size: 10px;"
+                th:text="'₹' + ${invoice.invoiceInfo.finalAmount}">
+                ₹ 0.00
+            </td>
         </tr>
 
     </table >
