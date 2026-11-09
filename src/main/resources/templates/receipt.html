@@ -5,474 +5,464 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <style>
-
         html,
-body {
-    height: 100%;
-    margin: 0;
-}
         body {
-     font-family: 'Arial', sans-serif;
+            height: 100%;
+            margin: 0;
+        }
 
-}
+        body {
+            font-family: 'Arial', sans-serif;
+        }
 
+        .container {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 100vh;
+            position: relative;
+            border-radius: 12px;
+            padding-top: 32px;
+            padding-bottom:32px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+        }
 
-         .container {
- width: 100%;
- box-sizing: border-box;
-    min-height: 100vh;
-    position: relative;
-border-radius: 12px;
- padding-top: 32px;
- padding-bottom:32px;
- padding-left: 20px;
- padding-right: 20px;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
- border: 1px solid #E5E7EB;
+        .header-table {
+            width: 100%;
+            font-size: 13px;
+        }
 
-         }
+        .header-row {
+            width: 100%;
+        }
 
+        .header-cell {
+            float: left;
+        }
 
-.header-table {
-    width: 100%;
-    font-size: 13px;
-}
+        .header-left {
+            width: 40%;
+        }
 
-.header-row {
-    width: 100%;
-}
+        .header-right {
+            width: 60%;
+            text-align: right;
+        }
 
-.header-cell {
-    float: left;
-}
+        .logo {
+            max-height: 60px;
+        }
 
-.header-left {
-    width: 40%;
-}
+        .title {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
 
-.header-right {
-    width: 60%;
-    text-align: right;
-}
+        .label {
+            color: #777;
+            width: 120px;
+            display: inline-block;
+        }
 
-.logo {
-    max-height: 60px;
-}
+        .value {
+            font-weight: bold;
+        }
 
+        .section-title {
+            color: #1E45E1;
+            margin: 25px 0 10px;
+            font-weight: bold;
+            font-size: 12px;
+        }
 
-         .title {
-             text-align: center;
-                      font-size: 20px;
-             margin-top: 20px;
-         }
+        table {
+            width: 100%;
+            margin-top:15px;
+            font-size: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
 
-         .label {
-             color: #777;
-             width: 120px;
-             display: inline-block;
-         }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
 
-         .value {
-             font-weight: bold;
-         }
+        th {
+            background: #FAFBFF;
+            text-align: left;
+            font-weight: 600;
+        }
 
-         .section-title {
-             color: #1E45E1;
-             margin: 25px 0 10px;
-             font-weight: bold;
-             font-size: 12px;
-         }
+        .summary {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background: #FAFBFF;
+            border-radius: 6px;
+            color:#4B4B4B;
+        }
 
-          table {
-             width: 100%;
-margin-top:15px;
-             font-size: 12px;
-             border-radius: 6px;
-             overflow: hidden;
-         }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color:#4B4B4B;
+            font-weight: bold;
+        }
 
-         th, td {
-             padding: 12px;
-             border-bottom: 1px solid #e5e7eb;
-         }
+        .right {
+            text-align: right;
+            white-space: nowrap;
+        }
 
-         th {
-             background: #FAFBFF;
-             text-align: left;
-             font-weight: 600;
-         }
+        .amount {
+            display: inline-block;
+            min-width: 80px;
+            text-align: right;
+        }
 
-         .summary {
-             margin-top: 20px;
-             border: 1px solid #ddd;
-             padding: 15px;
-              background: #FAFBFF;
-               border-radius: 6px;
-               color:#4B4B4B;
+        .paid {
+            color: green;
+            font-weight: bold;
+        }
 
-         }
+        .due {
+            color: red;
+            font-weight: bold;
+        }
 
-         .summary-row {
-             display: flex;
-             justify-content: space-between;
-             margin-bottom: 8px;
-             color:#4B4B4B;
-              font-weight: bold;
-         }
-.right {
-    text-align: right;
-    white-space: nowrap;
-}
+        .summary-box {
+            display: table;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #FAFBFF;
+            margin-top: 20px;
+            font-size: 13px;
+        }
 
-.amount {
-    display: inline-block;
-    min-width: 80px;
-    text-align: right;
-}
-         .paid {
-             color: green;
-             font-weight: bold;
-         }
+        .summary-row {
+            display: table-row;
+        }
 
-         .due {
-             color: red;
-             font-weight: bold;
-         }
+        .summary-row > div {
+            display: table-cell;
+            padding: 10px 14px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
 
+        .summary-box .label {
+            text-align: left;
+            color: #4B4B4B;
+        }
 
-.summary-box {
-    display: table;
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #FAFBFF;
-    margin-top: 20px;
-    font-size: 13px;
-}
+        .summary-box .value {
+            text-align: right;
+            white-space: nowrap;
+        }
 
-.summary-row {
-    display: table-row;
-}
+        .summary-box .paid {
+            color: green;
+        }
 
-.summary-row > div {
-    display: table-cell;
-    padding: 10px 14px;
-    font-weight: bold;
-    vertical-align: middle;
-}
+        .summary-box .due {
+            color: red;
+        }
 
-.summary-box .label {
-    text-align: left;
-    color: #4B4B4B;
-}
+        .bill-table {
+            display: table;
+            width: 100%;
+            font-size: 12px;
+            margin-top: 2px;
+        }
 
-.summary-box .value {
-    text-align: right;
-    white-space: nowrap;
-}
+        .bill-row {
+            display: table-row;
+        }
 
-.summary-box .paid {
-    color: green;
-}
+        .bill-cell {
+            display: table-cell;
+            vertical-align: top;
+        }
 
-.summary-box .due {
-    color: red;
-}
-
-
-.bill-table {
-    display: table;
-    width: 100%;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.bill-row {
-    display: table-row;
-}
-
-.bill-cell {
-    display: table-cell;
-       vertical-align: top;
-}
         .bill-right {
             width: 40%;
             text-align: left;
         }
 
-.bill-left .invoice-style {
-    display: table;
-    width: 100%;
-    margin: 6px 0;
-}
-
-.bill-left .invoice-icon,
-.bill-left .colon,
-.bill-left .info-text {
-    display: table-cell;
-    vertical-align: top;
-}
-
-.bill-left .invoice-icon {
-    width: 25px;
-    text-align: center;
-}
-
-.bill-left .colon {
-    width: 15px;
-    text-align: center;
-}
-
-.bill-left .info-text {
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-.bill-center {
-width: 20%;
-}
-
-
-.bill-cell p {
-    margin: 12px 0;
-}
-
-.label {
-    color: #4B4B4B;
-    font-size: 12px;
-}
-
-.bill-right p {
-       font-size: 12px;
-        display: grid;
-    grid-template-columns: 120px 10px auto;
-    margin: 8px 0;
-   }
-
-.bill-right .label {
-
-       color: #4B4B4B;
-}
-
-.bill-right .colon {
-    width: 10px;
-    text-align: center;
-}
-
-.bill-right .invoice-style,
-.bill-right strong {
-    flex: 1;
-     text-align: left;
-}
-
-
-
-.invoice-style {
-color: #222;
-font-size: 12px;
-margin-top: 2px
-}
-
-
-.condition-box {
-    display: table;
-    width: 100%;
-    margin-top: 20px;
-    font-size: 12px;
-}
-
-.condition-row {
-    display: table-row;
-}
-
-.condition-row > div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 8px 6px;
-}
-
-
-.condition-left {
-    width: 65%;
-    text-align: left;
-    color: #333;
-}
-
-.termscondition {
-    margin-top: 6px;
-    line-height: 1.5;
-}
-
-
-.condition-right {
-    width: 35%;
-    text-align: right;
-}
-
-
-.signature-box {
-    display: inline-block;
-    text-align: center;
-}
-
-
-.condition-right img {
-    display: block;
-    margin: 0 auto 5px auto;
-    max-height: 45px;
-}
-
-
-.signature-text {
-    font-size: 12px;
-}
-
-.footer {
-    margin-top: 25px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.footer-box {
-    display: table;
-    width: 100%;
-}
-
-.footer-row {
-    display: table-row;
-}
-
-.footer-row > div {
-    display: table-cell;
-    padding: 6px 0;
-    vertical-align: middle;
-    color: #555;
-}
-
-.footer-left {
-    text-align: left;
-}
-
-.footer-right {
-    text-align: right;
-}
-
-.invoice-hr {
-    border: none;
-    border-top: 1px solid;
-    margin: 15px 0;
-}
-.footer-style {
-color:#000;
-font-weight:600;
+        .bill-left .invoice-style {
+            display: table;
+            width: 100%;
+            margin: 6px 0;
         }
 
+        .bill-left .invoice-icon,
+        .bill-left .colon,
+        .bill-left .info-text {
+            display: table-cell;
+            vertical-align: top;
+        }
 
-    .invoice-type {
-    font-size: 15px;
-    font-weight: 600;
-    text-align: center;
-}
-.account-box {
-    display: table;
-    width: 100%;
-    margin-top: 20px;
-    font-size: 13px;
-}
+        .bill-left .invoice-icon {
+            width: 25px;
+            text-align: center;
+        }
 
-.account-row {
-    display: table-row;
-}
+        .bill-left .colon {
+            width: 15px;
+            text-align: center;
+        }
 
-.account-row > div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 8px 6px;
-}
+        .bill-left .info-text {
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
 
+        .bill-center {
+            width: 20%;
+        }
 
-.account-left {
-    width: 65%;
-    text-align: left;
-}
+        .bill-cell p {
+            margin: 12px 0;
+        }
 
+        .label {
+            color: #4B4B4B;
+            font-size: 12px;
+        }
 
-.account-right {
-    width: 35%;
-    text-align: right;
-}
+        .bill-right p {
+            font-size: 12px;
+            display: grid;
+            grid-template-columns: 120px 10px auto;
+            margin: 8px 0;
+        }
 
+        .bill-right .label {
+            color: #4B4B4B;
+        }
 
-.qr-image {
-    max-height: 150px;
-}
+        .bill-right .colon {
+            width: 10px;
+            text-align: center;
+        }
 
+        .bill-right .invoice-style,
+        .bill-right strong {
+            flex: 1;
+            text-align: left;
+        }
 
+        .invoice-style {
+            color: #222;
+            font-size: 12px;
+            margin-top: 2px
+        }
 
-   .amount-card {
-    display: table;
-    width: 100%;
-    border: 1px solid #E5E7EB;
-    border-radius: 10px;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top:10px;
-}
+        .condition-box {
+            display: table;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 12px;
+        }
 
-.amount-left,
-.amount-right {
-    display: table-cell;
-    vertical-align: middle;
+        .condition-row {
+            display: table-row;
+        }
 
-}
+        .condition-row > div {
+            display: table-cell;
+            vertical-align: top;
+            padding: 8px 6px;
+        }
 
-.amount-left {
-    width: 35%;
-    padding: 20px;
-    font-weight: 600;
-    font-size: 11px;
-    background: #ffffff;
-     border-radius: 10px;
-}
+        .condition-left {
+            width: 65%;
+            text-align: left;
+            color: #333;
+        }
 
-.amount-right {
-    width: 65%;
-        border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    }
+        .termscondition {
+            margin-top: 6px;
+            line-height: 1.5;
+        }
 
-.amount-value {
-    font-size: 20px;
-    font-weight: bold;
-    border-left: 4px solid #00A651;
-    padding: 20px;
-     background-color: #F1FFF5;
-}
+        .condition-right {
+            width: 35%;
+            text-align: right;
+        }
 
-.amount-words {
-    padding: 10px;
-    font-size: 13px;
-    color: #444;
-}
+        .signature-box {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .condition-right img {
+            display: block;
+            margin: 0 auto 5px auto;
+            max-height: 45px;
+        }
+
+        .signature-text {
+            font-size: 12px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .footer-box {
+            display: table;
+            width: 100%;
+        }
+
+        .footer-row {
+            display: table-row;
+        }
+
+        .footer-row > div {
+            display: table-cell;
+            padding: 6px 0;
+            vertical-align: middle;
+            color: #555;
+        }
+
+        .footer-left {
+            text-align: left;
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        .invoice-hr {
+            border: none;
+            border-top: 1px solid;
+            margin: 15px 0;
+        }
+
+        .footer-style {
+            color:#000;
+            font-weight:600;
+        }
+
+        .invoice-type {
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .account-box {
+            display: table;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .account-row {
+            display: table-row;
+        }
+
+        .account-row > div {
+            display: table-cell;
+            vertical-align: top;
+            padding: 8px 6px;
+        }
+
+        .account-left {
+            width: 65%;
+            text-align: left;
+        }
+
+        .account-right {
+            width: 35%;
+            text-align: right;
+        }
+
+        .qr-image {
+            max-height: 150px;
+        }
+
+        .amount-card {
+            display: table;
+            width: 100%;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top:10px;
+        }
+
+        .amount-left,
+        .amount-right {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .amount-left {
+            width: 35%;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 11px;
+            background: #ffffff;
+             border-radius: 10px;
+        }
+
+        .amount-right {
+            width: 65%;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .amount-value {
+            font-size: 20px;
+            font-weight: bold;
+            border-left: 4px solid #00A651;
+            padding: 20px;
+             background-color: #F1FFF5;
+        }
+
+        .amount-words {
+            padding: 10px;
+            font-size: 13px;
+            color: #444;
+        }
 
     </style>
 </head>
 <body>
 
-
-
-
 <div class="container">
-
 
     <div class="header-table">
         <div class="header-row">
 
             <div class="header-cell header-left">
+
                 <img class="logo"
                      th:src="${receipt.templateInfo.hostelLogo}"
                      alt="logo" />
+
+                <div th:if="${receipt.templateInfo.emailId != null
+                             and receipt.templateInfo.emailId != ''
+                             and receipt.templateInfo.emailId != 'null'}"
+                     th:text="${receipt.templateInfo.emailId}">
+                    test@gmail.com
+                </div>
+
+                <div th:text="${(receipt.templateInfo.countryCode != null ? receipt.templateInfo.countryCode : '')
+                              + ' ' + (receipt.templateInfo.phone != null ? receipt.templateInfo.phone : '')}">
+                    +91 2565845857
+                </div>
+
             </div>
 
             <div class="header-cell header-right">
@@ -492,9 +482,6 @@ font-weight:600;
         <div style="clear: both;"></div>
     </div>
 
-
-
-
     <hr class="invoice-hr"
         th:style="'border-color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"/>
     <div class="invoice-type"
@@ -502,93 +489,113 @@ font-weight:600;
         <strong th:text="${receipt.title}"></strong>
     </div>
 
-
-
-
-
-
     <div class="bill-table">
 
         <div class="bill-row">
 
-
             <div class="bill-cell bill-left">
+
                 <p th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
                     <strong>Receipt to: </strong>
                 </p>
 
                 <p class="invoice-style">
                     <i class="fa-regular fa-user invoice-icon"
-                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
-                    <span class="colon">:</span>
-                    <span class="info-text" th:text="${receipt.customerInfo.fullName}"></span>
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                    </i>
+                    <span class="colon"> </span>
+                    <span class="info-text"
+                          th:text="${receipt.customerInfo.fullName}">
+                    </span>
                 </p>
 
                 <p class="invoice-style">
                     <i class="fa-solid fa-phone invoice-icon"
-                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
-                    <span class="colon">:</span>
-                    <span class="info-text" th:text="${receipt.customerInfo.mobile}"></span>
-                </p>
-
-                <p class="invoice-style">
-                    <i class="fa-solid fa-bed invoice-icon"
-                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
-                    <span class="colon">:</span>
-                    <span class="info-text" th:text="${receipt.bedInfo.bedName}">-</span>
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                    </i>
+                    <span class="colon"> </span>
+                    <span class="info-text"
+                          th:text="${receipt.customerInfo.mobile}">
+                    </span>
                 </p>
 
                 <p class="invoice-style">
                     <i class="fa-solid fa-location-dot invoice-icon"
-                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')"></i>
-                    <span class="colon">:</span>
-
-                    <span class="info-text" th:text="${receipt.customerInfo.address}"></span>
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                    </i>
+                    <span class="colon"> </span>
+                    <span class="info-text"
+                          th:text="${receipt.customerInfo.address}">
+                    </span>
                 </p>
+
+                <p th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                    <span>Stay Details </span>
+                </p>
+
+                <p class="invoice-style">
+                    <i class="fa-solid fa-bed invoice-icon"
+                       th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
+                    </i>
+                    <span class="colon"> </span>
+                    <span class="info-text"
+                          th:text="${receipt.bedInfo.bedName}">
+                    </span>
+                </p>
+
             </div>
 
             <div class ="bill-cell bill-center"></div>
 
             <div class="bill-cell bill-right">
+
                 <p>
                     <span class="label">Receipt No</span>
                     <span class="colon">:</span>
-                    <strong th:text="${receipt.receiptInfo.receiptNumber}"></strong>
+                    <strong th:text="${receipt.receiptInfo.receiptNumber}">
+                    </strong>
                 </p>
 
                 <p>
                     <span class="label">Date</span>
                     <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${receipt.receiptInfo.date}"></span>
+                    <span class="invoice-style"
+                          th:text="${receipt.receiptInfo.date}">
+                    </span>
                 </p>
 
                 <p>
                     <span class="label">Time </span>
                     <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${receipt.receiptInfo.time}"></span>
+                    <span class="invoice-style"
+                          th:text="${receipt.receiptInfo.time}">
+                    </span>
                 </p>
 
                 <p>
                     <span class="label">Payment Mode</span>
                     <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${receipt.receiptInfo.paymentMode}"></span>
+                    <span class="invoice-style"
+                          th:text="${receipt.receiptInfo.paymentMode}">
+                    </span>
                 </p>
 
                 <p>
                     <span class="label">Transaction ID</span>
                     <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${receipt.receiptInfo.transactionId}">
-
+                    <span class="invoice-style"
+                          th:text="${receipt.receiptInfo.transactionId}">
                     </span>
                 </p>
 
-                <p>
+                <p th:if="${receipt.invoiceType == 'RENT' or receipt.invoiceType == 'REASSIGN_RENT'}">
                     <span class="label">Rental Period</span>
                     <span class="colon">:</span>
-                    <span class="invoice-style" th:text="${receipt.rentalPeriod}">
-
+                    <span class="invoice-style"
+                          th:text="${receipt.rentalPeriod}">
                     </span>
                 </p>
+
             </div>
 
         </div>
@@ -599,13 +606,13 @@ font-weight:600;
         <div class="amount-left">
 
             <div th:text="${T(java.lang.Integer).parseInt(receipt.invoiceAmount) < 0}
-        ? 'TOTAL REFUNDED AMOUNT'
-        : 'TOTAL PAID AMOUNT'">
+                 ? 'TOTAL REFUNDED AMOUNT'
+                 : 'TOTAL PAID AMOUNT'">
             </div>
 
-            <div th:text="${T(java.lang.Integer).parseInt(receipt.invoiceAmount) < 0}
-        ? '(Settlement)'
-        : ${receipt.description}">
+            <div th:text="${receipt.invoiceType == 'SETTLEMENT'
+                 ? ({T(java.lang.Integer).parseInt(receipt.invoiceAmount) < 0} ? 'Admin &#8594; Tenant' : 'Tenant &#8594; Admin')
+                 : receipt.description}">
             </div>
 
         </div>
@@ -621,10 +628,8 @@ font-weight:600;
 
     <div class="account">
 
-
         <div class="condition-box">
             <div class="condition-row">
-
 
                 <div class="condition-left">
                     <strong th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">
@@ -634,7 +639,6 @@ font-weight:600;
                          th:text="${receipt.templateInfo.termsAndCondition}">
                     </div>
                 </div>
-
 
                 <div class="condition-right">
                     <div class="signature-box">
@@ -648,10 +652,8 @@ font-weight:600;
             </div>
         </div>
 
-
         <div class="condition-box">
             <div class="condition-row">
-
 
                 <div class="condition-left">
                     <!--                    <strong th:style="'color:' + (${receipt.templateInfo.colorCode} ?: '#1da011')">-->
@@ -690,16 +692,20 @@ font-weight:600;
 
                 <span th:switch="${header}">
 
+<!--                    <span th:case="'Sl No'"-->
+<!--                          th:text="1"></span>-->
 
-                    <span th:case="'Sl No'"
-                          th:text="1"></span>
+                    <span th:case="'Invoice Number'"
+                          th:text="${receipt.invoiceNumber}"></span>
 
-                    <span th:case="'Description'"
-                          th:text="${receipt.description}"></span>
-
-                    <span th:case="'Amount'"
+                    <span th:case="'Amount / INR'"
                           th:text="'₹'+${receipt.invoiceAmount}"></span>
 
+                    <span th:case="'Description'"
+                          th:text="${receipt.headerDescription}"></span>
+
+<!--                    <span th:case="'Amount'"-->
+<!--                          th:text="'₹'+${receipt.invoiceAmount}"></span>-->
 
                     <span th:case="'Invoice No'"
                           th:text="${receipt.invoiceNumber}"></span>
@@ -713,14 +719,12 @@ font-weight:600;
                     <span th:case="'Payment Amount'"
                           th:text="'₹' + ${receipt.paidAmount}"></span>
 
-
                     <span th:case="*">-</span>
 
                 </span>
 
                 </td>
             </tr>
-
 
             <tr>
                 <td th:colspan="${receipt.headers.size() - 1}">
@@ -744,7 +748,11 @@ font-weight:600;
                         Email: <span class="footer-style" th:text="${receipt.templateInfo.emailId}"></span>
                     </div>
                     <div class="footer-right">
-                        Contact: <span class="footer-style" th:text="${receipt.templateInfo.phone}"></span>
+                        Contact:
+                        <span class="footer-style"
+                              th:text="${(receipt.templateInfo.countryCode != null ? receipt.templateInfo.countryCode : '')
+                              + ' ' + (receipt.templateInfo.phone != null ? receipt.templateInfo.phone : '')}">
+                        </span>
                     </div>
                 </div>
             </div>
