@@ -1,9 +1,13 @@
 <!DOCTYPE html>
+
 <html style="height: 100%; margin: 0;" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="utf-8"/>
 </head>
+
 <body style='height: 100%; margin: 0; font-family: "Arial", sans-serif;'>
+
 <div style="
     width: 100%;
     box-sizing: border-box;
@@ -12,8 +16,8 @@
     background: #ffffff;
     display: flex;
     flex-direction: column;
-    padding: 0 12px;
-">
+    padding: 0 12px;">
+
     <div style="flex: 1;">
         <table cellpadding="0" cellspacing="0" style="border: none;" width="100%">
             <tr style="border: none;">
@@ -38,13 +42,15 @@
                 </td>
 
                 <td align="right" style="border: none; padding: 12px;" valign="top" width="55%">
-                    <div style="font-size: 14px; font-weight: 500;" th:text="${invoice.hostelInfo.hostelName}">
+                    <div style="font-size: 14px; font-weight: 500;"
+                         th:text="${invoice.hostelInfo.hostelName}">
                     </div>
-                    <div style="margin-top: 5px; font-size: 10px;" th:text="${invoice.hostelInfo.address}">
+                    <div style="margin-top: 5px; font-size: 10px;"
+                         th:text="${invoice.hostelInfo.address}">
                     </div>
-                    <div style="margin-top: 5px; font-size: 10px;">
-                        GST IN : XXXXXXXXXX
-                    </div>
+                    <!--                    <div style="margin-top: 5px; font-size: 10px;">-->
+                    <!--                        GST IN : XXXXXXXXXX-->
+                    <!--                    </div>-->
                 </td>
             </tr>
         </table>
@@ -52,9 +58,11 @@
             <strong th:text="${invoice.invoiceType}">
             </strong>
         </div>
-        <div style="border-radius: 12px; padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; border: 1px solid #E5E7EB;">
+        
+        <div style="border-radius: 12px; padding-top: 10px; padding-bottom: 20px; padding-left: 20px;
+            padding-right: 20px; border: 1px solid #E5E7EB;">
 
-            <div style="display: table; width: 100%; font-size: 12px; margin-top: 2px;">
+            <div style="display: table; width: 100%; font-size: 12px; margin-top: 2px; padding-bottom: 20px;">
                 <div style="display: table-row;">
                     <div style="display: table-cell; vertical-align: top; text-align: left; width: 40%;">
                         <p style="color: #5E6470; margin: 12px 0;">
@@ -63,86 +71,99 @@
                             </strong>
                         </p>
                         <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
-        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.customerInfo.fullName}">
-        </span>
+                            <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;"
+                                  th:text="${invoice.customerInfo.fullName}">
+                            </span>
                         </p>
                         <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
-        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.customerInfo.mobile}">
-        </span>
+                            <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;"
+                                  th:text="${invoice.customerInfo.mobile}">
+                            </span>
                         </p>
                         <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
-        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.bedInfo != null ? invoice.bedInfo.bedName : ''}">
-        </span>
+                            <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;"
+                                  th:text="${invoice.customerInfo.address}">
+                            </span>
+                        </p>
+                        <p  style="color: #5E6470; margin: 12px 0;">
+                            <span>Stay Details </span>
                         </p>
                         <p style="display: table; width: 100%; margin: 6px 0; color: #222; font-size: 12px; margin-top: 2px;">
-        <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;" th:text="${invoice.customerInfo.address}">
-        </span>
+                            <span style="display: table-cell; vertical-align: top; word-break: break-word; overflow-wrap: break-word;"
+                                  th:text="${invoice.bedInfo != null ? invoice.bedInfo.bedName : ''}">
+                            </span>
                         </p>
                     </div>
                     <div style="display: table-cell; vertical-align: top; width: 20%;">
                     </div>
                     <div style="display: table-cell; vertical-align: top; width: 40%; text-align: left;">
                         <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-        <span style="color: #4B4B4B; font-size: 12px;">
-         Invoice
-        </span>
+                        <span style="color: #4B4B4B; font-size: 12px;">
+                         Invoice
+                        </span>
                             <span style="width: 10px; text-align: center;">
-         :
-        </span>
-                            <span th:text="${invoice.invoiceNumber}">
-        </span>
+                            :
+                        </span>
+                            <span th:text="${invoice.invoiceNumber}"></span>
                         </p>
                         <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-        <span style="color: #4B4B4B; font-size: 12px;">
-         Invoice Date
-        </span>
+                        <span style="color: #4B4B4B; font-size: 12px;">
+                         Invoice Date
+                        </span>
                             <span style="width: 10px; text-align: center;">
-         :
-        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.invoiceDate}">
-        </span>
+                            :
+                        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
+                                  th:text="${invoice.invoiceDate}">
+                        </span>
                         </p>
                         <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-        <span style="color: #4B4B4B; font-size: 12px;">
-         Due Date
-        </span>
+                        <span style="color: #4B4B4B; font-size: 12px;">
+                         Due Date
+                        </span>
                             <span style="width: 10px; text-align: center;">
-         :
-        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.dueDate}">
-        </span>
+                            :
+                        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
+                                  th:text="${invoice.dueDate}">
+                        </span>
                         </p>
                         <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-        <span style="color: #4B4B4B; font-size: 12px;">
-         Joining Date
-        </span>
+                        <span style="color: #4B4B4B; font-size: 12px;">
+                         Joining Date
+                        </span>
                             <span style="width: 10px; text-align: center;">
-         :
-        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.customerInfo.joiningDate}">
-        </span>
+                            :
+                        </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
+                                  th:text="${invoice.customerInfo.joiningDate}">
+                        </span>
                         </p>
-                        <p th:if="${invoice.invoiceType != 'Security Deposit' and invoice.invoiceType != 'Security Deposit(Booking)'}"
+                        <p th:if="${invoice.rentalPeriod != null and !#strings.isEmpty(invoice.rentalPeriod)}"
                            style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-        <span style="color: #4B4B4B; font-size: 12px;">
-         Rent Period
-        </span>
+                            <span style="color: #4B4B4B; font-size: 12px;">
+                                Rent Period
+                            </span>
                             <span style="width: 10px; text-align: center;">
-         :
-        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;" th:text="${invoice.rentalPeriod}">
-
-        </span>
+                                :
+                            </span>
+                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
+                                  th:text="${invoice.rentalPeriod}">
+                            </span>
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div style=" border-radius: 10px; overflow: hidden;" th:if="${invoice.listDeductions != null and invoice.listDeductions.size() &gt; 0}">
+            <div style=" border-radius: 10px; overflow: hidden;"
+                 th:if="${invoice.listDeductions != null and invoice.listDeductions.size() &gt; 0}">
+
                 <table style="width: 100%; font-size: 12px; border-radius: 10px; overflow: hidden; border-collapse: separate;">
+
                     <thead style="background: #f5f5f5;">
                     <tr>
-                        <th style="padding: 8px; text-align: left; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-left-radius: 10px;" th:text="${invoice.totalAmount != null and invoice.totalAmount.startsWith('-') ? 'REFUND' : 'PAYMENT'}">
+                        <th style="padding: 8px; text-align: left; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-left-radius: 10px;"
+                            th:text="${invoice.totalAmount != null and invoice.totalAmount.startsWith('-') ? 'REFUND' : 'PAYMENT'}">
                         </th>
                         <th style="padding: 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF;">
                             AMOUNT / INR
@@ -157,23 +178,22 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td style="padding: 10px 10px 25px 10px; border-bottom: 1px solid #e5e7eb;" th:text="${invoice.invoiceItems[0].item}">
+                        <td style="padding: 10px 10px 25px 10px; border-bottom: 1px solid #e5e7eb;"
+                            th:text="${invoice.invoiceItems[0].item}">
                         </td>
                         <td style="padding: 10px 10px 25px 10px; text-align: right; border-bottom: 1px solid #e5e7eb;">
-         <span th:text="'₹'+${invoice.invoiceItems[0].amount}">
-         </span>
+                         <span th:text="'₹'+${invoice.invoiceItems[0].amount}">
+                         </span>
                         </td>
                         <td style="padding: 10px 10px 25px 10px; border-bottom: 1px solid #e5e7eb;">
                             <div th:each="deduction : ${invoice.listDeductions}">
-          <span th:text="${deduction.type}">
-          </span>
+                                <span th:text="${deduction.type}"></span>
                                 <br/>
                             </div>
                         </td>
                         <td style="padding: 10px 10px 25px 10px; text-align: right; border-bottom: 1px solid #e5e7eb;">
                             <div th:each="deduction : ${invoice.listDeductions}">
-          <span th:text="'₹'+${deduction.amount}">
-          </span>
+                                <span th:text="'₹'+${deduction.amount}"></span>
                                 <br/>
                             </div>
                         </td>
@@ -183,42 +203,41 @@
                             Total
                         </td>
                         <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
-         <span th:text="'₹'+${invoice.basePrice}">
-         </span>
+                            <span th:text="'₹'+${invoice.basePrice}"></span>
                         </td>
                         <td style="padding: 8px; font-weight: 400; border-bottom: 1px solid #e5e7eb;">
                             Total Deductions
                         </td>
                         <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
-         <span th:text="'₹'+${invoice.totalDeductionAmount}">
-         </span>
+                            <span th:text="'₹'+${invoice.totalDeductionAmount}"></span>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <div style=" border-radius: 10px; overflow: hidden;" th:if="${invoice.listDeductions == null or invoice.listDeductions.size() == 0}">
+            <div style=" border-radius: 10px; overflow: hidden;"
+                 th:if="${invoice.listDeductions == null or invoice.listDeductions.size() == 0}">
                 <table style="width: 100%; font-size: 12px; border-radius: 10px; overflow: hidden; border-collapse: separate;">
                     <thead style="background: #f5f5f5;">
                     <tr>
-
-                        <th style="padding: 8px; text-align: left; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF;">
+                        <th style="padding: 8px; text-align: left; font-weight: 400; 
+                        border-bottom: 1px solid #e5e7eb; background: #FAFBFF;">
                             DESCRIPTION
                         </th>
-                        <th style="padding: 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-right-radius: 10px;">
+                        <th style="padding: 8px; text-align: right; font-weight: 400; 
+                        border-bottom: 1px solid #e5e7eb; background: #FAFBFF; border-top-right-radius: 10px;">
                             AMOUNT / INR
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="item : ${invoice.invoiceItems}">
-
-                        <td style="padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb;" th:text="${item.item}">
+                        <td style="padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb;"
+                            th:text="${item.item}">
                         </td>
                         <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
                             ₹
-                            <span th:text="${item.amount}">
-         </span>
+                            <span th:text="${item.amount}"></span>
                         </td>
                     </tr>
                     <tr style="border-top: 1px solid #ddd; font-weight: 400;">
@@ -227,145 +246,133 @@
                         </td>
                         <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">
                             ₹
-                            <span th:text="${invoice.totalAmount}">
-         </span>
+                            <span th:text="${invoice.totalAmount}"></span>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div style="
-    width: 40%;
-    margin-left: auto;
-    background: #FFFFFF;
-    border-radius: 12px;
-    padding: 8px 0;
-    box-sizing: border-box;
-    font-size: 11px;
-">
+            width: 40%;
+            margin-left: auto;
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 8px 0;
+            box-sizing: border-box;
+            font-size: 11px;">
 
                 <table style="
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        border: none;
-    ">
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+                border: none;">
 
                     <tr>
                         <td style="
-                width: 60%;
-                padding: 4px 0;
-                text-align: left;
-                white-space: nowrap;
-                font-weight: 400;
-                color: #4B4B4B;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 60%;
+                        padding: 4px 0;
+                        text-align: left;
+                        white-space: nowrap;
+                        font-weight: 400;
+                        color: #4B4B4B;
+                        font-size: 11px;
+                        border: none;">
                             Grand Total
                         </td>
 
                         <td style="
-                width: 40%;
-                padding: 4px 0;
-                text-align: right;
-                white-space: nowrap;
-                font-weight: 500;
-                color: #000000;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 40%;
+                        padding: 4px 0;
+                        text-align: right;
+                        white-space: nowrap;
+                        font-weight: 500;
+                        color: #000000;
+                        font-size: 11px;
+                        border: none;">
                             <span th:text="'₹ ' + ${invoice.totalAmount}"></span>
                         </td>
                     </tr>
 
                     <tr>
                         <td style="
-                width: 60%;
-                padding: 4px 0;
-                text-align: left;
-                white-space: nowrap;
-                font-weight: 400;
-                color: #4B4B4B;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 60%;
+                        padding: 4px 0;
+                        text-align: left;
+                        white-space: nowrap;
+                        font-weight: 400;
+                        color: #4B4B4B;
+                        font-size: 11px;
+                        border: none;">
                             Payment Made
                         </td>
 
                         <td style="
-                width: 40%;
-                padding: 4px 0;
-                text-align: right;
-                white-space: nowrap;
-                font-weight: 500;
-                color: green;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 40%;
+                        padding: 4px 0;
+                        text-align: right;
+                        white-space: nowrap;
+                        font-weight: 500;
+                        color: green;
+                        font-size: 11px;
+                        border: none;">
                             <span th:text="'₹ ' + ${invoice.paidAmount}"></span>
                         </td>
                     </tr>
 
                     <tr th:if="${invoice.invoiceType == 'Settlement' or invoice.invoiceType == 'Payment Bill'}">
                         <td style="
-                width: 60%;
-                padding: 4px 0;
-                text-align: left;
-                white-space: nowrap;
-                font-weight: 400;
-                color: #4B4B4B;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 60%;
+                        padding: 4px 0;
+                        text-align: left;
+                        white-space: nowrap;
+                        font-weight: 400;
+                        color: #4B4B4B;
+                        font-size: 11px;
+                        border: none;">
                             Discount Applied
                         </td>
 
                         <td style="
-                width: 40%;
-                padding: 4px 0;
-                text-align: right;
-                white-space: nowrap;
-                font-weight: 500;
-                color: red;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 40%;
+                        padding: 4px 0;
+                        text-align: right;
+                        white-space: nowrap;
+                        font-weight: 500;
+                        color: red;
+                        font-size: 11px;
+                        border: none;">
                             <span th:text="'₹ ' + ${invoice.discount}"></span>
                         </td>
                     </tr>
 
                     <tr>
                         <td style="
-                width: 60%;
-                padding: 4px 0;
-                text-align: left;
-                white-space: nowrap;
-                font-weight: 400;
-                color: #4B4B4B;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 60%;
+                        padding: 4px 0;
+                        text-align: left;
+                        white-space: nowrap;
+                        font-weight: 400;
+                        color: #4B4B4B;
+                        font-size: 11px;
+                        border: none;">
                             Balance Due
                         </td>
 
                         <td style="
-                width: 40%;
-                padding: 4px 0;
-                text-align: right;
-                white-space: nowrap;
-                font-weight: 500;
-                color: red;
-                font-size: 11px;
-                border: none;
-            ">
+                        width: 40%;
+                        padding: 4px 0;
+                        text-align: right;
+                        white-space: nowrap;
+                        font-weight: 500;
+                        color: red;
+                        font-size: 11px;
+                        border: none;">
                             <span th:text="'₹ ' + ${invoice.balanceAmount}"></span>
                         </td>
                     </tr>
 
                 </table>
             </div>
-
 
             <div>
                 <div style="display: table; width: 100%; margin-top: 10px; font-size: 13px;">
@@ -378,31 +385,32 @@
                             <p>
                                 Account No :
                                 <span th:text="${invoice.accountInfo.accountNo}">
-          N/A
-         </span>
+                                    N/A
+                                </span>
                             </p>
                             <p>
                                 IFSC Code :
                                 <span th:text="${invoice.accountInfo.ifscCode}">
-          N/A
-         </span>
+                                    N/A
+                                </span>
                             </p>
                             <p>
                                 Bank Name :
                                 <span th:text="${invoice.accountInfo.bankName}">
-          N/A
-         </span>
+                                    N/A
+                                </span>
                             </p>
                             <p>
                                 UPI Details :
                                 <span th:text="${invoice.accountInfo.upiId}">
-          N/A
-         </span>
+                                    N/A
+                                </span>
                             </p>
                         </div>
 
                         <div style="display: table-cell; vertical-align: top; padding: 8px 6px; width: 35%; text-align: right;">
-                            <img alt="QR Code" style="max-height: 150px;" th:src="${invoice.templateInfo.qrCode}"/>
+                            <img alt="QR Code" style="max-height: 150px;"
+                                 th:src="${invoice.templateInfo.qrCode}"/>
                             <div style="fontsize: 10px; color: #3D3D3D;">
                                 Scan QR for Payment
                             </div>
@@ -414,7 +422,8 @@
 
                         <div style="display: table-cell; width: 50%; text-align: left; vertical-align: bottom;">
                             <div style="display: inline-block; text-align: left;">
-                                <img alt="signature" style="max-width: 120px; max-height: 50px; display: block;" th:src="${invoice.templateInfo.signature}"/>
+                                <img alt="signature" style="max-width: 120px; max-height: 50px; display: block;"
+                                     th:src="${invoice.templateInfo.signature}"/>
                                 <div style="font-size: 10px; margin-top: 5px;white-space: nowrap;">
                                     Authorized Signature
                                 </div>
@@ -438,32 +447,28 @@
             </div>
         </div>
 
-
-
         <div style="display: table; width: 100%; margin-top: 5px; font-size: 12px;">
             <div style="display: table-row;">
 
                 <div style="
-        display: table-cell;
-        width: 50%;
-        vertical-align: top;
-        padding: 8px 6px;
-        color: #333;
-        white-space: nowrap;
-    ">
-        <span style="color: #5E6470;">
-            T and C :
-        </span>
+                display: table-cell;
+                width: 50%;
+                vertical-align: top;
+                padding: 8px 6px;
+                color: #333;
+                white-space: nowrap;">
 
-                    <span
-                            style="
-                margin-left: 6px;
-                line-height: 1.5;
-                color: #1A1C21;
-                white-space: normal;
-            "
-                            th:text="${invoice.templateInfo.termsAndCondition}">
-        </span>
+                    <span style="color: #5E6470;">
+                        T and C :
+                    </span>
+
+                    <span style="
+                    margin-left: 6px;
+                    line-height: 1.5;
+                    color: #1A1C21;
+                    white-space: normal;"
+                          th:text="${invoice.templateInfo.termsAndCondition}">
+                    </span>
                 </div>
 
             </div>
@@ -475,36 +480,30 @@
     width: 100%;
     margin-top: auto;
     font-size: 12px;
-    font-weight: 400;
-">
+    font-weight: 400;">
 
         <hr style="
         border: none;
         border-top: 1px solid #DFDFDF;
-        margin: 15px 0 8px;
-    "/>
+        margin: 15px 0 8px;"/>
+
         <div style="display: table; width: 100%;">
             <div style="display: table-row;">
                 <div style="display: table-cell; padding: 6px 0; vertical-align: middle; color: #555; text-align: left;">
                     Email:
-                    <span style="color: #000; font-weight: 400;" th:text="${invoice.templateInfo.emailId}">
-        </span>
+                    <span style="color: #000; font-weight: 400;"
+                          th:text="${invoice.templateInfo.emailId}">
+                    </span>
                 </div>
                 <div style="display: table-cell; padding: 6px 0; vertical-align: middle; color: #555; text-align: right;">
                     Contact:
                     <span style="color: #000; font-weight: 400;"
                           th:text="${invoice.templateInfo.countryCode + ' ' + invoice.templateInfo.phone}">
-        </span>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
-
-
-
-
-
-
 
 </div>
 </body>
