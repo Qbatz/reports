@@ -48,20 +48,24 @@ public class TransactionV1Service {
     private UsersService userService;
 
     public ResponseEntity<?> getReceiptPDF(String hostelId, String transactionId) {
+
         TransactionV1 transactionV1 = transactionRepository.findByHostelIdAndTransactionId(hostelId, transactionId);
         if (transactionV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
         InvoicesV1 invoicesV1 = invoiceService.getInvoice(transactionV1.getInvoiceId());
         if (invoicesV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         ReceiptsResponse receiptsResponse = getReceiptInfo(transactionV1, invoicesV1);
+
         Context context = new Context();
         context.setVariable("receipt", receiptsResponse);
 
         String receiptsUrl = pdfServices.generateReceiptPdf("receipt", context);
+
         return new ResponseEntity<>(receiptsUrl, HttpStatus.OK);
     }
 
@@ -118,6 +122,10 @@ public class TransactionV1Service {
             title = "Booking Receipt";
             description = "Security Deposit (Advance)";
             headerDescription = "Security Deposit (Advance) - Deductions";
+        } else {
+            title = "Rental Receipt";
+            description = "";
+            headerDescription = "";
         }
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())
@@ -147,9 +155,15 @@ public class TransactionV1Service {
             headers.add("Invoice Date");
             headers.add("Invoice Amount");
             headers.add("Payment Amount");
-            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()));
-            rentalPeriod.append(" - ");
-            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate()));
+//            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()));
+//            rentalPeriod.append(" - ");
+//            rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate()));
+        } else {
+            headers = new ArrayList<>();
+            headers.add("Invoice No");
+            headers.add("Invoice Date");
+            headers.add("Invoice Amount");
+            headers.add("Payment Amount");
         }
 
         if (transactionV1.getType() != null) {
@@ -163,7 +177,6 @@ public class TransactionV1Service {
                 labelUrl = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
             }
         }
-
         else {
 //            labelUrl = "https://smartstaydevs.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
             labelUrl = "https://smartstay-prod-01.s3.ap-south-1.amazonaws.com/smartstay/ss-payment-received.png";
@@ -200,11 +213,14 @@ public class TransactionV1Service {
     }
 
     public ResponseEntity<?> getReceiptDetails(String hostelId, String transactionId) {
-        TransactionV1 transactionV1 = transactionRepository.findByHostelIdAndTransactionId(hostelId, transactionId);
+
+        TransactionV1 transactionV1 = transactionRepository
+                .findByHostelIdAndTransactionId(hostelId, transactionId);
         if (transactionV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        InvoicesV1 invoicesV1 = invoiceService.getInvoice(transactionV1.getInvoiceId());
+        InvoicesV1 invoicesV1 = invoiceService
+                .getInvoice(transactionV1.getInvoiceId());
         if (invoicesV1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
