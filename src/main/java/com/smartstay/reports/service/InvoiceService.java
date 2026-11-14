@@ -198,8 +198,11 @@ public class InvoiceService {
                     .toList();
 
             listDeductions = invoicesV1.getDeductions();
+            if (invoicesV1.getDeductionAmount() != null) {
+                totalDeductionAmount = invoicesV1.getDeductionAmount() != null ? invoicesV1.getDeductionAmount() : 0;
+            }
 
-            totalDeductionAmount = invoicesV1.getDeductionAmount() != null ? invoicesV1.getDeductionAmount() : 0;
+
         }
 
         String invoiceType = null;

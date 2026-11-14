@@ -39,6 +39,12 @@ public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
         } else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             invoiceType = "Settlement";
         }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB.name())) {
+            invoiceType = "EB";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.OTHER.name())) {
+            invoiceType = "Other";
+        }
 
         if (!invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             double dAmount = 0.0;

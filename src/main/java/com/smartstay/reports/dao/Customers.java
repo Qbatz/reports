@@ -27,6 +27,7 @@ public class Customers {
     private String city;
     private String state;
     private Long country;
+    private Integer countryCode;
     private String profilePic;
     private String customerBedStatus;
     private Date joiningDate;
@@ -42,6 +43,8 @@ public class Customers {
     private Date lastUpdatedAt;
     private String updatedBy;
     private String mobSerialNo;
+    private String idProofType;
+    private String idProofNo;
 
 
     @OneToOne(mappedBy = "customers", cascade = CascadeType.ALL, orphanRemoval = true)
