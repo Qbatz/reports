@@ -240,6 +240,7 @@ public class InvoiceService {
         }
         else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Other Invoice";
+            rentalPeriod = "";
         }
         else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Additional Advance Invoice";
@@ -247,6 +248,7 @@ public class InvoiceService {
         }
         else if (InvoiceType.EB.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Eb Invoice";
+            rentalPeriod = "";
         }
         else {
             invoiceType = Utils.capitalize(invoicesV1.getInvoiceType()) + " Invoice";
@@ -1182,6 +1184,7 @@ public class InvoiceService {
         }
         else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Other Invoice";
+            rentalPeriod = "";
         }
         else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Additional Advance Invoice";
@@ -1189,6 +1192,7 @@ public class InvoiceService {
         }
         else if (InvoiceType.EB.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Eb Invoice";
+            rentalPeriod = "";
         }
         else {
             invoiceType = Utils.capitalize(invoicesV1.getInvoiceType()) + " Invoice";
