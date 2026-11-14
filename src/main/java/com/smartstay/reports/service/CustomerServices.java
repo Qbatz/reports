@@ -11,10 +11,12 @@ import java.util.List;
 
 @Service
 public class CustomerServices {
+
     @Autowired
     private CustomersRepository customersRepository;
 
     public CustomerInfo getCustomerInfo(String customerId) {
+
         Customers customers = customersRepository.findByCustomerId(customerId);
         if (customers == null) {
             return null;
@@ -53,7 +55,7 @@ public class CustomerServices {
         }
 
         return new CustomerInfo(fullName.toString(),
-                "+91-" + customers.getMobile(),
+                "+91 " + customers.getMobile(),
                 fullAddress.toString(),
                 Utils.dateToString(customers.getJoiningDate()));
     }

@@ -199,7 +199,7 @@ public class InvoiceService {
 
             listDeductions = invoicesV1.getDeductions();
             if (invoicesV1.getDeductionAmount() != null) {
-                totalDeductionAmount = invoicesV1.getDeductionAmount();
+                totalDeductionAmount = invoicesV1.getDeductionAmount() != null ? invoicesV1.getDeductionAmount() : 0;
             }
 
 
@@ -378,7 +378,7 @@ public class InvoiceService {
 
                             pendAmount = amount - payAmount;
 
-                            return new DeductionsItem(i.getType(), payAmount, amount, pendAmount);
+                            return new DeductionsItem(Utils.capitalize(i.getType()), payAmount, amount, pendAmount);
                         })
                         .toList();
 
@@ -437,18 +437,22 @@ public class InvoiceService {
             }
         }
 
+        nonRefundable = nonRefundable + currentPayablemount;
+
         if (settlementItems.getCurrentMonthPaidAmount() != null) {
             currentPaidAmount = settlementItems.getCurrentMonthPaidAmount();
             currentPayablemount = currentPayablemount - currentPaidAmount;
 //            subTotal = subTotal - currentPaidAmount;
         }
 
-        if (currentPayablemount > 0) {
-            payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
-        }
-        else {
-            refundable = refundable + (currentPayablemount * -1);
-        }
+//        if (currentPayablemount > 0) {
+//            payableRent = Utils.roundOffWithTwoDigit(currentPayablemount);
+//        }
+//        else {
+//            refundable = refundable + (currentPayablemount * -1);
+//        }
+
+        refundable = refundable + currentPaidAmount;
 
         if (listRentBreakUp != null) {
             if (!listRentBreakUp.isEmpty()) {
@@ -634,6 +638,7 @@ public class InvoiceService {
         FinalSettlementHeaderInfo headerInfo = null;
         if (hostelV1 != null) {
             headerInfo = new FinalSettlementHeaderInfo(invoicesV1.getInvoiceNumber(),
+                    hostelV1.getHostelName(),
                     hostelV1.getHouseNo(),
                     hostelV1.getStreet(),
                     hostelV1.getCity(),
@@ -646,7 +651,7 @@ public class InvoiceService {
                     hostelV1.getEmailId());
         }
 
-        nonRefundable = unpaidInvoiceAmount + electricityAmount;
+        nonRefundable = nonRefundable + unpaidInvoiceAmount + electricityAmount;
 
         discountAmount = invoiceDiscountService
                 .getInoiceDiscount(hostelV1 != null ? hostelV1.getHostelId() : "", invoicesV1.getInvoiceId());

@@ -20,7 +20,10 @@
 
                 <td style="border: none; padding: 12px; " valign="top" width="45%">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <img alt="Logo" style="max-width: 134px; max-height: 60px;" th:src="${invoice.templateInfo.hostelLogo}"/>
+
+                        <img alt="Logo" style="max-width: 134px; max-height: 60px;"
+                             th:src="${invoice.templateInfo.hostelLogo}"/>
+
                         <div style="font-size: 10px; line-height: 1.5;">
                             <div th:text="${invoice.templateInfo.emailId}">
                                 test@gmail.com
@@ -30,6 +33,7 @@
                                 +91 2565845857
                             </div>
                         </div>
+
                     </div>
                 </td>
 

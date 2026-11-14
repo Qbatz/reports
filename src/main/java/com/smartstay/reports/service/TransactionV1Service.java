@@ -66,48 +66,71 @@ public class TransactionV1Service {
     }
 
     public ReceiptsResponse getReceiptInfo(TransactionV1 transactionV1, InvoicesV1 invoicesV1) {
+
         String title = null;
         String description = null;
+        String headerDescription = null;
         List<String> headers = null;
         String labelUrl = null;
         BedInfo bedInfo = null;
         StringBuilder rentalPeriod = new StringBuilder();
+        String invoiceType = invoicesV1.getInvoiceType();
 
-        BookingsV1 bookingsV1 = bookingsService.findByCustomerId(invoicesV1.getCustomerId(), invoicesV1.getHostelId());
+        BookingsV1 bookingsV1 = bookingsService
+                .findByCustomerId(invoicesV1.getCustomerId(), invoicesV1.getHostelId());
         if (bookingsV1 != null) {
             if (bookingsV1.getBedId() != 0) {
                 bedInfo = bedsService.getBedDetails(bookingsV1.getBedId());
             }
-
         }
 
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
-            title = "Payment Receipt";
+        double totalAmount = 0.0;
+        double paidAmount = 0.0;
+        double dueAmount = 0.0;
+        if (invoicesV1.getTotalAmount() != null) {
+            totalAmount = invoicesV1.getTotalAmount();
+        }
+        if (transactionV1.getPaidAmount() != null) {
+            paidAmount = transactionV1.getPaidAmount();
+        }
+//        if (invoicesV1.getPaidAmount() != null) {
+//            paidAmount = transactionV1.getPaidAmount();
+//        }
+        dueAmount = totalAmount - paidAmount;
+
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+            title = "Rental Receipt";
             description = "";
+            headerDescription = "";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
             title = "Final Settlement Receipt";
             description = "Settlement";
+            headerDescription = "Settlement";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
+            title = "Security Deposit Receipt";
             description = "Security Deposit (Advance)";
-            title = "Security Deposit (Advance)";
+            headerDescription = "Security Deposit (Advance) - Deductions";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
-            description = "Security Deposit (Advance)";
             title = "Booking Receipt";
+            description = "Security Deposit (Advance)";
+            headerDescription = "Security Deposit (Advance) - Deductions";
         }
 
         if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())
                 || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())
                 || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
            headers = new ArrayList<>();
-           headers.add("Sl No");
+           headers.add("Invoice Number");
            headers.add("Description");
-           headers.add("Amount");
+           headers.add("Amount / INR");
            rentalPeriod.append("NA");
         }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
             headers = new ArrayList<>();
             headers.add("Invoice No");
             headers.add("Invoice Date");
@@ -117,7 +140,8 @@ public class TransactionV1Service {
             rentalPeriod.append(" - ");
             rentalPeriod.append(Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate()));
         }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name())) {
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name()) ||
+                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name())) {
             headers = new ArrayList<>();
             headers.add("Invoice No");
             headers.add("Invoice Date");
@@ -156,29 +180,17 @@ public class TransactionV1Service {
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
 
-        double totalAmount = 0.0;
-        double paidAmount = 0.0;
-        double dueAmount = 0.0;
-        if (invoicesV1.getTotalAmount() != null) {
-            totalAmount = invoicesV1.getTotalAmount();
-        }
-        if (transactionV1.getPaidAmount() != null) {
-            paidAmount = transactionV1.getPaidAmount();
-        }
-//        if (invoicesV1.getPaidAmount() != null) {
-//            paidAmount = transactionV1.getPaidAmount();
-//        }
-        dueAmount = totalAmount - paidAmount;
-
         return new ReceiptsResponse(invoicesV1.getInvoiceNumber(),
                 Utils.dateToString(invoicesV1.getInvoiceStartDate()),
                 String.valueOf(Math.round(totalAmount)),
+                invoiceType,
                 rentalPeriod.toString(),
                 String.valueOf(Math.round(paidAmount)),
                 String.valueOf(Math.round(dueAmount)),
                 paidAmountInWords,
                 title,
                 description,
+                headerDescription,
                 labelUrl,
                 headers,
                 hostelInfo,
@@ -186,7 +198,6 @@ public class TransactionV1Service {
                 templateInfo,
                 customerInfo, bedInfo);
     }
-
 
     public ResponseEntity<?> getReceiptDetails(String hostelId, String transactionId) {
         TransactionV1 transactionV1 = transactionRepository.findByHostelIdAndTransactionId(hostelId, transactionId);

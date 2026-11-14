@@ -50,6 +50,14 @@ public class TemplateService {
                         .findFirst()
                         .orElse(null);
             }
+            else if (invoiceType.equalsIgnoreCase(InvoiceType.EB.name())) {
+                billTemplateType = billTemplates
+                        .getTemplateTypes()
+                        .stream()
+                        .filter(i -> i.getInvoiceType().equalsIgnoreCase(BillConfigTypes.RENTAL.name()))
+                        .findFirst()
+                        .orElse(null);
+            }
             else if (invoiceType.equalsIgnoreCase(InvoiceType.OTHER.name())) {
                 billTemplateType = billTemplates
                         .getTemplateTypes()
