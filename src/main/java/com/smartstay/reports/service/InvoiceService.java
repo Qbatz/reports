@@ -94,12 +94,15 @@ public class InvoiceService {
     }
 
     private ResponseEntity<?> getRetainerInvoice(InvoicesV1 invoicesV1) {
+
         RetainerInfo retainerInfo = getRetainerInfo(invoicesV1);
 
         Context context = new Context();
         context.setVariable("invoice", retainerInfo);
 
-        String invoiceUrl = invoicePDFServices.generatePdf(invoicesV1.getInvoiceId(), "retainer-invoice", context);
+        String invoiceUrl = invoicePDFServices
+                .generatePdf(invoicesV1.getInvoiceId(), "retainer-invoice", context);
+
         return new ResponseEntity<>(invoiceUrl, HttpStatus.OK);
     }
 
@@ -173,22 +176,32 @@ public class InvoiceService {
                             item = "Rent";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
-                            item = "Electricity";
+                            item = "Electricity Bill";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
                             item = "Amenity";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
-                            item = "Security Deposit (Advance)";
+                            item = "Booking";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
-                            item = "Security Deposit (Advance)";
+                            item = "Advance";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
                             item = "Maintenance";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.OTHERS.name())) {
-                            item = i.getOtherItem();
+                            if (i.getOtherItem().equalsIgnoreCase(InvoiceType.EB_HOLDING.name())) {
+                                item = "Advance EB";
+                            }
+                            else if (i.getOtherItem().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
+                                item = "Advance Rent";
+                            }
+                            else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(i.getOtherItem())) {
+                                item = "Additional Advance";
+                            } else {
+                                item = i.getOtherItem();
+                            }
                         }
 
                         amount = String.valueOf(Math.round(i.getAmount()));
@@ -203,33 +216,40 @@ public class InvoiceService {
         }
 
         String invoiceType = null;
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) ||
-                invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
-            invoiceType = "Payment Bill";
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
+            invoiceType = "Rent Invoice";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+            invoiceType = "Reassign Rent Invoice";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            invoiceType = "Security Deposit(Booking) Invoice";
             rentalPeriod = "";
-            invoiceType = "Security Deposit(Booking)";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
-            invoiceType = "Security Deposit";
+            invoiceType = "Security Deposit(Advance) Invoice";
             rentalPeriod = "";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
-            invoiceType = "Settlement";
+            invoiceType = "Final Settlement Invoice";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) || 
                 invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
-            invoiceType = "Retainer";
+            invoiceType = "Retainer Invoice";
+            rentalPeriod = "";
         }
         else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
-            invoiceType = "Other";
+            invoiceType = "Other Invoice";
         }
         else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
-            invoiceType = "Additional Advance";
+            invoiceType = "Additional Advance Invoice";
+            rentalPeriod = "";
+        }
+        else if (InvoiceType.EB.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Eb Invoice";
         }
         else {
-            invoiceType = Utils.capitalize(invoicesV1.getInvoiceType());
+            invoiceType = Utils.capitalize(invoicesV1.getInvoiceType()) + " Invoice";
         }
 
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
@@ -1042,6 +1062,7 @@ public class InvoiceService {
     }
 
     private RetainerInfo getRetainerInfo(InvoicesV1 invoicesV1) {
+
         double paidAmount = 0.0;
         double discount = 0.0;
         if (invoicesV1.getPaidAmount() != null) {
@@ -1056,7 +1077,8 @@ public class InvoiceService {
         if (invoicesV1.getInvoiceDate() != null) {
             invoiceDate = Utils.dateToString(invoicesV1.getInvoiceDate());
         }
-        String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-" + Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
+        String rentalPeriod = Utils.dateToDateMonth(invoicesV1.getInvoiceStartDate()) + "-"
+                + Utils.dateToDateMonth(invoicesV1.getInvoiceEndDate());
 
         discount = invoiceDiscountService.getInoiceDiscount(invoicesV1.getHostelId(), invoicesV1.getInvoiceId());
 
@@ -1094,16 +1116,16 @@ public class InvoiceService {
                             item = "Rent";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.EB.name())) {
-                            item = "Electricity";
+                            item = "Electricity Bill";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.AMENITY.name())) {
                             item = "Amenity";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.BOOKING.name())) {
-                            item = "Security Deposit (Advance)";
+                            item = "Booking";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.ADVANCE.name())) {
-                            item = "Security Deposit (Advance)";
+                            item = "Advance";
                         }
                         else if (i.getInvoiceItem().equalsIgnoreCase(com.smartstay.reports.ennum.InvoiceItems.MAINTENANCE.name())) {
                             item = "Maintenance";
@@ -1121,7 +1143,9 @@ public class InvoiceService {
                             else if (i.getOtherItem().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
                                 item = "Advance Rent";
                             }
-                            else {
+                            else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(i.getOtherItem())) {
+                                item = "Additional Advance";
+                            } else {
                                 item = i.getOtherItem();
                             }
                         }
@@ -1134,26 +1158,41 @@ public class InvoiceService {
         }
 
         String invoiceType = null;
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name()) || invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
-            invoiceType = "Payment Bill";
+        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
+            invoiceType = "Rent Invoice";
+        }
+        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+            invoiceType = "Reassign Rent Invoice";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+            invoiceType = "Security Deposit(Booking) Invoice";
             rentalPeriod = "";
-            invoiceType = "Security Deposit(Booking)";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
-            invoiceType = "Security Deposit";
+            invoiceType = "Security Deposit(Advance) Invoice";
             rentalPeriod = "";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
-            invoiceType = "Settlement";
-
+            invoiceType = "Final Settlement Invoice";
         }
         else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB_HOLDING.name()) ||
                 invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.AMOUNT_HOLDING.name())) {
-            invoiceType = "Retainer";
+            invoiceType = "Retainer Invoice";
+            rentalPeriod = "";
         }
-
+        else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Other Invoice";
+        }
+        else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Additional Advance Invoice";
+            rentalPeriod = "";
+        }
+        else if (InvoiceType.EB.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Eb Invoice";
+        }
+        else {
+            invoiceType = Utils.capitalize(invoicesV1.getInvoiceType()) + " Invoice";
+        }
 
         HostelInfo hostelInfo = hostelService.hostelInfo(invoicesV1.getHostelId());
         CustomerInfo customerInfo = customerServices.getCustomerInfo(invoicesV1.getCustomerId());
@@ -1162,7 +1201,8 @@ public class InvoiceService {
             cbh = customerBedHistoryService.getBookedBed(invoicesV1.getCustomerId());
         }
         else {
-            cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(), invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
+            cbh = customerBedHistoryService.getCustomerBedByStartDate(invoicesV1.getCustomerId(),
+                    invoicesV1.getInvoiceStartDate(), invoicesV1.getInvoiceEndDate());
         }
         BedInfo bedInfo = null;
         if (cbh != null) {
