@@ -33,7 +33,7 @@ public class BookingsService {
 
         return bookingsRepository
                 .findAllBookingsWithFilters(hostelId, startDate, endDate,
-                        (customerIds != null && !customerIds.isEmpty()) ? customerIds : new ArrayList<>(),
+                        (customerIds != null && !customerIds.isEmpty()) ? customerIds : null,
                         (status != null && !status.isEmpty()) ? status : null,
                         (roomIds != null && !roomIds.isEmpty()) ? roomIds : null,
                         (floorIds != null && !floorIds.isEmpty()) ? floorIds : null);
