@@ -12,15 +12,14 @@ import java.util.Set;
 @Repository
 public interface BankingV2Repository extends JpaRepository<BankingV2, String> {
 
-    List<BankingV2> findAllByBankIdInAndIsActiveTrueAndIsDeletedFalse(Set<String> bankIds);
+    List<BankingV2> findAllByBankIdInAndIsDeletedFalse(Set<String> bankIds);
 
-    BankingV2 findByBankIdAndIsActiveTrueAndIsDeletedFalse(String bankId);
+    BankingV2 findByBankIdAndIsDeletedFalse(String bankId);
 
     @Query("""
             SELECT b.bankId FROM bankingv2 b
             WHERE b.hostelId = :hostelId
                 AND b.accountType IN :accountTypes
-                AND b.isActive = true
                 AND b.isDeleted = false
             """)
     List<String> findBankIdsByAccountTypes(@Param("hostelId") String hostelId,

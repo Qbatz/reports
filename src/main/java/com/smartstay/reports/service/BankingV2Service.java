@@ -20,7 +20,7 @@ public class BankingV2Service {
 
     public List<BankingV2> getByBankIds(Set<String> bankIds) {
         return bankingV2Repository
-                .findAllByBankIdInAndIsActiveTrueAndIsDeletedFalse(bankIds);
+                .findAllByBankIdInAndIsDeletedFalse(bankIds);
     }
 
     public AccountDetails getBankAccountDetails(String bankId, String qrCode) {
@@ -29,7 +29,7 @@ public class BankingV2Service {
                 null, null, qrCode);
 
         BankingV2 bankingV2 = bankingV2Repository
-                .findByBankIdAndIsActiveTrueAndIsDeletedFalse(bankId);
+                .findByBankIdAndIsDeletedFalse(bankId);
 
         if (bankingV2 != null) {
 
@@ -58,7 +58,7 @@ public class BankingV2Service {
     public String getPaymentMode(String bankId){
 
         BankingV2 bankingV2 = bankingV2Repository
-                .findByBankIdAndIsActiveTrueAndIsDeletedFalse(bankId);
+                .findByBankIdAndIsDeletedFalse(bankId);
 
         if (bankingV2 == null){
             return null;
