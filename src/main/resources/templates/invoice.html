@@ -94,63 +94,46 @@
                             </span>
                         </p>
                     </div>
+                    
                     <div style="display: table-cell; vertical-align: top; width: 20%;">
                     </div>
-                    <div style="display: table-cell; vertical-align: top; width: 40%; text-align: left;">
-                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-                        <span style="color: #4B4B4B; font-size: 12px;">
-                         Invoice
-                        </span>
-                            <span style="width: 10px; text-align: center;">
-                            :
-                        </span>
-                            <span th:text="${invoice.invoiceNumber}"></span>
-                        </p>
-                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-                        <span style="color: #4B4B4B; font-size: 12px;">
-                         Invoice Date
-                        </span>
-                            <span style="width: 10px; text-align: center;">
-                            :
-                        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
-                                  th:text="${invoice.invoiceDate}">
-                        </span>
-                        </p>
-                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-                        <span style="color: #4B4B4B; font-size: 12px;">
-                         Due Date
-                        </span>
-                            <span style="width: 10px; text-align: center;">
-                            :
-                        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
-                                  th:text="${invoice.dueDate}">
-                        </span>
-                        </p>
-                        <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-                        <span style="color: #4B4B4B; font-size: 12px;">
-                         Joining Date
-                        </span>
-                            <span style="width: 10px; text-align: center;">
-                            :
-                        </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
-                                  th:text="${invoice.customerInfo.joiningDate}">
-                        </span>
-                        </p>
-                        <p th:if="${invoice.rentalPeriod != null and !#strings.isEmpty(invoice.rentalPeriod)}"
-                           style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
-                            <span style="color: #4B4B4B; font-size: 12px;">
-                                Rent Period
-                            </span>
-                            <span style="width: 10px; text-align: center;">
-                                :
-                            </span>
-                            <span style="flex: 1; text-align: left; color: #222; font-size: 12px; margin-top: 2px;"
-                                  th:text="${invoice.rentalPeriod}">
-                            </span>
-                        </p>
+
+                    <div style="display: table-cell; vertical-align: top; width: 40%; text-align: right;">
+
+                        <div style="display: inline-block; text-align: left;">
+
+                            <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+                                <span style="color: #4B4B4B;">Invoice</span>
+                                <span style="width: 10px; text-align: center;">:</span>
+                                <span th:text="${invoice.invoiceNumber}"></span>
+                            </p>
+
+                            <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+                                <span style="color: #4B4B4B;">Invoice Date</span>
+                                <span style="width: 10px; text-align: center;">:</span>
+                                <span th:text="${invoice.invoiceDate}"></span>
+                            </p>
+
+                            <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+                                <span style="color: #4B4B4B;">Due Date</span>
+                                <span style="width: 10px; text-align: center;">:</span>
+                                <span th:text="${invoice.dueDate}"></span>
+                            </p>
+
+                            <p style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+                                <span style="color: #4B4B4B;">Joining Date</span>
+                                <span style="width: 10px; text-align: center;">:</span>
+                                <span th:text="${invoice.customerInfo.joiningDate}"></span>
+                            </p>
+
+                            <p th:if="${invoice.rentalPeriod != null and !#strings.isEmpty(invoice.rentalPeriod)}"
+                               style="margin: 12px 0; font-size: 12px; display: grid; grid-template-columns: 120px 10px auto;">
+                                <span style="color: #4B4B4B;">Rent Period</span>
+                                <span style="width: 10px; text-align: center;">:</span>
+                                <span th:text="${invoice.rentalPeriod}"></span>
+                            </p>
+
+                        </div>
                     </div>
                 </div>
             </div>
