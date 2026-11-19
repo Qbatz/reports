@@ -2,6 +2,7 @@ package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.*;
 import com.smartstay.reports.dto.beds.BedDetails;
+import com.smartstay.reports.dto.billingRules.BillingDates;
 import com.smartstay.reports.dto.customer.Deductions;
 import com.smartstay.reports.dto.customer.FooterInfo;
 import com.smartstay.reports.dto.customer.HostelInformation;
@@ -9,8 +10,7 @@ import com.smartstay.reports.dto.customer.StayInfo;
 import com.smartstay.reports.dto.invoice.*;
 import com.smartstay.reports.dto.invoice.EBItems;
 import com.smartstay.reports.dto.settlement.*;
-import com.smartstay.reports.ennum.InvoiceType;
-import com.smartstay.reports.ennum.PaymentStatus;
+import com.smartstay.reports.ennum.*;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
@@ -20,10 +20,12 @@ import com.smartstay.reports.responses.hostel.TemplateInfo;
 import com.smartstay.reports.responses.invoice.*;
 import com.smartstay.reports.responses.invoice.InvoiceItems;
 import com.smartstay.reports.responses.invoice.RetainerInfo;
+import com.smartstay.reports.responses.pagination.PaginationDataRes;
 import com.smartstay.reports.responses.settlement.AdditionalAdvance;
 import com.smartstay.reports.responses.settlement.AdditionalAdvanceItems;
 import com.smartstay.reports.services.InvoiceRedemptionService;
 import com.smartstay.reports.services.SettlementItemService;
+import com.smartstay.reports.utils.NameUtils;
 import com.smartstay.reports.utils.Utils;
 import com.smartstay.reports.wrappers.CurrentRentBreakUp;
 import com.smartstay.reports.wrappers.InvoiceMapper;
@@ -33,14 +35,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static com.smartstay.reports.ennum.PaymentStatus.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService {
+
     @Autowired
     private InvoicesV1Repository invoicesV1Repository;
     @Autowired
@@ -65,6 +65,18 @@ public class InvoiceService {
     private BankingV2Service bankingV2Service;
     @Autowired
     private InvoiceRedemptionService invoiceRedemptionService;
+    @Autowired
+    private UsersService usersService;
+    @Autowired
+    private BillingRulesService billingRulesService;
+    @Autowired
+    private FloorsService floorsService;
+    @Autowired
+    private RoomsService roomsService;
+    @Autowired
+    private BedsService bedService;
+    @Autowired
+    private BookingsService bookingsService;
 
     public ResponseEntity<?> getInvoiceReport(String hostelId, String invoiceId) {
 
@@ -778,11 +790,17 @@ public class InvoiceService {
                                               Double maxOutstandingAmount,
                                               String startDate,
                                               String endDate) {
-        InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, search, paymentStatus, invoiceModes, invoiceTypes, createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, startDate, endDate);
+
+        InvoicePdfResponse invoicePdfResponse = getInvoiceDetails(hostelId, search, paymentStatus,
+                invoiceModes, invoiceTypes, createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount,
+                maxOutstandingAmount, startDate, endDate);
+
         Context context = new Context();
         context.setVariable("invoices", invoicePdfResponse);
 
-        String invoiceReportUrl = pdfServices.generateInvoicePdf("invoice-report", context);
+        String invoiceReportUrl = pdfServices
+                .generateInvoicePdf("invoice-report", context);
+
         return new ResponseEntity<>(invoiceReportUrl, HttpStatus.OK);
     }
 
@@ -799,6 +817,7 @@ public class InvoiceService {
                                                 Double maxOutstandingAmount,
                                                 String startDate,
                                                 String endDate) {
+
         Date sDate = Utils.stringToDate(startDate.replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         Date eDate = Utils.stringToDate(endDate.replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
 
@@ -849,6 +868,7 @@ public class InvoiceService {
                 .toList();
 
         String totalInvoice = String.valueOf(listInvoices.size());
+
         double totalInvoiceAmount = listInvoices.
                 stream()
                 .mapToDouble(i -> {
@@ -865,10 +885,11 @@ public class InvoiceService {
                     }
                 })
                 .sum();
+
         double paidAmount = listInvoices
                 .stream()
                 .filter(i -> i.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PAID.name()) ||
-                        i.getPaymentStatus().equalsIgnoreCase(PARTIAL_PAYMENT.name()))
+                        i.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PARTIAL_PAYMENT.name()))
                 .mapToDouble(i -> {
                     if (i.getPaidAmount() != null) {
                         return i.getPaidAmount();
@@ -881,7 +902,8 @@ public class InvoiceService {
 
         double returnInvoiceAmount = listInvoices
                 .stream()
-                .filter(i -> i.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name()) && i.getPaymentStatus().equalsIgnoreCase(PaymentStatus.CANCELLED.name()))
+                .filter(i -> i.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name()) &&
+                        i.getPaymentStatus().equalsIgnoreCase(PaymentStatus.CANCELLED.name()))
                 .mapToDouble(i -> {
                     if (i.getPaidAmount() != null) {
                         return i.getPaidAmount();
@@ -922,20 +944,15 @@ public class InvoiceService {
                 .sum();
 
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(new Date()), Utils.dateToTime(new Date()));
-        HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
-        InvoiceHeader invoiceHeader = new InvoiceHeader(Utils.dateToString(sDate), Utils.dateToString(eDate),
-                totalInvoice,
-                String.valueOf(totalInvoiceAmount),
-                String.valueOf(paidAmount),
-                String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)),
-                String.valueOf(outstandingAmount),
-                String.valueOf(returnInvoiceAmount),
-                String.valueOf(cancelledAmount));
 
-        return new InvoicePdfResponse(hostelInformation,
-                invoiceHeader,
-                footerInfo,
-                listInvoiceItems);
+        HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
+
+        InvoiceHeader invoiceHeader = new InvoiceHeader(Utils.dateToString(sDate), Utils.dateToString(eDate),
+                totalInvoice, String.valueOf(totalInvoiceAmount), String.valueOf(paidAmount),
+                String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)), String.valueOf(outstandingAmount),
+                String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
+
+        return new InvoicePdfResponse(hostelInformation, invoiceHeader, footerInfo, listInvoiceItems);
     }
 
     public ResponseEntity<?> getNewSettlementDetails(String hostelId, String invoiceId) {
@@ -1248,12 +1265,634 @@ public class InvoiceService {
         return invoiceInfo;
     }
 
-
     public List<String> findInvoiceIdsByHostelIdAndTypeIn(String hostelId, List<String> invoiceTypes) {
         List<String> listInvoiceIds = invoicesV1Repository.findInvoiceIdsByHostelIdAndTypeIn(hostelId, invoiceTypes);
         if (listInvoiceIds == null) {
             return new ArrayList<>();
         }
         return listInvoiceIds;
+    }
+
+
+    public ResponseEntity<?> getInvoiceReportConsolidatedView(String hostelId, String userId, String search,
+                                                              List<String> paymentStatus, List<String> invoiceModes,
+                                                              List<String> invoiceTypes, List<String> createdBy, String period,
+                                                              Double minPaidAmount, Double maxPaidAmount, Double minOutstandingAmount,
+                                                              Double maxOutstandingAmount, String startDate, String endDate,
+                                                              List<Integer> floorIds, Boolean includePaidInvoice,
+                                                              Boolean includeEmptyBeds, String groupBy, Boolean includeSubTotals,
+                                                              Boolean includeGrandTotal, Boolean includeHostelName,
+                                                              Boolean isPaginated, int page, int size) {
+
+        return buildInvoiceReportConsolidatedView(hostelId, userId, search, paymentStatus, invoiceModes, invoiceTypes,
+                createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, startDate,
+                endDate, floorIds, includePaidInvoice, includeEmptyBeds, groupBy, includeSubTotals, includeGrandTotal,
+                includeHostelName, isPaginated, page, size);
+    }
+
+    private ResponseEntity<?> buildInvoiceReportConsolidatedView(String hostelId, String userId, String search,
+                                                                 List<String> paymentStatus, List<String> invoiceModes,
+                                                                 List<String> invoiceTypes, List<String> createdBy,
+                                                                 String period, Double minPaidAmount, Double maxPaidAmount,
+                                                                 Double minOutstandingAmount, Double maxOutstandingAmount,
+                                                                 String startDate, String endDate, List<Integer> floorIds,
+                                                                 Boolean includePaidInvoice, Boolean includeEmptyBeds,
+                                                                 String groupBy, Boolean includeSubTotals, Boolean includeGrandTotal,
+                                                                 Boolean includeHostelName, Boolean isPaginated,
+                                                                 int page, int size) {
+
+        HostelV1 hostel = hostelService.getHostel(hostelId);
+        if (hostel == null){
+            return new ResponseEntity<>("Hostel not found", HttpStatus.BAD_REQUEST);
+        }
+
+        Users user = usersService.findByUserId(userId);
+        if (user == null){
+            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+        }
+
+        BillingRules billingRules = billingRulesService
+                .getLatestBillingRulesByHostelId(hostelId);
+        if (billingRules == null){
+            return new ResponseEntity<>("Billing rules not found", HttpStatus.BAD_REQUEST);
+        }
+
+        // get table columns here for table order
+
+        Date today = new Date();
+
+        if (isPaginated == null){
+            isPaginated = false;
+        }
+
+        if (isPaginated) {
+            page = Math.max(page - 1, 0);
+            size = Math.max(size, 1);
+        }
+
+        search = (search == null || search.isBlank()) ? null : search.trim();
+
+        Set<String> filteredCustomerIds = null;
+        if (search != null){
+            List<Customers> customers = customerServices
+                    .searchCustomer(hostelId, search);
+
+            filteredCustomerIds = customers.stream()
+                    .map(Customers::getCustomerId)
+                    .collect(Collectors.toSet());
+        }
+
+        if (paymentStatus == null || paymentStatus.isEmpty()){
+            paymentStatus = null;
+        }
+
+        if (invoiceModes == null || invoiceModes.isEmpty()){
+            invoiceModes = null;
+        }
+
+        if (invoiceTypes == null || invoiceTypes.isEmpty()){
+            invoiceTypes = null;
+        }
+
+        if (createdBy == null || createdBy.isEmpty()){
+            createdBy = null;
+        }
+
+        Date filterStartDate = null;
+        Date filterEndDate = null;
+        if (period != null && !period.isBlank()){
+            BillingDates billingDates = billingRulesService
+                    .getBillingDatesByPeriod(period, billingRules);
+
+            filterStartDate = billingDates.currentBillStartDate();
+            filterEndDate = billingDates.currentBillEndDate();
+        }
+        else {
+            if (startDate == null && endDate == null){
+                return new ResponseEntity<>("Need date input when period is null", HttpStatus.BAD_REQUEST);
+            }
+
+            if (startDate != null){
+                filterStartDate = Utils.stringToDate(startDate
+                        .replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
+            }
+            if (endDate != null){
+                filterEndDate = Utils.stringToDate(endDate
+                        .replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
+            }
+        }
+
+        List<Floors> allFloors = floorsService.getAllByHostelId(hostelId);
+        List<Floors> floors = new ArrayList<>();
+        List<Rooms> rooms = new ArrayList<>();
+        List<Beds> beds = new ArrayList<>();
+        if (floorIds == null || floorIds.isEmpty()){
+            floors = allFloors;
+        } else {
+            floors = floorsService.getByFloorIds(new HashSet<>(floorIds));
+        }
+
+        if (floors != null && !floors.isEmpty()){
+            Set<Integer> newFloorIds = floors.stream()
+                    .map(Floors::getFloorId)
+                    .collect(Collectors.toSet());
+
+            rooms = roomsService.getAllByFloorIds(newFloorIds);
+        }
+
+        if (rooms != null && !rooms.isEmpty()){
+            Set<Integer> roomIds = rooms.stream()
+                    .map(Rooms::getRoomId)
+                    .collect(Collectors.toSet());
+
+            beds = bedsService.getAllByRoomIds(roomIds);
+        }
+
+        if (includeEmptyBeds == null){
+            includeEmptyBeds = false;
+        }
+
+        List<BookingsV1> latestBookings = new ArrayList<>();
+        if (beds != null && !beds.isEmpty()){
+
+            Set<Integer> bedIds = beds.stream()
+                    .map(Beds::getBedId)
+                    .collect(Collectors.toSet());
+
+            latestBookings = bookingsService
+                    .getLatestBookingsByBedIds(bedIds);
+
+            Set<String> bedCustomerIds = latestBookings.stream()
+                    .map(BookingsV1::getCustomerId)
+                    .collect(Collectors.toSet());
+
+            if (!bedCustomerIds.isEmpty()){
+                if (filteredCustomerIds != null){
+                    filteredCustomerIds.retainAll(bedCustomerIds);
+                } else {
+                    filteredCustomerIds = bedCustomerIds;
+                }
+            }
+        }
+
+        if (includePaidInvoice == null){
+            includePaidInvoice = false;
+        }
+
+        if (includePaidInvoice){
+            if (paymentStatus != null){
+                paymentStatus.add(PaymentStatus.PAID.name());
+            }
+        } else {
+            if (paymentStatus != null){
+                paymentStatus.remove(PaymentStatus.PAID.name());
+            }
+        }
+
+        GroupByEnum groupByEnum = GroupByEnum.FLOOR_ROOM_BED;
+        if (groupBy != null){
+            try {
+                groupByEnum = GroupByEnum.valueOf(groupBy);
+            } catch (Exception e){
+                return new ResponseEntity<>("Invalid Group by filter",
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (includeSubTotals == null){
+            includeSubTotals = true;
+        }
+
+        if (includeGrandTotal == null){
+            includeGrandTotal = true;
+        }
+
+        if (includeHostelName == null){
+            includeHostelName = true;
+        }
+
+        List<InvoicesV1> invoices = invoicesV1Repository
+                .findConsolidatedInvoicesByFilters(hostelId, filteredCustomerIds, paymentStatus,
+                        invoiceModes, invoiceTypes, createdBy, filterStartDate, filterEndDate, minPaidAmount,
+                        maxPaidAmount, minOutstandingAmount, maxOutstandingAmount);
+
+        if (paymentStatus == null && !includePaidInvoice){
+            invoices = invoices.stream()
+                    .filter(i -> !PaymentStatus.PAID.name().equalsIgnoreCase(i.getPaymentStatus()))
+                    .toList();
+        }
+
+        Map<Integer, List<Rooms>> roomsByFloor = new HashMap<>();
+        if (rooms != null){
+            roomsByFloor = rooms.stream()
+                    .collect(Collectors.groupingBy(Rooms::getFloorId));
+        }
+
+        Map<Integer, List<Beds>> bedsByRoom = new HashMap<>();
+        if (beds != null){
+            bedsByRoom = beds.stream()
+                    .collect(Collectors.groupingBy(Beds::getRoomId));
+        }
+
+        Map<Integer, String> customerByBed = latestBookings.stream()
+                .collect(Collectors.toMap(
+                        BookingsV1::getBedId,
+                        BookingsV1::getCustomerId,
+                        (existing, replacement) -> existing
+                ));
+
+        Map<String, List<InvoicesV1>> invoicesByCustomer = invoices.stream()
+                .collect(Collectors.groupingBy(InvoicesV1::getCustomerId));
+
+        Set<String> customerIds = invoices.stream()
+                .map(InvoicesV1::getCustomerId)
+                .collect(Collectors.toSet());
+
+        List<Customers> customers = customerServices
+                .findByCustomerIds(new ArrayList<>(customerIds));
+
+        Map<String, Customers> customersMap = customers.stream()
+                .collect(Collectors.toMap(Customers::getCustomerId,
+                        customer -> customer));
+
+        Set<String> createdByUserIds = invoices.stream()
+                .filter(i -> !InvoiceType.SETTLEMENT.name().equalsIgnoreCase(i.getInvoiceType()))
+                .map(InvoicesV1::getCreatedBy)
+                .collect(Collectors.toSet());
+
+        List<Users> createdByUsers = usersService
+                .findByUserIds(new ArrayList<>(createdByUserIds));
+
+        String totalInvoice = String.valueOf(invoices.size());
+        double totalInvoiceAmount = 0;
+        double paidAmount = 0;
+        double returnInvoiceAmount = 0;
+        double cancelledAmount = 0;
+        double outstandingAmount = 0;
+        double totalBookingAmount = 0;
+
+        for (InvoicesV1 invoice : invoices){
+
+            double totalAmount = invoice.getTotalAmount() != null ? invoice.getTotalAmount() : 0.0;
+            double invPaidAmount = invoice.getPaidAmount() != null ? invoice.getPaidAmount() : 0.0;
+            double pendingAmount = totalAmount - invPaidAmount;
+
+            if (InvoiceType.BOOKING.name().equalsIgnoreCase(invoice.getInvoiceType())){
+                totalBookingAmount += totalAmount;
+            }
+            if (!invoice.isCancelled()){
+                outstandingAmount += pendingAmount;
+            } else {
+                cancelledAmount += pendingAmount;
+            }
+            if (InvoiceType.BOOKING.name().equalsIgnoreCase(invoice.getInvoiceType()) &&
+                    PaymentStatus.CANCELLED.name().equalsIgnoreCase(invoice.getPaymentStatus())){
+                if (invoice.getPaidAmount() != null){
+                    returnInvoiceAmount += invoice.getPaidAmount();
+                } else {
+                    returnInvoiceAmount += totalAmount;
+                }
+            }
+            if (PaymentStatus.PAID.name().equalsIgnoreCase(invoice.getPaymentStatus()) ||
+                    PaymentStatus.PARTIAL_PAYMENT.name().equalsIgnoreCase(invoice.getPaymentStatus())){
+                paidAmount += invPaidAmount;
+            }
+            totalInvoiceAmount += totalAmount;
+        }
+
+        HostelInformation hostelInfo = hostelService.getHostelInformation(hostelId);
+
+        InvoiceHeader invHeader = new InvoiceHeader(Utils.dateToString(filterStartDate), Utils.dateToString(filterEndDate),
+                totalInvoice, String.valueOf(totalInvoiceAmount), String.valueOf(paidAmount),
+                String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)), String.valueOf(outstandingAmount),
+                String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
+
+        FooterInfo footerInfo = new FooterInfo(Utils.dateToString(today), Utils.dateToTime(today));
+
+        List<UserFilterRes> createdByFilters = createdByUsers.stream()
+                .map(i -> new UserFilterRes(NameUtils
+                        .getFullName(i.getFirstName(), i.getLastName()),
+                        i.getUserId()))
+                .toList();
+
+        List<EnumFilterRes> periodFilters = Arrays.stream(PeriodEnum.values())
+                .map(i -> new EnumFilterRes(i.name(), i.getLabel()))
+                .toList();
+
+        List<EnumFilterRes> paymentStatusFilters = Arrays.stream(PaymentStatus.values())
+                .map(i -> new EnumFilterRes(i.name(), i.getDisplayName()))
+                .toList();
+
+        List<EnumFilterRes> invoiceModeFilters = Arrays.stream(InvoiceMode.values())
+                .map(i -> new EnumFilterRes(i.name(),
+                        NameUtils.capitalizeWordsWithUnderscore(i.name())))
+                .toList();
+
+        List<EnumFilterRes> invoiceTypeFilters = Arrays.stream(InvoiceType.values())
+            .map(i -> new EnumFilterRes(i.name(),
+                    NameUtils.capitalizeWordsWithUnderscore(i.name())))
+            .toList();
+
+        List<FloorsFilterRes> floorsFilters = allFloors.stream()
+                .map(i -> new FloorsFilterRes(i.getFloorId(), i.getFloorName()))
+                .toList();
+
+        List<EnumFilterRes> groupByFilters = Arrays.stream(GroupByEnum.values())
+                .map(i -> new EnumFilterRes(i.name(), i.getLabel()))
+                .toList();
+
+        InvConsolidatedFiltersRes filtersRes = new InvConsolidatedFiltersRes(createdByFilters, periodFilters,
+                paymentStatusFilters, invoiceModeFilters, invoiceTypeFilters, floorsFilters, groupByFilters);
+
+        PaginationDataRes paginationData = isPaginated ?
+                new PaginationDataRes(page + 1, size, 0, 1)
+                : null;
+
+        InvConsolidatedPdfRes response = new InvConsolidatedPdfRes(includePaidInvoice, includeEmptyBeds,
+                includeSubTotals, includeGrandTotal, includeHostelName, hostelInfo, invHeader, footerInfo,
+                List.of(), List.of(), filtersRes, paginationData);
+
+        if (GroupByEnum.FLOOR_ROOM_BED.equals(groupByEnum)) {
+
+            List<InvFloorsRes> floorResponses = new ArrayList<>();
+
+            if (floors == null){
+                floors = new ArrayList<>();
+            }
+
+            for (Floors floor : floors) {
+
+                List<InvRoomRes> roomResponses = new ArrayList<>();
+
+                for (Rooms room : roomsByFloor.getOrDefault(floor.getFloorId(), List.of())) {
+
+                    List<InvBedRes> bedResponses = buildBedResponses(bedsByRoom, customerByBed,
+                            customersMap, invoicesByCustomer, room, includeEmptyBeds);
+
+                    if (!includeEmptyBeds && bedResponses.isEmpty()) {
+                        continue;
+                    }
+
+                    roomResponses.add(new InvRoomRes(room.getRoomId(), room.getRoomName(), bedResponses));
+                }
+
+                if (!includeEmptyBeds && roomResponses.isEmpty()) {
+                    continue;
+                }
+
+                floorResponses.add(new InvFloorsRes(floor.getFloorId(), floor.getFloorName(), roomResponses));
+            }
+
+            long totalElements = floorResponses.size();
+
+            List<InvFloorsRes> paginatedFloors = paginateList(
+                    floorResponses, isPaginated, page, size
+            );
+
+            paginationData = isPaginated ?
+                    new PaginationDataRes(page + 1, size, totalElements,
+                            (int) Math.ceil((double) totalElements / size))
+                    : null;
+
+            response = new InvConsolidatedPdfRes(includePaidInvoice, includeEmptyBeds, includeSubTotals,
+                    includeGrandTotal, includeHostelName, hostelInfo, invHeader, footerInfo, paginatedFloors,
+                    List.of(), filtersRes, paginationData);
+        }
+        else if (GroupByEnum.ROOM_BED.equals(groupByEnum)) {
+
+            List<InvRoomRes> roomResponses = new ArrayList<>();
+
+            if (rooms == null){
+                rooms = new ArrayList<>();
+            }
+
+            for (Rooms room : rooms) {
+
+                List<InvBedRes> bedResponses = buildBedResponses(bedsByRoom, customerByBed,
+                        customersMap, invoicesByCustomer, room, includeEmptyBeds);
+
+                if (!includeEmptyBeds && bedResponses.isEmpty()) {
+                    continue;
+                }
+
+                roomResponses.add(new InvRoomRes(room.getRoomId(), room.getRoomName(), bedResponses));
+            }
+
+            long totalElements = roomResponses.size();
+
+            List<InvRoomRes> paginatedRooms = paginateList(
+                    roomResponses, isPaginated, page, size
+            );
+
+            paginationData = isPaginated ?
+                    new PaginationDataRes(page + 1, size, totalElements,
+                    (int) Math.ceil((double) totalElements / size))
+                    : null;
+
+            response = new InvConsolidatedPdfRes(includePaidInvoice, includeEmptyBeds, includeSubTotals,
+                    includeGrandTotal, includeHostelName, hostelInfo, invHeader, footerInfo, List.of(),
+                    paginatedRooms, filtersRes, paginationData);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private InvConsolidatedRes toInvConsolidatedRes(InvoicesV1 invoice, Customers customer) {
+
+        if (invoice == null){
+            return null;
+        }
+
+        String name = "NA";
+        String invoiceType = "NA";
+        String dueAmount = "NA";
+        String paymentStatus = "NA";
+
+        if (customer != null){
+            name = NameUtils.getFullName(customer.getFirstName(), customer.getLastName());
+        }
+
+        if (InvoiceType.RENT.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Rent";
+        } else if (InvoiceType.REASSIGN_RENT.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Re-Assign Rent";
+        } else if (InvoiceType.BOOKING.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Booking";
+        } else if (InvoiceType.ADVANCE.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Advance";
+        } else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Additional Advance";
+        } else if (InvoiceType.SETTLEMENT.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Settlement";
+        } else if (InvoiceType.EB.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "EB";
+        } else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Other";
+        } else if (InvoiceType.AMOUNT_HOLDING.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                InvoiceType.EB_HOLDING.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            invoiceType = "Retainer";
+        } else {
+            invoiceType = Utils.capitalize(invoice.getInvoiceType());
+        }
+
+        if (PaymentStatus.PAID.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Paid";
+        } else if (PaymentStatus.PARTIAL_PAYMENT.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Partially Paid";
+        } else if (PaymentStatus.REFUNDED.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Refunded";
+        } else if (PaymentStatus.PARTIAL_REFUND.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Partially Refunded";
+        } else if (PaymentStatus.PENDING.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Pending";
+        } else if (PaymentStatus.PENDING_REFUND.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Pending Refunded";
+        } else if (PaymentStatus.CANCELLED.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Cancelled";
+        } else if (PaymentStatus.ADVANCE_IN_HAND.name().equalsIgnoreCase(invoice.getPaymentStatus())) {
+            paymentStatus = "Advance In Hand";
+        } else {
+            paymentStatus = Utils.capitalize(invoice.getPaymentStatus());
+        }
+
+        if (invoice.isCancelled()) {
+            paymentStatus = "Cancelled";
+        }
+
+        double totalAmount = invoice.getTotalAmount() != null ? invoice.getTotalAmount() : 0.0;
+        double paidAmount = invoice.getPaidAmount() != null ? invoice.getPaidAmount() : 0.0;
+        double pendingAmount = totalAmount - paidAmount;
+
+        if (!InvoiceType.SETTLEMENT.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+            dueAmount = String.valueOf(pendingAmount);
+        }
+        else {
+            if (totalAmount < 0){
+                if (invoice.getPaidAmount() != null){
+                    double amount = totalAmount + paidAmount;
+                    dueAmount = String.valueOf(amount);
+                } else {
+                    dueAmount = String.valueOf(totalAmount);
+                }
+            } else {
+                dueAmount = String.valueOf(pendingAmount);
+            }
+        }
+
+        return new InvConsolidatedRes(invoice.getInvoiceNumber(), name, invoiceType,
+                Utils.dateToString(invoice.getInvoiceStartDate()), Utils.dateToString(invoice.getInvoiceDueDate()),
+                String.valueOf(invoice.getTotalAmount()), String.valueOf(paidAmount),
+                dueAmount, paymentStatus, invoice.getInvoiceUrl()
+        );
+    }
+
+    private List<InvBedRes> buildBedResponses(Map<Integer, List<Beds>> bedsByRoom,
+                                              Map<Integer, String> customerByBed,
+                                              Map<String, Customers> customersMap,
+                                              Map<String, List<InvoicesV1>> invoicesByCustomer,
+                                              Rooms room, boolean includeEmptyBeds) {
+
+        List<InvBedRes> bedResponses = new ArrayList<>();
+
+        for (Beds bed : bedsByRoom.getOrDefault(room.getRoomId(), List.of())) {
+
+            String customerId = customerByBed.get(bed.getBedId());
+
+            Customers customer = customersMap.getOrDefault(customerId, null);
+
+            List<InvoicesV1> customerInvoices = invoicesByCustomer.getOrDefault(customerId, List.of());
+
+            List<InvConsolidatedRes> invoiceResponses = customerInvoices
+                    .stream()
+                    .map(i -> toInvConsolidatedRes(i, customer))
+                    .toList();
+
+            if (!includeEmptyBeds && invoiceResponses.isEmpty()) {
+                continue;
+            }
+
+            int invoiceCount = customerInvoices.size();
+
+            double actualRent = 0;
+            double pendingRent = 0;
+            double ebAmount = 0;
+            double pendingAdvance = 0;
+            double pendingNonRefundable = 0;
+            double totalPendingAmount = 0;
+
+            for (InvoicesV1 invoice : customerInvoices) {
+
+                double totalAmount = invoice.getTotalAmount() != null ? invoice.getTotalAmount() : 0;
+                double invPaidAmount = invoice.getPaidAmount() != null ? invoice.getPaidAmount() : 0;
+                double pendingAmount = totalAmount - invPaidAmount;
+                double balanceAmount = invoice.getBalanceAmount() != null ? invoice.getBalanceAmount() : 0;
+                double deductionAmount = invoice.getDeductionAmount() != null ? invoice.getDeductionAmount() : 0;
+
+                List<com.smartstay.reports.dao.InvoiceItems> invoiceItems = invoice.getInvoiceItems();
+
+                if (InvoiceType.RENT.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.REASSIGN_RENT.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.OTHER.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.EB.name().equalsIgnoreCase(invoice.getInvoiceType())){
+                    actualRent += totalAmount;
+                    pendingRent += pendingAmount;
+
+                    if (invoiceItems != null && !invoiceItems.isEmpty()){
+                        ebAmount = invoiceItems
+                                .stream()
+                                .filter(item ->  com.smartstay.reports.ennum.InvoiceItems.EB.name()
+                                        .equals(item.getInvoiceItem()))
+                                .mapToDouble(com.smartstay.reports.dao.InvoiceItems::getAmount)
+                                .sum();
+                    }
+                }
+
+                if (InvoiceType.BOOKING.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.ADVANCE.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.AMOUNT_HOLDING.name().equalsIgnoreCase(invoice.getInvoiceType()) ||
+                        InvoiceType.EB_HOLDING.name().equalsIgnoreCase(invoice.getInvoiceType())) {
+                    pendingAdvance += balanceAmount;
+                }
+
+                pendingNonRefundable += deductionAmount;
+            }
+
+            totalPendingAmount = pendingAdvance - pendingNonRefundable - pendingRent;
+
+            String tenantName = null;
+            String countryCode = null;
+            String mobile = null;
+            if (customer != null){
+                tenantName = NameUtils.getFullName(customer.getFirstName(), customer.getLastName());
+                countryCode = "+" + String.valueOf(customer.getCountryCode());
+                mobile = customer.getMobile();
+            }
+
+            bedResponses.add(new InvBedRes(bed.getBedId(), bed.getBedName(), tenantName, countryCode,
+                    mobile, String.valueOf(actualRent), String.valueOf(pendingRent), String.valueOf(ebAmount),
+                    String.valueOf(pendingAdvance), String.valueOf(pendingNonRefundable),
+                    String.valueOf(totalPendingAmount), String.valueOf(invoiceCount), invoiceResponses));
+        }
+
+        return bedResponses;
+    }
+
+    private <T> List<T> paginateList(List<T> data, boolean isPaginated,
+                                     int page, int size) {
+
+        if (!isPaginated) {
+            return data;
+        }
+
+        int fromIndex = page * size;
+
+        if (fromIndex >= data.size()) {
+            return List.of();
+        }
+
+        int toIndex = Math.min(fromIndex + size, data.size());
+
+        return data.subList(fromIndex, toIndex);
     }
 }
