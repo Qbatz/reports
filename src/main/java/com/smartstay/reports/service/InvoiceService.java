@@ -1373,19 +1373,12 @@ public class InvoiceService {
             filterStartDate = billingDates.currentBillStartDate();
             filterEndDate = billingDates.currentBillEndDate();
         }
-        else {
-            if (startDate == null && endDate == null){
-                return new ResponseEntity<>("Need date input when period is null", HttpStatus.BAD_REQUEST);
-            }
 
-            if (startDate != null){
-                filterStartDate = Utils.stringToDate(startDate
-                        .replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
-            }
-            if (endDate != null){
-                filterEndDate = Utils.stringToDate(endDate
-                        .replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
-            }
+        if (startDate != null && endDate != null){
+            filterStartDate = Utils.stringToDate(startDate
+                    .replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
+            filterEndDate = Utils.stringToDate(endDate
+                    .replaceAll("/", "-"), Utils.USER_INPUT_DATE_FORMAT);
         }
 
         List<Floors> allFloors = floorsService.getAllByHostelId(hostelId);
@@ -1568,10 +1561,10 @@ public class InvoiceService {
 
         HostelInformation hostelInfo = hostelService.getHostelInformation(hostelId);
 
-        InvoiceHeader invHeader = new InvoiceHeader(Utils.dateToString(filterStartDate), Utils.dateToString(filterEndDate),
-                totalInvoice, String.valueOf(totalInvoiceAmount), String.valueOf(paidAmount),
-                String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)), String.valueOf(outstandingAmount),
-                String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
+        InvoiceHeader invHeader = new InvoiceHeader(filterStartDate != null ? Utils.dateToString(filterStartDate) : null,
+                filterEndDate != null ? Utils.dateToString(filterEndDate) : null, totalInvoice, String.valueOf(totalInvoiceAmount),
+                String.valueOf(paidAmount), String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)),
+                String.valueOf(outstandingAmount), String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
 
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(today), Utils.dateToTime(today));
 
