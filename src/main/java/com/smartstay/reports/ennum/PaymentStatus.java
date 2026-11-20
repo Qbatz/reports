@@ -1,6 +1,10 @@
 package com.smartstay.reports.ennum;
 
+import lombok.Getter;
+
+@Getter
 public enum PaymentStatus {
+
     PAID("Paid"),
     PENDING("Pending"),
     PARTIAL_PAYMENT("Partial Payment"),
@@ -10,14 +14,9 @@ public enum PaymentStatus {
     PARTIAL_REFUND("Partial Refund"),
     REFUNDED("Refunded");
 
-
     private final String displayName;
 
     PaymentStatus(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 }

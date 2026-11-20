@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
+
     List<Customers> listCustomers = null;
 
     public InvoiceMapper(List<Customers> listCustomers) {
@@ -20,6 +21,7 @@ public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
 
     @Override
     public ListInvoiceItems apply(InvoicesV1 invoicesV1) {
+
         String name = "NA";
         String invoiceType = "NA";
         String dueAmount = "NA";
@@ -101,6 +103,7 @@ public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
         if (invoicesV1.isCancelled()) {
             paymentStatus = "Cancelled";
         }
+
         if (listCustomers != null) {
             Customers customers = listCustomers
                     .stream()
@@ -111,6 +114,7 @@ public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
                 name = NameUtils.getFullName(customers.getFirstName(), customers.getLastName());
             }
         }
+
         return new ListInvoiceItems(invoicesV1.getInvoiceNumber(),
                 name,
                 invoiceType,

@@ -9,9 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface BedsRepository extends JpaRepository<Beds, Integer> {
+
     @Query(value = """
             SELECT bed.bed_id as bedId, bed.bed_name as bedName, flrs.floor_id as floorId, 
             flrs.floor_name as floorName, rms.room_id as roomId, rms.room_name as roomName 
@@ -26,4 +28,6 @@ public interface BedsRepository extends JpaRepository<Beds, Integer> {
             floors flrs on flrs.floor_id=rms.floor_id where bed.bed_id IN (:bedId)
             """, nativeQuery = true)
     List<BedInformations> findByBedIds(@Param("bedId") List<Integer> bedIds);
+
+    List<Beds> findAllByRoomIdInAndIsActiveTrueAndIsDeletedFalse(Set<Integer> roomIds);
 }

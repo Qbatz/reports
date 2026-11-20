@@ -1,13 +1,12 @@
 package com.smartstay.reports.service;
 
 import com.smartstay.reports.dao.BookingsV1;
+import com.smartstay.reports.ennum.BookingsStatus;
 import com.smartstay.reports.repositories.BookingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class BookingsService {
@@ -33,9 +32,18 @@ public class BookingsService {
 
         return bookingsRepository
                 .findAllBookingsWithFilters(hostelId, startDate, endDate,
-                        (customerIds != null && !customerIds.isEmpty()) ? customerIds : new ArrayList<>(),
+                        (customerIds != null && !customerIds.isEmpty()) ? customerIds : null,
                         (status != null && !status.isEmpty()) ? status : null,
                         (roomIds != null && !roomIds.isEmpty()) ? roomIds : null,
                         (floorIds != null && !floorIds.isEmpty()) ? floorIds : null);
+    }
+
+    public List<BookingsV1> getLatestBookingsByBedIds(Set<Integer> bedIds) {
+
+        Set<String> activeStatuses = new HashSet<>();
+        activeStatuses.add(BookingsStatus.CHECKIN.name());
+        activeStatuses.add(BookingsStatus.NOTICE.name());
+
+        return bookingsRepository.findLatestByBedIdInAndCurrentStatusIn(bedIds, activeStatuses);
     }
 }

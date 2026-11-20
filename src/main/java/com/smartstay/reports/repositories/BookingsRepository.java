@@ -8,20 +8,22 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface BookingsRepository extends JpaRepository<BookingsV1, String> {
 
     @Query(value = """
-                        SELECT b FROM bookingsv1 b WHERE b.hostelId = :hostelId 
-                        AND 
-                (b.joiningDate IS NOT NULL AND DATE(b.joiningDate) <= DATE(:endDate) 
-                OR 
-                (b.joiningDate IS NULL AND DATE(b.expectedJoiningDate) <= DATE(:endDate))) 
-                AND 
-                (b.currentStatus <> 'CANCELLED' OR (b.currentStatus = 'CANCELLED' AND DATE(b.cancelDate) >= DATE(:startDate) AND 
-                DATE(b.cancelDate) <= DATE(:endDate))) AND 
-                (b.checkoutDate IS NULL OR DATE(b.checkoutDate) >= DATE(:startDate)) """)
+                    SELECT b FROM bookingsv1 b WHERE b.hostelId = :hostelId
+                    AND
+                    (b.joiningDate IS NOT NULL AND DATE(b.joiningDate) <= DATE(:endDate)
+                    OR
+                    (b.joiningDate IS NULL AND DATE(b.expectedJoiningDate) <= DATE(:endDate)))
+                    AND
+                    (b.currentStatus <> 'CANCELLED' OR (b.currentStatus = 'CANCELLED' AND DATE(b.cancelDate) >= DATE(:startDate) AND
+                    DATE(b.cancelDate) <= DATE(:endDate))) AND
+                    (b.checkoutDate IS NULL OR DATE(b.checkoutDate) >= DATE(:startDate))
+                    """)
     List<BookingsV1> findAllBookingsWithFilters(@Param("hostelId") String hostelId,
                                                 @Param("startDate") Date startDate,
                                                 @Param("endDate") Date endDate);
@@ -53,4 +55,19 @@ public interface BookingsRepository extends JpaRepository<BookingsV1, String> {
                                                 @Param("roomIds") List<Integer> roomIds,
                                                 @Param("floorIds") List<Integer> floorIds
     );
+
+    @Query(value = """
+            select b.* from bookingsv1 b
+            join (
+                select bed_id, max(created_at) as created_at
+                from bookingsv1
+                where bed_id in (:bedIds)
+                    and current_status in (:currentStatuses)
+                group by bed_id
+            ) latest
+            on latest.bed_id = b.bed_id
+            and latest.created_at = b.created_at
+            """, nativeQuery = true)
+    List<BookingsV1> findLatestByBedIdInAndCurrentStatusIn(Set<Integer> bedIds,
+                                                           Set<String> currentStatuses);
 }
