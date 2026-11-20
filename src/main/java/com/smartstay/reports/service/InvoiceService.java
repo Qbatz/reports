@@ -11,6 +11,7 @@ import com.smartstay.reports.dto.invoice.*;
 import com.smartstay.reports.dto.invoice.EBItems;
 import com.smartstay.reports.dto.settlement.*;
 import com.smartstay.reports.ennum.*;
+import com.smartstay.reports.payloads.invoice.InvConsolidatedViewPayload;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.hostel.HostelInfo;
@@ -1274,32 +1275,14 @@ public class InvoiceService {
     }
 
 
-    public ResponseEntity<?> getInvoiceReportConsolidatedView(String hostelId, String userId, String search,
-                                                              List<String> paymentStatus, List<String> invoiceModes,
-                                                              List<String> invoiceTypes, List<String> createdBy, String period,
-                                                              Double minPaidAmount, Double maxPaidAmount, Double minOutstandingAmount,
-                                                              Double maxOutstandingAmount, String startDate, String endDate,
-                                                              List<Integer> floorIds, Boolean includePaidInvoice,
-                                                              Boolean includeEmptyBeds, String groupBy, Boolean includeSubTotals,
-                                                              Boolean includeGrandTotal, Boolean includeHostelName,
-                                                              Boolean isPaginated, int page, int size) {
+    public ResponseEntity<?> getInvoiceReportConsolidatedView(String hostelId, String userId,
+                                                              InvConsolidatedViewPayload payload) {
 
-        return buildInvoiceReportConsolidatedView(hostelId, userId, search, paymentStatus, invoiceModes, invoiceTypes,
-                createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, startDate,
-                endDate, floorIds, includePaidInvoice, includeEmptyBeds, groupBy, includeSubTotals, includeGrandTotal,
-                includeHostelName, isPaginated, page, size);
+        return buildInvoiceReportConsolidatedView(hostelId, userId, payload);
     }
 
-    private ResponseEntity<?> buildInvoiceReportConsolidatedView(String hostelId, String userId, String search,
-                                                                 List<String> paymentStatus, List<String> invoiceModes,
-                                                                 List<String> invoiceTypes, List<String> createdBy,
-                                                                 String period, Double minPaidAmount, Double maxPaidAmount,
-                                                                 Double minOutstandingAmount, Double maxOutstandingAmount,
-                                                                 String startDate, String endDate, List<Integer> floorIds,
-                                                                 Boolean includePaidInvoice, Boolean includeEmptyBeds,
-                                                                 String groupBy, Boolean includeSubTotals, Boolean includeGrandTotal,
-                                                                 Boolean includeHostelName, Boolean isPaginated,
-                                                                 int page, int size) {
+    private ResponseEntity<?> buildInvoiceReportConsolidatedView(String hostelId, String userId,
+                                                                 InvConsolidatedViewPayload payload) {
 
         HostelV1 hostel = hostelService.getHostel(hostelId);
         if (hostel == null){
@@ -1320,6 +1303,29 @@ public class InvoiceService {
         // get table columns here for table order
 
         Date today = new Date();
+
+        Boolean isPaginated = payload.isPaginated();
+        int page = payload.page();
+        int size = payload.size();
+        String search = payload.search();
+        List<String> paymentStatus = payload.paymentStatus();
+        List<String> invoiceModes = payload.invoiceModes();
+        List<String> invoiceTypes = payload.invoiceTypes();
+        List<String> createdBy = payload.createdBy();
+        String period = payload.period();
+        Double minPaidAmount = payload.minPaidAmount();
+        Double maxPaidAmount = payload.maxPaidAmount();
+        Double minOutstandingAmount = payload.minOutstandingAmount();
+        Double maxOutstandingAmount = payload.maxOutstandingAmount();
+        String startDate = payload.startDate();
+        String endDate = payload.endDate();
+        List<Integer> floorIds = payload.floorIds();
+        Boolean includePaidInvoice = payload.includePaidInvoice();
+        Boolean includeEmptyBeds = payload.includeEmptyBeds();
+        String groupBy = payload.groupBy();
+        Boolean includeSubTotals = payload.includeSubTotals();
+        Boolean includeGrandTotal = payload.includeGrandTotal();
+        Boolean includeHostelName = payload.includeHostelName();
 
         if (isPaginated == null){
             isPaginated = false;

@@ -1,9 +1,11 @@
 package com.smartstay.reports.controller;
 
+import com.smartstay.reports.payloads.invoice.InvConsolidatedViewPayload;
 import com.smartstay.reports.service.InvoiceService;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,34 +77,10 @@ public class InvoiceController {
                 minOutstandingAmount, maxOutstandingAmount, startDate, endDate);
     }
 
-    @GetMapping("/consolidated-details/{hostelId}/{userId}")
+    @PostMapping("/consolidated-details/{hostelId}/{userId}")
     public ResponseEntity<?> getInvoiceReportConsolidatedView(@PathVariable("hostelId") String hostelId,
                                                               @PathVariable("userId") String userId,
-                                                              @RequestParam(value = "search", required = false) String search,
-                                                              @RequestParam(value = "paymentStatus", required = false) List<String> paymentStatus,
-                                                              @RequestParam(value = "invoiceModes", required = false) List<String> invoiceModes,
-                                                              @RequestParam(value = "invoiceTypes", required = false) List<String> invoiceTypes,
-                                                              @RequestParam(value = "createdBy", required = false) List<String> createdBy,
-                                                              @RequestParam(value = "period", required = false) String period,
-                                                              @RequestParam(value = "minPaidAmount", required = false) Double minPaidAmount,
-                                                              @RequestParam(value = "maxPaidAmount", required = false) Double maxPaidAmount,
-                                                              @RequestParam(value = "minOutstandingAmount", required = false) Double minOutstandingAmount,
-                                                              @RequestParam(value = "maxOutstandingAmount", required = false) Double maxOutstandingAmount,
-                                                              @RequestParam(value = "startDate", required = false) String startDate,
-                                                              @RequestParam(value = "endDate", required = false) String endDate,
-                                                              @RequestParam(value = "floors", required = false) List<Integer> floorIds,
-                                                              @RequestParam(value = "includePaidInvoice", required = false) Boolean includePaidInvoice,
-                                                              @RequestParam(value = "includeEmptyBeds", required = false) Boolean includeEmptyBeds,
-                                                              @RequestParam(value = "groupBy", required = false) String groupBy,
-                                                              @RequestParam(value = "includeSubTotals", required = false) Boolean includeSubTotals,
-                                                              @RequestParam(value = "includeGrandTotal", required = false) Boolean includeGrandTotal,
-                                                              @RequestParam(value = "includeHostelName", required = false) Boolean includeHostelName,
-                                                              @RequestParam(value = "isPaginated", required = false) Boolean isPaginated,
-                                                              @RequestParam(value = "page", defaultValue = "0") int page,
-                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
-        return invoiceService.getInvoiceReportConsolidatedView(hostelId, userId, search, paymentStatus, invoiceModes, invoiceTypes,
-                createdBy, period, minPaidAmount, maxPaidAmount, minOutstandingAmount, maxOutstandingAmount, startDate, endDate,
-                floorIds, includePaidInvoice, includeEmptyBeds, groupBy, includeSubTotals, includeGrandTotal, includeHostelName,
-                isPaginated, page, size);
+                                                              @RequestBody @Valid InvConsolidatedViewPayload payload) {
+        return invoiceService.getInvoiceReportConsolidatedView(hostelId, userId, payload);
     }
 }
