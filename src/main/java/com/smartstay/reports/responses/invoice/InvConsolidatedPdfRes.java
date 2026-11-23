@@ -2,6 +2,7 @@ package com.smartstay.reports.responses.invoice;
 
 import com.smartstay.reports.dto.customer.FooterInfo;
 import com.smartstay.reports.dto.customer.HostelInformation;
+import com.smartstay.reports.responses.filterOptions.ColumnFiltersRes;
 import com.smartstay.reports.responses.hostel.InvoiceHeader;
 import com.smartstay.reports.responses.pagination.PaginationDataRes;
 
@@ -18,5 +19,8 @@ public record InvConsolidatedPdfRes(boolean includePaidInvoice,
                                     List<InvFloorsRes> floors,
                                     List<InvRoomRes> rooms,
                                     InvConsolidatedFiltersRes filters,
-                                    PaginationDataRes paginationData) {
+                                    PaginationDataRes paginationData,
+                                    List<ColumnFiltersRes> tableColumns,
+                                    List<String> tableHeaders,
+                                    List<Object> columnData) {
 }

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Pending Collection Sheet - SRK Homes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+
+        @page {
+            size: A4 landscape;
+            margin: 28px 32px 40px;
+
+
+            @top-left   { content: "Pending Collection Sheet \00B7  SRK Homes"; font: 700 11px/1 Gilroy, "DM Sans", Arial, sans-serif; color: #020618; }
+            @top-right  { content: "01 Nov 2026 \2013  30 Nov 2026"; font: 400 11px/1 Gilroy, "DM Sans", Arial, sans-serif; color: #314158; }
+            @bottom-left  { content: "Actual Rent is shown for reference and is not added to Total Pending."; font: 400 9px/1 Gilroy, "DM Sans", Arial, sans-serif; color: #62748E; }
+            @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 400 9px/1 Gilroy, "DM Sans", Arial, sans-serif; color: #62748E; }
+        }
+        @page :first {
+            @top-left  { content: none; }
+            @top-right { content: none; }
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; background: #fff; }
+        body {
+            font-family: Gilroy, "DM Sans", Arial, sans-serif;
+            color: #111928;
+            font-size: 10px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+
+        @media screen {
+            body { background: #E5E7EB; padding: 24px 0; }
+            .sheet { width: 1123px; margin: 0 auto; background: #fff; padding: 28px 32px; box-shadow: 0 4px 16px rgba(15, 23, 42, .12); }
+            .screen-note { display: block; }
+        }
+        .screen-note { display: none; margin: 12px 0 0; font-size: 9px; color: #62748E; }
+
+        /* ---------- First-page header ---------- */
+        .report-title { margin: 0; font-size: 20px; line-height: 26px; font-weight: 700; color: #020618; }
+        .report-subtitle { margin: 0; font-size: 12px; line-height: 18px; color: #62748E; }
+        .report-meta { display: flex; gap: 24px; margin: 10px 0 18px; font-size: 10px; line-height: 18px; color: #314158; }
+        .report-meta .generated { margin-left: auto; }
+        .report-meta b { font-weight: 700; }
+
+        /* ---------- Table ---------- */
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        thead { display: table-header-group; }            /* repeats on every page */
+        tr { break-inside: avoid; page-break-inside: avoid; }
+
+        th {
+            height: 40px;
+            padding: 0 8px;
+            background: #F8F9FF;
+            border-top: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 9px;
+            line-height: 12px;
+            font-weight: 600;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+            color: #6B7280;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th.num { text-align: right; }
+        th.ctr { text-align: center; }
+        td {
+            height: 28px;
+            padding: 0 8px;
+            border-bottom: 1px solid #E5E7EB;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
+        .num { text-align: right; }
+        .ctr { text-align: center; }
+        .strong { font-weight: 600; }
+
+        /* Floor name: bold on the first row of a floor, muted on the others so a
+           floor that continues on the next page is still labelled. */
+        td.floor { font-weight: 600; }
+        tr.cont td.floor { color: #B6C0CF; font-weight: 400; }
+        tr.first td { border-top: 2px solid #CAD5E2; }
+        tbody.floor-group:first-of-type tr.first td { border-top: 0; }
+
+        .st-pending { color: #B91C1C; }
+        .st-partial { color: #B45309; }
+        .st-paid    { color: #15803D; }
+        .st-vacant  { color: #1D4ED8; }
+
+        /* ---------- Subtotal and grand total ---------- */
+        tr.subtotal td {
+            background: #F8FAFC;
+            border-bottom: 1px solid #CAD5E2;
+            font-weight: 600;
+            color: #1D293D;
+        }
+        tr.grand td {
+            height: 32px;
+            background: #EEF2FF;
+            border-top: 2px solid #1E45E1;
+            border-bottom: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: #020618;
+        }
+        /* Keep totals with the row above them. */
+        tr.subtotal, tr.grand { break-before: avoid; page-break-before: avoid; }
+    </style>
+</head>
+<body>
+<div class="sheet">
+
+    <!-- BACKEND: report.title, report.propertyName, report.periodFrom/periodTo,
+         report.scope label, report.filtersSummary ("None" when no filters),
+         report.generatedAt. Hide the property in the subtitle and the period when
+         the user switched off "Include Property Name and Report Period". Keep the
+         @page header text above in step with the same values. -->
+    <h1 class="report-title">Pending Collection Sheet</h1>
+    <p class="report-subtitle">Invoice Register &middot; SRK Homes</p>
+    <div class="report-meta">
+        <span><b>Report period:</b> 01 Nov 2026 &ndash; 30 Nov 2026</span>
+        <span><b>Scope:</b> Pending tenants only</span>
+        <span><b>Filters:</b> None</span>
+        <span class="generated"><b>Generated:</b> 18 Nov 2026, 21:28</span>
+    </div>
+
+    <table>
+        <colgroup>
+            <col style="width:7.38%">  <!-- Floor -->
+            <col style="width:6.56%">  <!-- Room -->
+            <col style="width:4.10%">  <!-- Bed -->
+            <col style="width:12.30%"> <!-- Tenant -->
+            <col style="width:8.20%">  <!-- Status -->
+            <col style="width:9.84%">  <!-- Contact Number -->
+            <col style="width:7.38%">  <!-- Actual Rent -->
+            <col style="width:7.38%">  <!-- Pending Rent -->
+            <col style="width:6.56%">  <!-- Pending EB -->
+            <col style="width:7.38%">  <!-- Pending Advance -->
+            <col style="width:9.02%">  <!-- Pending Non-refundable Amount -->
+            <col style="width:8.20%">  <!-- Total Pending -->
+            <col style="width:5.70%">  <!-- Pending Invoice Count -->
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Floor</th>
+            <th>Room</th>
+            <th>Bed</th>
+            <th>Tenant</th>
+            <th>Status</th>
+            <th>Contact Number</th>
+            <th class="num">Actual Rent</th>
+            <th class="num">Pending Rent</th>
+            <th class="num">Pending EB</th>
+            <th class="num">Pending Advance</th>
+            <th class="num">Pending Non-refundable Amount</th>
+            <th class="num">Total Pending</th>
+            <th class="ctr">Pending Invoice Count</th>
+        </tr>
+        </thead>
+
+        <!-- BACKEND: one <tbody class="floor-group"> per floor, in floor order.
+             Inside: one <tr> per bed (Room, then Bed order), then the subtotal row.
+             Put class "first" on the first row of a floor, class "cont" on the rest. -->
+
+        <!-- ===================== Ground Floor ===================== -->
+        <tbody class="floor-group">
+        <tr class="first">
+            <td class="floor">Ground Floor</td>
+            <td class="strong">Room 101</td>
+            <td class="strong">A</td>
+            <td class="strong">Priya Patel</td>
+            <td class="st-pending">Pending</td>
+            <td>+91 99402 18290</td>
+            <td class="num">&#8377;7,500</td>
+            <td class="num">&#8377;7,500</td>
+            <td class="num">&#8377;600</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num strong">&#8377;8,100</td>
+            <td class="ctr">1</td>
+        </tr>
+        <tr class="cont">
+            <td class="floor">Ground Floor</td>
+            <td class="strong">Room 101</td>
+            <td class="strong">B</td>
+            <td class="strong">Amit Kumar</td>
+            <td class="st-partial">Partially Paid</td>
+            <td>+91 99625 44098</td>
+            <td class="num">&#8377;10,000</td>
+            <td class="num">&#8377;6,000</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num strong">&#8377;6,000</td>
+            <td class="ctr">1</td>
+        </tr>
+        <!-- Example rows that appear only when scope = all tenants and empty beds.
+             Delete once the API drives the rows. They are not part of the static
+             totals below (vacant adds nothing; a paid tenant adds Actual Rent only).
+
+        Vacant bed (no tenant; excluded from totals):
+        <tr class="cont">
+          <td class="floor">Ground Floor</td>
+          <td class="strong">Room 102</td>
+          <td class="strong">A</td>
+          <td class="strong">&mdash;</td>
+          <td class="st-vacant">Vacant</td>
+          <td>&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&#8377;0</td>
+          <td class="num">&#8377;0</td>
+          <td class="num">&#8377;0</td>
+          <td class="num">&#8377;0</td>
+          <td class="num strong">&#8377;0</td>
+          <td class="ctr">&mdash;</td>
+        </tr>
+
+        Paid tenant (zero outstanding, count 0):
+        <tr class="cont">
+          <td class="floor">Ground Floor</td>
+          <td class="strong">Room 103</td>
+          <td class="strong">A</td>
+          <td class="strong">Sneha Reddy</td>
+          <td class="st-paid">Paid</td>
+          <td>+91 98400 12345</td>
+          <td class="num">&#8377;7,000</td>
+          <td class="num">&#8377;0</td>
+          <td class="num">&#8377;0</td>
+          <td class="num">&#8377;0</td>
+          <td class="num">&#8377;0</td>
+          <td class="num strong">&#8377;0</td>
+          <td class="ctr">0</td>
+        </tr>
+        -->
+        <tr class="subtotal">
+            <td colspan="6">Ground Floor subtotal</td>
+            <td class="num">&#8377;17,500</td>
+            <td class="num">&#8377;13,500</td>
+            <td class="num">&#8377;600</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;14,100</td>
+            <td class="ctr">2</td>
+        </tr>
+        </tbody>
+
+        <!-- ===================== First Floor ===================== -->
+        <tbody class="floor-group">
+        <tr class="first">
+            <td class="floor">First Floor</td>
+            <td class="strong">Room 201</td>
+            <td class="strong">A</td>
+            <td class="strong">Vikram Singh</td>
+            <td class="st-pending">Pending</td>
+            <td>+91 97898 61007</td>
+            <td class="num">&#8377;8,000</td>
+            <td class="num">&#8377;8,000</td>
+            <td class="num">&#8377;520</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num strong">&#8377;8,520</td>
+            <td class="ctr">1</td>
+        </tr>
+        <tr class="cont">
+            <td class="floor">First Floor</td>
+            <td class="strong">Room 201</td>
+            <td class="strong">B</td>
+            <td class="strong">Karthik Menon</td>
+            <td class="st-partial">Partially Paid</td>
+            <td>+91 90031 66512</td>
+            <td class="num">&#8377;9,000</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;3,000</td>
+            <td class="num">&#8377;1,000</td>
+            <td class="num strong">&#8377;4,000</td>
+            <td class="ctr">1</td>
+        </tr>
+        <tr class="subtotal">
+            <td colspan="6">First Floor subtotal</td>
+            <td class="num">&#8377;17,000</td>
+            <td class="num">&#8377;8,000</td>
+            <td class="num">&#8377;520</td>
+            <td class="num">&#8377;3,000</td>
+            <td class="num">&#8377;1,000</td>
+            <td class="num">&#8377;12,520</td>
+            <td class="ctr">2</td>
+        </tr>
+        </tbody>
+
+        <!-- ===================== Second Floor ===================== -->
+        <tbody class="floor-group">
+        <tr class="first">
+            <td class="floor">Second Floor</td>
+            <td class="strong">Room 301</td>
+            <td class="strong">A</td>
+            <td class="strong">Ravi Shankar</td>
+            <td class="st-pending">Pending</td>
+            <td>+91 98765 43213</td>
+            <td class="num">&#8377;12,000</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;6,000</td>
+            <td class="num">&#8377;1,500</td>
+            <td class="num strong">&#8377;7,500</td>
+            <td class="ctr">1</td>
+        </tr>
+        <tr class="cont">
+            <td class="floor">Second Floor</td>
+            <td class="strong">Room 302</td>
+            <td class="strong">A</td>
+            <td class="strong">Meena Iyer</td>
+            <td class="st-partial">Partially Paid</td>
+            <td>+91 94440 55667</td>
+            <td class="num">&#8377;9,500</td>
+            <td class="num">&#8377;4,500</td>
+            <td class="num">&#8377;700</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num strong">&#8377;5,200</td>
+            <td class="ctr">1</td>
+        </tr>
+        <tr class="cont">
+            <td class="floor">Second Floor</td>
+            <td class="strong">Room 303</td>
+            <td class="strong">A</td>
+            <td class="strong">Divya Nair</td>
+            <td class="st-partial">Partially Paid</td>
+            <td>+91 98945 33210</td>
+            <td class="num">&#8377;8,000</td>
+            <td class="num">&#8377;5,000</td>
+            <td class="num">&#8377;650</td>
+            <td class="num">&#8377;0</td>
+            <td class="num">&#8377;0</td>
+            <td class="num strong">&#8377;5,650</td>
+            <td class="ctr">2</td>
+        </tr>
+        <tr class="subtotal">
+            <td colspan="6">Second Floor subtotal</td>
+            <td class="num">&#8377;29,500</td>
+            <td class="num">&#8377;9,500</td>
+            <td class="num">&#8377;1,350</td>
+            <td class="num">&#8377;6,000</td>
+            <td class="num">&#8377;1,500</td>
+            <td class="num">&#8377;18,350</td>
+            <td class="ctr">4</td>
+        </tr>
+        </tbody>
+
+        <!-- BACKEND: grand total over all occupied beds. Omit this <tbody> when the
+             user switched off "Include Grand Total". Omit each subtotal row when
+             "Include Floor-wise Subtotals" is off. -->
+        <tbody>
+        <tr class="grand">
+            <td colspan="6">Grand Total</td>
+            <td class="num"></td>
+            <td class="num">&#8377;31,000</td>
+            <td class="num">&#8377;2,470</td>
+            <td class="num">&#8377;9,000</td>
+            <td class="num">&#8377;2,500</td>
+            <td class="num">&#8377;44,970</td>
+            <td class="ctr">8</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Screen preview only; in the PDF the @page footer shows this line. -->
+    <p class="screen-note">Actual Rent is shown for reference and is not added to Total Pending.</p>
+
+</div>
+</body>
+</html>
