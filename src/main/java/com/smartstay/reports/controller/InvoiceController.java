@@ -77,7 +77,7 @@ public class InvoiceController {
                 minOutstandingAmount, maxOutstandingAmount, startDate, endDate);
     }
 
-    @PostMapping("/consolidated-details/{hostelId}/{userId}")
+    @PostMapping("/consolidated/details/{hostelId}/{userId}")
     public ResponseEntity<?> getInvoiceReportConsolidatedView(@PathVariable("hostelId") String hostelId,
                                                               @PathVariable("userId") String userId,
                                                               @RequestBody @Valid InvConsolidatedViewPayload payload) {
