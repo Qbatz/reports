@@ -33,7 +33,6 @@ import com.smartstay.reports.utils.Utils;
 import com.smartstay.reports.utils.columnOptions.InvRegisterConsolidatedColumnUtils;
 import com.smartstay.reports.wrappers.CurrentRentBreakUp;
 import com.smartstay.reports.wrappers.InvoiceMapper;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -1885,6 +1884,7 @@ public class InvoiceService {
                 double pendingAmount = totalAmount - invPaidAmount;
                 double balanceAmount = invoice.getBalanceAmount() != null ? invoice.getBalanceAmount() : 0;
                 double deductionAmount = invoice.getDeductionAmount() != null ? invoice.getDeductionAmount() : 0;
+                double pendingDeductionAmount = deductionAmount;
 
                 List<com.smartstay.reports.dao.InvoiceItems> invoiceItems = invoice.getInvoiceItems();
 
@@ -1913,10 +1913,26 @@ public class InvoiceService {
                     pendingAdvance += balanceAmount;
                 }
 
-                pendingNonRefundable += deductionAmount;
+                if (deductionAmount != 0){
+                    pendingDeductionAmount = deductionAmount - invPaidAmount;
+                }
+                pendingNonRefundable += pendingDeductionAmount;
             }
 
-            totalPendingAmount = pendingAdvance - pendingNonRefundable - pendingRent;
+            double payableAmount = pendingRent + pendingNonRefundable;
+
+            totalPendingAmount = payableAmount - pendingAdvance;
+
+            String status = "Pending";
+            if (totalPendingAmount == 0){
+                status = "Paid";
+            } else if (totalPendingAmount > 0 && totalPendingAmount < payableAmount) {
+                status = "Partially Paid";
+            } else if (totalPendingAmount == payableAmount) {
+                status = "Pending";
+            } else if (totalPendingAmount < 0) {
+                status = "Refund";
+            }
 
             String tenantName = null;
             String countryCode = null;
@@ -1925,10 +1941,12 @@ public class InvoiceService {
                 tenantName = NameUtils.getFullName(customer.getFirstName(), customer.getLastName());
                 countryCode = "+" + String.valueOf(customer.getCountryCode());
                 mobile = customer.getMobile();
+            } else {
+                status = "Vacant";
             }
 
             bedResponses.add(new InvBedRes(bed.getBedId(), bed.getBedName(), tenantName, countryCode,
-                    mobile, String.valueOf(actualRent), String.valueOf(pendingRent), String.valueOf(ebAmount),
+                    mobile, status, String.valueOf(actualRent), String.valueOf(pendingRent), String.valueOf(ebAmount),
                     String.valueOf(pendingAdvance), String.valueOf(pendingNonRefundable),
                     String.valueOf(totalPendingAmount), String.valueOf(invoiceCount), invoiceResponses));
         }
@@ -1969,6 +1987,8 @@ public class InvoiceService {
                         row.add(bedRes.bedName());
                 case InvRegisterConsolidatedColumnUtils.TENANT_NAME ->
                         row.add(bedRes.tenantName());
+                case InvRegisterConsolidatedColumnUtils.STATUS ->
+                        row.add(bedRes.status());
                 case InvRegisterConsolidatedColumnUtils.CONTACT_NUMBER ->
                         row.add(bedRes.tenantCountryCode() + " " + bedRes.tenantMobile());
                 case InvRegisterConsolidatedColumnUtils.ACTUAL_RENT ->
