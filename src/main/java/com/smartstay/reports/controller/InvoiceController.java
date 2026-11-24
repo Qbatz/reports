@@ -83,4 +83,11 @@ public class InvoiceController {
                                                               @RequestBody @Valid InvConsolidatedViewPayload payload) {
         return invoiceService.getInvoiceReportConsolidatedView(hostelId, userId, payload);
     }
+
+    @PostMapping("/consolidated/pdf/{hostelId}/{userId}")
+    public ResponseEntity<?> getInvoiceReportConsolidatedViewPdf(@PathVariable("hostelId") String hostelId,
+                                                                 @PathVariable("userId") String userId,
+                                                                 @RequestBody @Valid InvConsolidatedViewPayload payload) {
+        return invoiceService.getInvoiceReportConsolidatedViewPdf(hostelId, userId, payload);
+    }
 }

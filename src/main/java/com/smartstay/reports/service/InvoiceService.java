@@ -11,6 +11,7 @@ import com.smartstay.reports.dto.invoice.*;
 import com.smartstay.reports.dto.invoice.EBItems;
 import com.smartstay.reports.dto.settlement.*;
 import com.smartstay.reports.ennum.*;
+import com.smartstay.reports.exceptions.BadRequestException;
 import com.smartstay.reports.payloads.invoice.InvConsolidatedViewPayload;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
@@ -32,6 +33,7 @@ import com.smartstay.reports.utils.Utils;
 import com.smartstay.reports.utils.columnOptions.InvRegisterConsolidatedColumnUtils;
 import com.smartstay.reports.wrappers.CurrentRentBreakUp;
 import com.smartstay.reports.wrappers.InvoiceMapper;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -1281,26 +1283,28 @@ public class InvoiceService {
     public ResponseEntity<?> getInvoiceReportConsolidatedView(String hostelId, String userId,
                                                               InvConsolidatedViewPayload payload) {
 
-        return buildInvoiceReportConsolidatedView(hostelId, userId, payload);
+        InvConsolidatedPdfRes response = buildInvoiceReportConsolidatedView(hostelId, userId, payload);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> buildInvoiceReportConsolidatedView(String hostelId, String userId,
-                                                                 InvConsolidatedViewPayload payload) {
+    private InvConsolidatedPdfRes buildInvoiceReportConsolidatedView(String hostelId, String userId,
+                                                                     InvConsolidatedViewPayload payload) {
 
         HostelV1 hostel = hostelService.getHostel(hostelId);
         if (hostel == null){
-            return new ResponseEntity<>("Hostel not found", HttpStatus.BAD_REQUEST);
+            throw new BadRequestException("Hostel not found");
         }
 
         Users user = usersService.findByUserId(userId);
         if (user == null){
-            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+            throw new BadRequestException("User not found");
         }
 
         BillingRules billingRules = billingRulesService
                 .getLatestBillingRulesByHostelId(hostelId);
         if (billingRules == null){
-            return new ResponseEntity<>("Billing rules not found", HttpStatus.BAD_REQUEST);
+            throw new BadRequestException("Billing rules not found");
         }
 
         List<ColumnFilters> tableColumns = tableColumnService
@@ -1483,8 +1487,7 @@ public class InvoiceService {
             try {
                 groupByEnum = GroupByEnum.valueOf(groupBy);
             } catch (Exception e){
-                return new ResponseEntity<>("Invalid Group by filter",
-                        HttpStatus.BAD_REQUEST);
+                throw new BadRequestException("Invalid Group by filter");
             }
         }
 
@@ -1749,7 +1752,7 @@ public class InvoiceService {
                     paginatedRooms, filtersRes, paginationData, activeColumnsRes, columnNames, columnData);
         }
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     private InvConsolidatedRes toInvConsolidatedRes(InvoicesV1 invoice, Customers customer) {
@@ -1988,5 +1991,19 @@ public class InvoiceService {
         row.add(bedRes.invoices());
 
         return row;
+    }
+
+    public ResponseEntity<?> getInvoiceReportConsolidatedViewPdf(String hostelId, String userId,
+                                                                 InvConsolidatedViewPayload payload) {
+
+        InvConsolidatedPdfRes response = buildInvoiceReportConsolidatedView(hostelId, userId, payload);
+
+        Context context = new Context();
+        context.setVariable("invoice-consolidated", response);
+
+        String invoiceConsolidatedReportUrl = pdfServices
+                .generateInvoiceConsolidatedPdf("invoice-consolidated", context);
+
+        return new ResponseEntity<>(invoiceConsolidatedReportUrl, HttpStatus.OK);
     }
 }
