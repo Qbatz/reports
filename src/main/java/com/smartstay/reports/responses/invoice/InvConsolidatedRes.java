@@ -9,5 +9,6 @@ public record InvConsolidatedRes(String invoiceNumber,
                                  String paidAmount,
                                  String dueAmount,
                                  String status,
-                                 String invoiceUrl) {
+                                 String invoiceUrl,
+                                 boolean isOverdue) {
 }

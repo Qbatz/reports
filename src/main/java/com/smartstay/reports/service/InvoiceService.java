@@ -28,6 +28,7 @@ import com.smartstay.reports.responses.settlement.AdditionalAdvance;
 import com.smartstay.reports.responses.settlement.AdditionalAdvanceItems;
 import com.smartstay.reports.services.InvoiceRedemptionService;
 import com.smartstay.reports.services.SettlementItemService;
+import com.smartstay.reports.utils.DateUtils;
 import com.smartstay.reports.utils.NameUtils;
 import com.smartstay.reports.utils.Utils;
 import com.smartstay.reports.utils.columnOptions.InvRegisterConsolidatedColumnUtils;
@@ -1765,6 +1766,8 @@ public class InvoiceService {
         String dueAmount = "NA";
         String paymentStatus = "NA";
 
+        Date today = new Date();
+
         if (customer != null){
             name = NameUtils.getFullName(customer.getFirstName(), customer.getLastName());
         }
@@ -1836,10 +1839,17 @@ public class InvoiceService {
             }
         }
 
+        boolean isOverdue = false;
+        boolean isUnpaid = PaymentStatus.PENDING.name().equalsIgnoreCase(invoice.getPaymentStatus())
+                || PaymentStatus.PARTIAL_PAYMENT.name().equalsIgnoreCase(invoice.getPaymentStatus());
+        if (!invoice.isCancelled() && isUnpaid && pendingAmount > 0 && invoice.getInvoiceDueDate() != null) {
+            isOverdue = DateUtils.compareWithTwoDates(invoice.getInvoiceDueDate(), today) < 0;
+        }
+
         return new InvConsolidatedRes(invoice.getInvoiceNumber(), name, invoiceType,
                 Utils.dateToString(invoice.getInvoiceStartDate()), Utils.dateToString(invoice.getInvoiceDueDate()),
                 String.valueOf(invoice.getTotalAmount()), String.valueOf(paidAmount),
-                dueAmount, paymentStatus, invoice.getInvoiceUrl()
+                dueAmount, paymentStatus, invoice.getInvoiceUrl(), isOverdue
         );
     }
 
