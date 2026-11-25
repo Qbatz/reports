@@ -56,18 +56,11 @@ public interface BookingsRepository extends JpaRepository<BookingsV1, String> {
                                                 @Param("floorIds") List<Integer> floorIds
     );
 
-    @Query(value = """
-            select b.* from bookingsv1 b
-            join (
-                select bed_id, max(created_at) as created_at
-                from bookingsv1
-                where bed_id in (:bedIds)
-                    and current_status in (:currentStatuses)
-                group by bed_id
-            ) latest
-            on latest.bed_id = b.bed_id
-            and latest.created_at = b.created_at
-            """, nativeQuery = true)
+    @Query("""
+            select b from bookingsv1 b
+            where b.bedId in :bedIds
+                and b.currentStatus in :currentStatuses
+            """)
     List<BookingsV1> findLatestByBedIdInAndCurrentStatusIn(Set<Integer> bedIds,
                                                            Set<String> currentStatuses);
 }

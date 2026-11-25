@@ -1529,7 +1529,7 @@ public class InvoiceService {
                 .collect(Collectors.toMap(
                         BookingsV1::getBedId,
                         BookingsV1::getCustomerId,
-                        (existing, replacement) -> existing
+                        (existing, replacement) -> replacement
                 ));
 
         Map<String, List<InvoicesV1>> invoicesByCustomer = invoices.stream()
