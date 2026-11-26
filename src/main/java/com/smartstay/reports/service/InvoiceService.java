@@ -532,7 +532,9 @@ public class InvoiceService {
                     .sum();
 
             if (walletAmount <= 0) {
-                refundable = refundable + walletAmount;
+                refundable = refundable + (walletAmount * -1);
+            } else {
+                nonRefundable = nonRefundable + walletAmount;
             }
 
             List<WalletItems> listwalletItems = listWalletItems
