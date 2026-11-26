@@ -1311,16 +1311,15 @@ public class InvoiceService {
                 .getInvRegConsolidatedColumns(hostelId, userId,
                         FilterOptionsModule.MODULE_INVOICE_REGISTER_CONSOLIDATED.name());
 
-        List<ColumnFilters> activeColumns = tableColumns.stream()
-                .filter(ColumnFilters::isSelected)
+        List<ColumnFilters> orderedColumns = tableColumns.stream()
                 .sorted(Comparator.comparingInt(ColumnFilters::getOrder))
                 .toList();
 
-        List<String> columnNames = activeColumns.stream()
+        List<String> columnNames = orderedColumns.stream()
                 .map(ColumnFilters::getFieldName)
                 .toList();
 
-        List<ColumnFiltersRes> activeColumnsRes = activeColumns.stream()
+        List<ColumnFiltersRes> columnsRes = orderedColumns.stream()
                 .map(i -> {
 
                     boolean isLocked = InvRegisterConsolidatedColumnUtils.FLOOR.equals(i.getFieldName()) ||
@@ -1644,7 +1643,7 @@ public class InvoiceService {
 
         InvConsolidatedPdfRes response = new InvConsolidatedPdfRes(includePaidInvoice, includeEmptyBeds,
                 includeSubTotals, includeGrandTotal, includeHostelName, hostelInfo, invHeader, footerInfo,
-                List.of(), List.of(), filtersRes, paginationData, activeColumnsRes, columnNames, columnData);
+                List.of(), List.of(), filtersRes, paginationData, columnsRes, columnNames, columnData);
 
         if (GroupByEnum.FLOOR_ROOM_BED.equals(groupByEnum)) {
 
@@ -1700,7 +1699,7 @@ public class InvoiceService {
 
             response = new InvConsolidatedPdfRes(includePaidInvoice, includeEmptyBeds, includeSubTotals,
                     includeGrandTotal, includeHostelName, hostelInfo, invHeader, footerInfo, paginatedFloors,
-                    List.of(), filtersRes, paginationData, activeColumnsRes, columnNames, columnData);
+                    List.of(), filtersRes, paginationData, columnsRes, columnNames, columnData);
         }
         else if (GroupByEnum.ROOM_BED.equals(groupByEnum)) {
 
@@ -1749,7 +1748,7 @@ public class InvoiceService {
 
             response = new InvConsolidatedPdfRes(includePaidInvoice, includeEmptyBeds, includeSubTotals,
                     includeGrandTotal, includeHostelName, hostelInfo, invHeader, footerInfo, List.of(),
-                    paginatedRooms, filtersRes, paginationData, activeColumnsRes, columnNames, columnData);
+                    paginatedRooms, filtersRes, paginationData, columnsRes, columnNames, columnData);
         }
 
         return response;
