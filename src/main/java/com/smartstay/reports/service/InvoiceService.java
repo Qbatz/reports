@@ -13,6 +13,7 @@ import com.smartstay.reports.dto.settlement.*;
 import com.smartstay.reports.ennum.*;
 import com.smartstay.reports.exceptions.BadRequestException;
 import com.smartstay.reports.payloads.invoice.InvConsolidatedViewPayload;
+import com.smartstay.reports.payloads.invoice.table.TableColumnPayload;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.filterOptions.ColumnFiltersRes;
@@ -1288,6 +1289,58 @@ public class InvoiceService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    private void validateColumns(List<TableColumnPayload> columns) {
+
+        Set<String> allowedFields = InvRegisterConsolidatedColumnUtils.defaultColumns()
+                .stream()
+                .map(ColumnFilters::getFieldName)
+                .collect(Collectors.toSet());
+
+        Set<String> lockedFields = Set.of(
+                InvRegisterConsolidatedColumnUtils.FLOOR,
+                InvRegisterConsolidatedColumnUtils.ROOM,
+                InvRegisterConsolidatedColumnUtils.BED,
+                InvRegisterConsolidatedColumnUtils.TOTAL_PENDING_AMOUNT);
+
+        Set<String> seenFields = new HashSet<>();
+        Set<Integer> seenOrders = new HashSet<>();
+
+        for (TableColumnPayload column : columns) {
+
+            if (column == null) {
+                throw new BadRequestException("Invalid table column");
+            }
+
+            String fieldName = column.fieldName() == null ? null : column.fieldName().trim();
+            if (fieldName == null || fieldName.isEmpty()) {
+                throw new BadRequestException("Column field name is required");
+            }
+            if (!allowedFields.contains(fieldName)) {
+                throw new BadRequestException("Invalid column: " + fieldName);
+            }
+            if (!seenFields.add(fieldName)) {
+                throw new BadRequestException("Duplicate column: " + fieldName);
+            }
+
+            if (column.order() <= 0) {
+                throw new BadRequestException("Invalid order for column: " + fieldName);
+            }
+            if (!seenOrders.add(column.order())) {
+                throw new BadRequestException("Duplicate column order: " + column.order());
+            }
+
+            if (lockedFields.contains(fieldName) && !column.isSelected()) {
+                throw new BadRequestException(fieldName + " column cannot be deselected");
+            }
+        }
+
+        for (String locked : lockedFields) {
+            if (!seenFields.contains(locked)) {
+                throw new BadRequestException(locked + " column is required");
+            }
+        }
+    }
+
     private InvConsolidatedPdfRes buildInvoiceReportConsolidatedView(String hostelId, String userId,
                                                                      InvConsolidatedViewPayload payload) {
 
@@ -1307,19 +1360,30 @@ public class InvoiceService {
             throw new BadRequestException("Billing rules not found");
         }
 
-        List<ColumnFilters> tableColumns = tableColumnService
-                .getInvRegConsolidatedColumns(hostelId, userId,
-                        FilterOptionsModule.MODULE_INVOICE_REGISTER_CONSOLIDATED.name());
+        List<ColumnFilters> tableColumns;
+        List<TableColumnPayload> payloadColumns = payload.tableColumns();
+        if (payloadColumns != null && !payloadColumns.isEmpty()) {
+            validateColumns(payloadColumns);
+            tableColumns = payloadColumns.stream()
+                    .map(c -> new ColumnFilters(c.order(),
+                            c.fieldName().trim(), c.isSelected()))
+                    .toList();
+        } else {
+            tableColumns = tableColumnService
+                    .getInvRegConsolidatedColumns(hostelId, userId,
+                            FilterOptionsModule.MODULE_INVOICE_REGISTER_CONSOLIDATED.name());
+        }
 
-        List<ColumnFilters> orderedColumns = tableColumns.stream()
+        List<ColumnFilters> activeColumns = tableColumns.stream()
+                .filter(ColumnFilters::isSelected)
                 .sorted(Comparator.comparingInt(ColumnFilters::getOrder))
                 .toList();
 
-        List<String> columnNames = orderedColumns.stream()
+        List<String> columnNames = activeColumns.stream()
                 .map(ColumnFilters::getFieldName)
                 .toList();
 
-        List<ColumnFiltersRes> columnsRes = orderedColumns.stream()
+        List<ColumnFiltersRes> columnsRes = tableColumns.stream()
                 .map(i -> {
 
                     boolean isLocked = InvRegisterConsolidatedColumnUtils.FLOOR.equals(i.getFieldName()) ||
