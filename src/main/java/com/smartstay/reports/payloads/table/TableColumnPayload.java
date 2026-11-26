@@ -1,4 +1,4 @@
-package com.smartstay.reports.payloads.invoice.table;
+package com.smartstay.reports.payloads.table;
 
 public record TableColumnPayload(int order,
                                  String fieldName,

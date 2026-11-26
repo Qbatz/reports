@@ -13,7 +13,7 @@ import com.smartstay.reports.dto.settlement.*;
 import com.smartstay.reports.ennum.*;
 import com.smartstay.reports.exceptions.BadRequestException;
 import com.smartstay.reports.payloads.invoice.InvConsolidatedViewPayload;
-import com.smartstay.reports.payloads.invoice.table.TableColumnPayload;
+import com.smartstay.reports.payloads.table.TableColumnPayload;
 import com.smartstay.reports.repositories.InvoicesV1Repository;
 import com.smartstay.reports.responses.customers.CustomerInfo;
 import com.smartstay.reports.responses.filterOptions.ColumnFiltersRes;

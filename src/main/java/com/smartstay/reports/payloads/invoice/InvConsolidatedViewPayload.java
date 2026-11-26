@@ -1,6 +1,6 @@
 package com.smartstay.reports.payloads.invoice;
 
-import com.smartstay.reports.payloads.invoice.table.TableColumnPayload;
+import com.smartstay.reports.payloads.table.TableColumnPayload;
 
 import java.util.List;
 
