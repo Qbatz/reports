@@ -1974,7 +1974,6 @@ public class InvoiceService {
                 double pendingAmount = totalAmount - invPaidAmount;
                 double balanceAmount = invoice.getBalanceAmount() != null ? invoice.getBalanceAmount() : 0;
                 double deductionAmount = invoice.getDeductionAmount() != null ? invoice.getDeductionAmount() : 0;
-                double pendingDeductionAmount = deductionAmount;
 
                 List<com.smartstay.reports.dao.InvoiceItems> invoiceItems = invoice.getInvoiceItems();
 
@@ -2003,22 +2002,17 @@ public class InvoiceService {
                     pendingAdvance += balanceAmount;
                 }
 
-                if (deductionAmount != 0){
-                    pendingDeductionAmount = deductionAmount - invPaidAmount;
-                }
-                pendingNonRefundable += pendingDeductionAmount;
+                pendingNonRefundable += deductionAmount;
             }
 
-            double payableAmount = pendingRent + pendingNonRefundable;
-
-            totalPendingAmount = payableAmount - pendingAdvance;
+            totalPendingAmount = pendingRent - pendingAdvance;
 
             String status = "Pending";
             if (totalPendingAmount == 0){
                 status = "Paid";
-            } else if (totalPendingAmount > 0 && totalPendingAmount < payableAmount) {
+            } else if (totalPendingAmount > 0 && totalPendingAmount < actualRent) {
                 status = "Partially Paid";
-            } else if (totalPendingAmount == payableAmount) {
+            } else if (totalPendingAmount == actualRent) {
                 status = "Pending";
             } else if (totalPendingAmount < 0) {
                 status = "Refund";
