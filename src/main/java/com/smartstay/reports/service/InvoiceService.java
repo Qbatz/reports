@@ -29,6 +29,7 @@ import com.smartstay.reports.responses.settlement.AdditionalAdvance;
 import com.smartstay.reports.responses.settlement.AdditionalAdvanceItems;
 import com.smartstay.reports.services.InvoiceRedemptionService;
 import com.smartstay.reports.services.SettlementItemService;
+import com.smartstay.reports.utils.CustomerUtils;
 import com.smartstay.reports.utils.DateUtils;
 import com.smartstay.reports.utils.NameUtils;
 import com.smartstay.reports.utils.Utils;
@@ -955,7 +956,7 @@ public class InvoiceService {
         HostelInformation hostelInformation = hostelService.getHostelInformation(hostelId);
 
         InvoiceHeader invoiceHeader = new InvoiceHeader(Utils.dateToString(sDate), Utils.dateToString(eDate),
-                totalInvoice, String.valueOf(totalInvoiceAmount), String.valueOf(paidAmount),
+                totalInvoice, null, null, String.valueOf(totalInvoiceAmount), String.valueOf(paidAmount),
                 String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)), String.valueOf(outstandingAmount),
                 String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
 
@@ -1619,6 +1620,8 @@ public class InvoiceService {
                 .findByUserIds(new ArrayList<>(createdByUserIds));
 
         String totalInvoice = String.valueOf(invoices.size());
+        int totalTenants = customerIds.size();
+        int overdueInvoicesCount = 0;
         double totalInvoiceAmount = 0;
         double paidAmount = 0;
         double returnInvoiceAmount = 0;
@@ -1653,14 +1656,24 @@ public class InvoiceService {
                 paidAmount += invPaidAmount;
             }
             totalInvoiceAmount += totalAmount;
+
+            boolean isUnpaid = PaymentStatus.PENDING.name().equalsIgnoreCase(invoice.getPaymentStatus())
+                    || PaymentStatus.PARTIAL_PAYMENT.name().equalsIgnoreCase(invoice.getPaymentStatus());
+            if (!invoice.isCancelled() && isUnpaid && pendingAmount > 0 && invoice.getInvoiceDueDate() != null) {
+                boolean isOverdue = DateUtils.compareWithTwoDates(invoice.getInvoiceDueDate(), today) < 0;
+                if (isOverdue){
+                    overdueInvoicesCount++;
+                }
+            }
         }
 
         HostelInformation hostelInfo = hostelService.getHostelInformation(hostelId);
 
         InvoiceHeader invHeader = new InvoiceHeader(filterStartDate != null ? Utils.dateToString(filterStartDate) : null,
-                filterEndDate != null ? Utils.dateToString(filterEndDate) : null, totalInvoice, String.valueOf(totalInvoiceAmount),
-                String.valueOf(paidAmount), String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)),
-                String.valueOf(outstandingAmount), String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
+                filterEndDate != null ? Utils.dateToString(filterEndDate) : null, totalInvoice, String.valueOf(totalTenants),
+                String.valueOf(overdueInvoicesCount), String.valueOf(totalInvoiceAmount), String.valueOf(paidAmount),
+                String.valueOf(Utils.roundOffWithTwoDigit(totalBookingAmount)), String.valueOf(outstandingAmount),
+                String.valueOf(returnInvoiceAmount), String.valueOf(cancelledAmount));
 
         FooterInfo footerInfo = new FooterInfo(Utils.dateToString(today), Utils.dateToTime(today));
 
@@ -2014,17 +2027,21 @@ public class InvoiceService {
             String tenantName = null;
             String countryCode = null;
             String mobile = null;
+            String tenantProfilePic = null;
+            String tenantInitials = null;
             if (customer != null){
                 tenantName = NameUtils.getFullName(customer.getFirstName(), customer.getLastName());
                 countryCode = "+" + String.valueOf(customer.getCountryCode());
                 mobile = customer.getMobile();
+                tenantProfilePic = CustomerUtils.getProfilePic(customer);
+                tenantInitials = NameUtils.getInitials(customer.getFirstName(), customer.getLastName());
             } else {
                 status = "Vacant";
             }
 
             bedResponses.add(new InvBedRes(bed.getBedId(), bed.getBedName(), tenantName, countryCode,
-                    mobile, status, String.valueOf(actualRent), String.valueOf(pendingRent), String.valueOf(ebAmount),
-                    String.valueOf(pendingAdvance), String.valueOf(pendingNonRefundable),
+                    mobile, tenantProfilePic, tenantInitials, status, String.valueOf(actualRent), String.valueOf(pendingRent),
+                    String.valueOf(ebAmount), String.valueOf(pendingAdvance), String.valueOf(pendingNonRefundable),
                     String.valueOf(totalPendingAmount), String.valueOf(invoiceCount), invoiceResponses));
         }
 
