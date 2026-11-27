@@ -2002,7 +2002,24 @@ public class InvoiceService {
                     pendingAdvance += balanceAmount;
                 }
 
-                pendingNonRefundable += deductionAmount;
+                List<Deductions> deductions = invoice.getDeductions();
+
+                if (deductions != null && !deductions.isEmpty()){
+
+                    double deductionTotalPendingAmount = 0;
+
+                    for (Deductions deduction : deductions){
+                        double amount = deduction.getAmount() != null ? deduction.getAmount() : 0;
+                        double deductionPaidAmount = deduction.getPaidAmount() != null ? deduction.getPaidAmount() : 0;
+                        double deductionPendingAmount = amount - deductionPaidAmount;
+
+                        deductionTotalPendingAmount += deductionPendingAmount;
+                    }
+
+                    pendingNonRefundable += deductionTotalPendingAmount;
+                } else {
+                    pendingNonRefundable += deductionAmount;
+                }
             }
 
             totalPendingAmount = pendingRent - pendingAdvance;

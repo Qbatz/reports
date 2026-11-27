@@ -194,11 +194,11 @@
             th:class="${'c-' + #strings.replace(#strings.toLowerCase(h), ' ', '-')
                         + (#strings.contains(money, '|' + h + '|') ? ' num' : (h == 'Invoices' ? ' ctr' : ''))}">
             <th:block th:switch="${h}">
-                <th:block th:case="'Tenant Name'">Tenant</th:block>
-                <th:block th:case="'Eb Amount'">Pending EB</th:block>
-                <th:block th:case="'Pending Non-Refundable'">Pending Non-Refundable Amount</th:block>
-                <th:block th:case="'Total Pending Amount'">Total Pending</th:block>
-                <th:block th:case="'Invoices'">Invoice Count</th:block>
+                <th:block th:case="'Tenant Name'">Tenant Name</th:block>
+                <th:block th:case="'Eb Amount'">EB Amount</th:block>
+                <th:block th:case="'Pending Non-Refundable'">Pending Non-Refundable</th:block>
+                <th:block th:case="'Total Pending Amount'">Total Pending Amount</th:block>
+                <th:block th:case="'Invoices'">Invoices</th:block>
                 <th:block th:case="*" th:text="${h}">Floor</th:block>
             </th:block>
         </th>
