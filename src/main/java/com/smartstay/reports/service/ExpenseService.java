@@ -172,11 +172,15 @@ public class ExpenseService {
                         ? expense.getPaidAmount() : 0;
 
                 totalExpenseAmount += transactionAmount;
-                if (ExpensePaymentStatus.Full.equals(expense.getPaymentStatus())){
-                    totalPaidAmount += totalPrice;
-                }
+
+//                if (ExpensePaymentStatus.Full.name().equals(expense.getPaymentStatus())){
+//                    totalPaidAmount += totalPrice;
+//                }
+                totalPaidAmount += paidAmount;
+
                 totalUnpaidAmount += balanceAmount;
-                if (ExpensePaymentStatus.Partial.equals(expense.getPaymentStatus())){
+
+                if (ExpensePaymentStatus.Partial.name().equals(expense.getPaymentStatus())){
                     totalPartiallyPaidAmount += paidAmount;
                 }
             }
