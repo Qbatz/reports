@@ -25,25 +25,27 @@ public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
         String dueAmount = "NA";
         String paymentStatus = "NA";
 
-        if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.RENT.name())) {
+        if (InvoiceType.RENT.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Rent";
-        }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.REASSIGN_RENT.name())) {
+        } else if (InvoiceType.REASSIGN_RENT.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Re-Assign Rent";
-        }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.BOOKING.name())) {
+        } else if (InvoiceType.BOOKING.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Booking";
-        }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.ADVANCE.name())) {
+        } else if (InvoiceType.ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Advance";
-        } else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
+        } else if (InvoiceType.ADDITIONAL_ADVANCE.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Additional Advance";
+        } else if (InvoiceType.SETTLEMENT.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Settlement";
-        }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.EB.name())) {
+        } else if (InvoiceType.EB.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "EB";
-        }
-        else if (invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.OTHER.name())) {
+        } else if (InvoiceType.OTHER.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
             invoiceType = "Other";
+        } else if (InvoiceType.AMOUNT_HOLDING.name().equalsIgnoreCase(invoicesV1.getInvoiceType()) ||
+                InvoiceType.EB_HOLDING.name().equalsIgnoreCase(invoicesV1.getInvoiceType())) {
+            invoiceType = "Retainer";
+        } else {
+            invoiceType = Utils.capitalize(invoicesV1.getInvoiceType());
         }
 
         if (!invoicesV1.getInvoiceType().equalsIgnoreCase(InvoiceType.SETTLEMENT.name())) {
@@ -79,23 +81,24 @@ public class InvoiceMapper implements Function<InvoicesV1, ListInvoiceItems> {
             }
         }
 
-        if (invoicesV1.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PAID.name())) {
+        if (PaymentStatus.PAID.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
             paymentStatus = "Paid";
-        }
-        else if (invoicesV1.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PARTIAL_PAYMENT.name())) {
+        } else if (PaymentStatus.PARTIAL_PAYMENT.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
             paymentStatus = "Partially Paid";
-        }
-        else if (invoicesV1.getPaymentStatus().equalsIgnoreCase(PaymentStatus.REFUNDED.name())) {
+        } else if (PaymentStatus.REFUNDED.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
             paymentStatus = "Refunded";
-        }
-        else if (invoicesV1.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PARTIAL_REFUND.name())) {
+        } else if (PaymentStatus.PARTIAL_REFUND.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
             paymentStatus = "Partially Refunded";
-        }
-        else if (invoicesV1.getPaymentStatus().equalsIgnoreCase(PaymentStatus.PENDING.name())) {
+        } else if (PaymentStatus.PENDING.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
             paymentStatus = "Pending";
-        }
-        else if (invoicesV1.getPaymentStatus().equalsIgnoreCase(PaymentStatus.CANCELLED.name())) {
+        } else if (PaymentStatus.PENDING_REFUND.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
+            paymentStatus = "Pending Refunded";
+        } else if (PaymentStatus.CANCELLED.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
             paymentStatus = "Cancelled";
+        } else if (PaymentStatus.ADVANCE_IN_HAND.name().equalsIgnoreCase(invoicesV1.getPaymentStatus())) {
+            paymentStatus = "Advance In Hand";
+        } else {
+            paymentStatus = Utils.capitalize(invoicesV1.getPaymentStatus());
         }
 
         if (invoicesV1.isCancelled()) {
