@@ -1,5 +1,6 @@
 package com.smartstay.reports.service;
 
+import com.smartstay.reports.dao.Beds;
 import com.smartstay.reports.dto.beds.BedDetails;
 import com.smartstay.reports.dto.beds.BedInformations;
 import com.smartstay.reports.repositories.BedsRepository;
@@ -8,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BedsService {
+
     @Autowired
     private BedsRepository bedsRepository;
 
@@ -32,8 +35,11 @@ public class BedsService {
         return bedsRepository.findByBedId(bedId);
     }
 
-
     public List<BedInformations> getBedInformations(List<Integer> bedIds) {
         return bedsRepository.findByBedIds(bedIds);
+    }
+
+    public List<Beds> getAllByRoomIds(Set<Integer> roomIds) {
+        return bedsRepository.findAllByRoomIdInAndIsActiveTrueAndIsDeletedFalse(roomIds);
     }
 }

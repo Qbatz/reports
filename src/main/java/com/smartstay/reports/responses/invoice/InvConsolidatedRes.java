@@ -1,0 +1,14 @@
+package com.smartstay.reports.responses.invoice;
+
+public record InvConsolidatedRes(String invoiceNumber,
+                                 String name,
+                                 String invoiceType,
+                                 String invoiceDate,
+                                 String dueDate,
+                                 String invoiceAmount,
+                                 String paidAmount,
+                                 String dueAmount,
+                                 String status,
+                                 String invoiceUrl,
+                                 boolean isOverdue) {
+}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Pending Collection Sheet</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 28px 32px 40px;
+
+            @bottom-left {
+                content: "Actual Rent is shown for reference and is not added to Total Pending.";
+                font-family: Arial, sans-serif;
+                font-size: 8px;
+                color: #62748E;
+            }
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: Arial, sans-serif;
+                font-size: 8px;
+                color: #62748E;
+            }
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; background: #FFFFFF; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            color: #111928;
+        }
+
+        /* ---------- First-page header ---------- */
+        .report-title {
+            margin: 0;
+            font-size: 18px;
+            line-height: 24px;
+            font-weight: bold;
+            color: #020618;
+        }
+        .report-subtitle {
+            margin: 0;
+            font-size: 10px;
+            line-height: 16px;
+            color: #62748E;
+        }
+
+        .meta {
+            margin: 10px 0 18px;
+            font-size: 8px;
+            line-height: 14px;
+            color: #314158;
+        }
+        .meta:after { content: ""; display: block; clear: both; }
+        .meta .item { float: left; margin-right: 22px; white-space: nowrap; }
+        .meta .generated { float: right; margin-right: 0; }
+        .meta b { color: #1D293D; }
+
+        /* ---------- Data table ---------- */
+        table.grid {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        table.grid thead { display: table-header-group; }
+        table.grid tr { page-break-inside: avoid; }
+
+        table.grid th {
+            padding: 6px 7px;
+            background: #F8F9FF;
+            border-top: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 7px;
+            line-height: 9px;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            color: #6B7280;
+            text-align: left;
+            vertical-align: middle;
+        }
+        table.grid td {
+            height: 24px;
+            padding: 0 7px;
+            border-bottom: 1px solid #E5E7EB;
+            white-space: nowrap;
+            overflow: hidden;
+            vertical-align: middle;
+            color: #1D293D;
+        }
+        table.grid .num { text-align: right; }
+        table.grid .ctr { text-align: center; }
+        table.grid .strong { font-weight: bold; }
+        table.grid td.floor { font-weight: bold; }
+
+        /* Column widths (keyed off the table header name) */
+        .c-floor                  { width: 9%; }
+        .c-room                   { width: 7%; }
+        .c-bed                    { width: 5%; }
+        .c-tenant-name            { width: 12%; }
+        .c-status                 { width: 8%; }
+        .c-contact-number         { width: 10%; }
+        .c-actual-rent            { width: 7%; }
+        .c-pending-rent           { width: 6.5%; }
+        .c-eb-amount              { width: 6%; }
+        .c-pending-advance        { width: 6.5%; }
+        .c-pending-non-refundable { width: 8%; }
+        .c-total-pending-amount   { width: 8%; }
+        .c-invoices               { width: 7%; }
+
+        /* Status colours */
+        .st-pending { color: #B91C1C !important; }
+        .st-partial { color: #C2410C !important; }
+        .st-paid    { color: #15803D !important; }
+        .st-vacant  { color: #1D4ED8 !important; }
+        .st-refund  { color: #7E22CE !important; }
+
+        /* ---------- Subtotal and grand total ---------- */
+        table.grid tr.subtotal td {
+            background: #F8FAFC;
+            border-bottom: 1px solid #CAD5E2;
+            font-weight: bold;
+            color: #1D293D;
+        }
+        table.grid tr.grand td {
+            height: 30px;
+            background: #EEF2FF;
+            border-top: 2px solid #1E45E1;
+            border-bottom: 0;
+            font-size: 10px;
+            font-weight: bold;
+            color: #020618;
+        }
+        table.grid tr.subtotal, table.grid tr.grand { page-break-before: avoid; }
+
+        table.grid td.empty {
+            height: 40px;
+            text-align: center;
+            color: #62748E;
+        }
+    </style>
+</head>
+
+<!--
+    Context variable: "invoice-consolidated" -> InvConsolidatedPdfRes.
+    The name contains a hyphen, so it is read through #ctx.getVariable(...).
+
+    Rows come from columnData (one List per bed, values in the same order as
+    tableHeaders; the trailing invoices list is ignored). Floor subtotals are
+    computed from columnData when the response is grouped by floor.
+-->
+<body th:with="r=${#ctx.getVariable('invoice-consolidated')},
+               headers=${r.tableHeaders},
+               rows=${r.columnData},
+               money='|Actual Rent|Pending Rent|Eb Amount|Pending Advance|Pending Non-Refundable|Total Pending Amount|',
+               fi=${headers.indexOf('Floor')},
+               si=${headers.indexOf('Status')},
+               ti=${headers.indexOf('Tenant Name')},
+               grouped=${r.floors != null and !r.floors.isEmpty() and fi >= 0},
+               firstNum=${headers.^[#strings.contains('|Actual Rent|Pending Rent|Eb Amount|Pending Advance|Pending Non-Refundable|Total Pending Amount|Invoices|', '|' + #this + '|')]},
+               lead=${firstNum != null ? headers.indexOf(firstNum) : headers.size()}">
+
+<!-- Reusable amount formatter: ₹7,500 / ₹7,500.50 / -₹500 -->
+<th:block th:if="${false}">
+    <span th:fragment="amt(n)"
+          th:text="${(n &lt; 0 ? '-' : '') + '₹' + #numbers.formatDecimal(n &lt; 0 ? -n : n, 1, 'COMMA', n % 1 == 0 ? 0 : 2, 'POINT')}">₹0</span>
+</th:block>
+
+<h1 class="report-title">Pending Collection Sheet</h1>
+<p class="report-subtitle"
+   th:text="${'Invoice Register' + (r.includeHostelName and r.hostelInformation != null and r.hostelInformation.hostelName != null ? ' · ' + r.hostelInformation.hostelName : '')}">
+    Invoice Register
+</p>
+
+<div class="meta">
+    <div class="item generated" th:if="${r.footerInfo != null}">
+        <b>Generated:</b>
+        <span th:text="${r.footerInfo.date + ', ' + r.footerInfo.time}">24 Nov 2026, 17:11</span>
+    </div>
+    <div class="item" th:if="${r.includeHostelName and r.invoiceHeader != null and r.invoiceHeader.startDate != null}">
+        <b>Report period:</b>
+        <span th:text="${r.invoiceHeader.startDate + ' – ' + (r.invoiceHeader.endDate != null ? r.invoiceHeader.endDate : '')}">01 Nov 2026 – 30 Nov 2026</span>
+    </div>
+    <div class="item">
+        <b>Scope:</b>
+        <span th:text="${r.includeEmptyBeds ? 'All tenants and empty beds' : (r.includePaidInvoice ? 'All tenants' : 'Pending tenants only')}">All tenants and empty beds</span>
+    </div>
+</div>
+
+<table class="grid">
+    <thead>
+    <tr>
+        <th th:each="h : ${headers}"
+            th:class="${'c-' + #strings.replace(#strings.toLowerCase(h), ' ', '-')
+                        + (#strings.contains(money, '|' + h + '|') ? ' num' : (h == 'Invoices' ? ' ctr' : ''))}">
+            <th:block th:switch="${h}">
+                <th:block th:case="'Tenant Name'">Tenant Name</th:block>
+                <th:block th:case="'Eb Amount'">EB Amount</th:block>
+                <th:block th:case="'Pending Non-Refundable'">Pending Non-Refundable</th:block>
+                <th:block th:case="'Total Pending Amount'">Total Pending Amount</th:block>
+                <th:block th:case="'Invoices'">Invoices</th:block>
+                <th:block th:case="*" th:text="${h}">Floor</th:block>
+            </th:block>
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:if="${rows == null or rows.isEmpty()}">
+        <td class="empty" th:colspan="${headers.size()}">No records found</td>
+    </tr>
+
+    <th:block th:each="row, st : ${rows}"
+              th:with="floorName=${fi >= 0 ? row[fi] : null},
+                       prevFloor=${st.first or fi &lt; 0 ? null : rows[st.index - 1][fi]},
+                       nextFloor=${st.last or fi &lt; 0 ? null : rows[st.index + 1][fi]},
+                       groupStart=${!grouped or st.first or prevFloor != floorName},
+                       isVacant=${(si >= 0 and row[si] == 'Vacant') or (si &lt; 0 and ti >= 0 and row[ti] == null)}">
+
+        <!-- Bed row -->
+        <tr>
+            <td th:each="h, cs : ${headers}"
+                th:with="v=${row[cs.index]}"
+                th:class="${h == 'Floor' ? 'floor'
+                          : (h == 'Room' or h == 'Bed' or h == 'Tenant Name' ? 'strong'
+                          : (h == 'Status' ? (v == 'Pending' ? 'st-pending'
+                                              : (v == 'Partially Paid' ? 'st-partial'
+                                              : (v == 'Paid' ? 'st-paid'
+                                              : (v == 'Vacant' ? 'st-vacant'
+                                              : (v == 'Refund' ? 'st-refund' : '')))))
+                          : (h == 'Total Pending Amount' ? 'num strong'
+                          : (#strings.contains(money, '|' + h + '|') ? 'num'
+                          : (h == 'Invoices' ? 'ctr' : '')))))}">
+                <th:block th:switch="${h}">
+                    <th:block th:case="'Floor'" th:text="${groupStart ? v : ''}">Ground Floor</th:block>
+                    <th:block th:case="'Contact Number'"
+                              th:text="${v == null or #strings.contains(v, 'null') ? '–' : v}">+91 99402 18290</th:block>
+                    <th:block th:case="'Invoices'" th:text="${isVacant or v == null ? '–' : v}">1</th:block>
+                    <th:block th:case="*">
+                        <th:block th:if="${#strings.contains(money, '|' + h + '|')}">
+                            <th:block th:if="${isVacant and h == 'Actual Rent'}">–</th:block>
+                            <th:block th:unless="${isVacant and h == 'Actual Rent'}"
+                                      th:with="n=${v != null ? T(java.lang.Double).parseDouble(v) : 0.0}">
+                                <th:block th:replace="~{:: amt(${n})}"/>
+                            </th:block>
+                        </th:block>
+                        <th:block th:unless="${#strings.contains(money, '|' + h + '|')}"
+                                  th:text="${v != null ? v : '–'}">Priya Patel</th:block>
+                    </th:block>
+                </th:block>
+            </td>
+        </tr>
+
+        <!-- Floor subtotal (after the last bed of each floor) -->
+        <tr class="subtotal"
+            th:if="${grouped and r.includeSubTotals and (st.last or nextFloor != floorName)}"
+            th:with="grp=${rows.?[#this[#ctx.getVariable('fi')] == #ctx.getVariable('floorName')]}">
+            <td th:if="${lead > 0}" th:colspan="${lead}" th:text="${floorName + ' subtotal'}">Ground Floor subtotal</td>
+            <td th:each="h, cs : ${headers}"
+                th:if="${cs.index >= lead}"
+                th:with="ci=${cs.index}"
+                th:class="${#strings.contains(money, '|' + h + '|') ? 'num' : (h == 'Invoices' ? 'ctr' : '')}">
+                <th:block th:if="${#strings.contains(money, '|' + h + '|')}"
+                          th:with="n=${#aggregates.sum(grp.![T(java.lang.Double).parseDouble(#this[#ctx.getVariable('ci')])]).doubleValue()}">
+                    <th:block th:replace="~{:: amt(${n})}"/>
+                </th:block>
+                <th:block th:if="${h == 'Invoices'}"
+                          th:text="${#numbers.formatInteger(#aggregates.sum(grp.![T(java.lang.Double).parseDouble(#this[#ctx.getVariable('ci')])]), 1)}">2</th:block>
+            </td>
+        </tr>
+    </th:block>
+    </tbody>
+
+    <!-- Grand total -->
+    <tbody th:if="${r.includeGrandTotal and rows != null and !rows.isEmpty()}">
+    <tr class="grand">
+        <td th:if="${lead > 0}" th:colspan="${lead}">Grand Total</td>
+        <td th:each="h, cs : ${headers}"
+            th:if="${cs.index >= lead}"
+            th:with="ci=${cs.index}"
+            th:class="${#strings.contains(money, '|' + h + '|') ? 'num' : (h == 'Invoices' ? 'ctr' : '')}">
+            <th:block th:if="${#strings.contains(money, '|' + h + '|')}"
+                      th:with="n=${#aggregates.sum(rows.![T(java.lang.Double).parseDouble(#this[#ctx.getVariable('ci')])]).doubleValue()}">
+                <th:block th:replace="~{:: amt(${n})}"/>
+            </th:block>
+            <th:block th:if="${h == 'Invoices'}"
+                      th:text="${#numbers.formatInteger(#aggregates.sum(rows.![T(java.lang.Double).parseDouble(#this[#ctx.getVariable('ci')])]), 1)}">8</th:block>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

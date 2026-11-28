@@ -12,7 +12,12 @@ public class UsersService {
 
     @Autowired
     private UserRepositories userRepositories;
+
     public List<Users> findByUserIds(List<String> userIds) {
         return userRepositories.findAllById(userIds);
+    }
+
+    public Users findByUserId(String userId) {
+        return userRepositories.findByUserId(userId);
     }
 }

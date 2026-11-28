@@ -1,9 +1,11 @@
 package com.smartstay.reports.controller;
 
+import com.smartstay.reports.payloads.invoice.InvConsolidatedViewPayload;
 import com.smartstay.reports.service.InvoiceService;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,20 +34,27 @@ public class InvoiceController {
     }
 
     @GetMapping("/new/{hostelId}/{invoiceId}")
-    public ResponseEntity<?> getInvoiceReportsSettlmentNew(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
+    public ResponseEntity<?> getInvoiceReportsSettlmentNew(@PathVariable("invoiceId") String invoiceId,
+                                                           @PathVariable("hostelId") String hostelId) {
         return invoiceService.getInvoiceReportNew(hostelId, invoiceId);
     }
 
     @GetMapping("/new/details/{hostelId}/{invoiceId}")
-    public ResponseEntity<?> getInvoiceReportsDetailsSettlementNew(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
+    public ResponseEntity<?> getInvoiceReportsDetailsSettlementNew(@PathVariable("invoiceId") String invoiceId,
+                                                                   @PathVariable("hostelId") String hostelId) {
         return invoiceService.getNewSettlementDetails(hostelId, invoiceId);
     }
+
     @GetMapping("/new/retainer/details/{hostelId}/{invoiceId}")
-    public ResponseEntity<?> getInvoiceReportsDetailsRetainers(@PathVariable("invoiceId") String invoiceId, @PathVariable("hostelId") String hostelId) {
+    public ResponseEntity<?> getInvoiceReportsDetailsRetainers(@PathVariable("invoiceId") String invoiceId,
+                                                               @PathVariable("hostelId") String hostelId) {
         return invoiceService.getNewRetainerDetails(hostelId, invoiceId);
     }
+
     @GetMapping("/pdf/details/{hostelId}")
-    public ResponseEntity<?> getInvoiceReportDetails(@PathVariable("hostelId") String hostelId, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
+    public ResponseEntity<?> getInvoiceReportDetails(@PathVariable("hostelId") String hostelId,
+                                                     @RequestParam("startDate") String startDate,
+                                                     @RequestParam("endDate") String endDate) {
         return invoiceService.getInvoiceReportDetailDetails(hostelId, startDate, endDate);
     }
 
@@ -66,5 +75,19 @@ public class InvoiceController {
         return invoiceService.getInvoiceReport(hostelId, search, paymentStatus, invoiceModes,
                 invoiceTypes, createdBy, period, minPaidAmount, maxPaidAmount,
                 minOutstandingAmount, maxOutstandingAmount, startDate, endDate);
+    }
+
+    @PostMapping("/consolidated/details/{hostelId}/{userId}")
+    public ResponseEntity<?> getInvoiceReportConsolidatedView(@PathVariable("hostelId") String hostelId,
+                                                              @PathVariable("userId") String userId,
+                                                              @RequestBody @Valid InvConsolidatedViewPayload payload) {
+        return invoiceService.getInvoiceReportConsolidatedView(hostelId, userId, payload);
+    }
+
+    @PostMapping("/consolidated/pdf/{hostelId}/{userId}")
+    public ResponseEntity<?> getInvoiceReportConsolidatedViewPdf(@PathVariable("hostelId") String hostelId,
+                                                                 @PathVariable("userId") String userId,
+                                                                 @RequestBody @Valid InvConsolidatedViewPayload payload) {
+        return invoiceService.getInvoiceReportConsolidatedViewPdf(hostelId, userId, payload);
     }
 }
