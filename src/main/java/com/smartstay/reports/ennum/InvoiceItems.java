@@ -8,5 +8,4 @@ public enum InvoiceItems {
     MAINTENANCE,
     BOOKING,
     ADVANCE
-
 }
