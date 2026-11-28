@@ -1578,6 +1578,25 @@ public class InvoiceService {
                     .toList();
         }
 
+        invoices = invoices.stream()
+                .filter(i -> !InvoiceType.AMOUNT_HOLDING.name().equalsIgnoreCase(i.getInvoiceType()) &&
+                        !InvoiceType.EB_HOLDING.name().equalsIgnoreCase(i.getInvoiceType()) &&
+                        !InvoiceType.SETTLEMENT.name().equalsIgnoreCase(i.getInvoiceType()))
+                .filter(i -> PaymentStatus.PAID.name().equalsIgnoreCase(i.getPaymentStatus()) ||
+                        PaymentStatus.PARTIAL_PAYMENT.name().equalsIgnoreCase(i.getPaymentStatus()) ||
+                        PaymentStatus.PENDING.name().equalsIgnoreCase(i.getPaymentStatus()))
+                .toList();
+
+        Map<String, List<InvoicesV1>> invoicesByCustomer = invoices.stream()
+                .collect(Collectors.groupingBy(InvoicesV1::getCustomerId));
+
+        Set<String> createdByUserIds = invoices.stream()
+                .map(InvoicesV1::getCreatedBy)
+                .collect(Collectors.toSet());
+
+        List<Users> createdByUsers = usersService
+                .findByUserIds(new ArrayList<>(createdByUserIds));
+
         Map<Integer, List<Rooms>> roomsByFloor = new HashMap<>();
         if (rooms != null){
             roomsByFloor = rooms.stream()
@@ -1597,12 +1616,7 @@ public class InvoiceService {
                         (existing, replacement) -> replacement
                 ));
 
-        Map<String, List<InvoicesV1>> invoicesByCustomer = invoices.stream()
-                .collect(Collectors.groupingBy(InvoicesV1::getCustomerId));
-
-        Set<String> customerIds = invoices.stream()
-                .map(InvoicesV1::getCustomerId)
-                .collect(Collectors.toSet());
+        Set<String> customerIds = new HashSet<>(customerByBed.values());
 
         List<Customers> customers = customerServices
                 .findByCustomerIds(new ArrayList<>(customerIds));
@@ -1610,14 +1624,6 @@ public class InvoiceService {
         Map<String, Customers> customersMap = customers.stream()
                 .collect(Collectors.toMap(Customers::getCustomerId,
                         customer -> customer));
-
-        Set<String> createdByUserIds = invoices.stream()
-                .filter(i -> !InvoiceType.SETTLEMENT.name().equalsIgnoreCase(i.getInvoiceType()))
-                .map(InvoicesV1::getCreatedBy)
-                .collect(Collectors.toSet());
-
-        List<Users> createdByUsers = usersService
-                .findByUserIds(new ArrayList<>(createdByUserIds));
 
         String totalInvoice = String.valueOf(invoices.size());
         int totalTenants = customerIds.size();
@@ -1688,6 +1694,8 @@ public class InvoiceService {
                 .toList();
 
         List<EnumFilterRes> paymentStatusFilters = Arrays.stream(PaymentStatus.values())
+                .filter(i -> PaymentStatus.PAID.equals(i) || PaymentStatus.PARTIAL_PAYMENT.equals(i)
+                        || PaymentStatus.PENDING.equals(i))
                 .map(i -> new EnumFilterRes(i.name(), i.getDisplayName()))
                 .toList();
 
@@ -1697,6 +1705,8 @@ public class InvoiceService {
                 .toList();
 
         List<EnumFilterRes> invoiceTypeFilters = Arrays.stream(InvoiceType.values())
+                .filter(i -> !InvoiceType.AMOUNT_HOLDING.equals(i) &&
+                        !InvoiceType.EB_HOLDING.equals(i) && !InvoiceType.SETTLEMENT.equals(i))
             .map(i -> new EnumFilterRes(i.name(),
                     NameUtils.capitalizeWordsWithUnderscore(i.name())))
             .toList();
@@ -1950,7 +1960,7 @@ public class InvoiceService {
                     .map(i -> toInvConsolidatedRes(i, customer))
                     .toList();
 
-            if (!includeEmptyBeds && invoiceResponses.isEmpty()) {
+            if (!includeEmptyBeds && customer == null) {
                 continue;
             }
 
